@@ -19,7 +19,6 @@ import (
 	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	grpcadapter "github.com/byte-v-forge/browser-automation/internal/adapters/grpc"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/repository/postgres"
-	"github.com/byte-v-forge/browser-automation/internal/adapters/runtime/camoufox"
 	"github.com/byte-v-forge/browser-automation/internal/app"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
@@ -178,29 +177,10 @@ func loadConfig() (config, error) {
 	if cfg.PostgresMaxConns < 1 {
 		return cfg, fmt.Errorf("BROWSER_AUTOMATION_POSTGRES_MAX_CONNS must be positive")
 	}
-	if cfg.Runtime != defaultRuntime {
+	if runtimePluginByKey(cfg.Runtime) == nil {
 		return cfg, fmt.Errorf("unsupported BROWSER_AUTOMATION_RUNTIME %q", cfg.Runtime)
 	}
 	return cfg, nil
-}
-
-func newRuntime(cfg config) (*camoufox.Runtime, error) {
-	runtime, err := camoufox.NewRuntime(camoufox.Config{
-		PythonPath:      cfg.CamoufoxPythonPath,
-		ArtifactsDir:    cfg.CamoufoxArtifactsDir,
-		StartupTimeout:  cfg.CamoufoxStartupTimeout,
-		ShutdownTimeout: cfg.CamoufoxShutdownTimeout,
-		TaskTimeout:     cfg.CamoufoxTaskTimeout,
-		Headless:        cfg.CamoufoxHeadless,
-		ServerPort:      cfg.CamoufoxServerPort,
-		WSPathPrefix:    cfg.CamoufoxWSPathPrefix,
-		ExtraEnv:        cfg.CamoufoxExtraEnv,
-		ProxyRefs:       cfg.CamoufoxProxyRefs,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("configure camoufox runtime: %w", err)
-	}
-	return runtime, nil
 }
 
 func applyMigrations(ctx context.Context, pool *pgxpool.Pool, dir string) error {
