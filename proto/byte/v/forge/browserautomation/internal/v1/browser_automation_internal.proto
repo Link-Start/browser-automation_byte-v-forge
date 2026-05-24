@@ -7,7 +7,7 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "ByteVForge.BrowserAutomation.Internal.V1";
-option go_package = "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/internal/v1;browserautomationinternalv1";
+option go_package = "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/private/v1;browserautomationinternalv1";
 option java_multiple_files = true;
 option java_outer_classname = "BrowserAutomationInternalProto";
 option java_package = "com.bytevforge.browserautomation.internal.v1";

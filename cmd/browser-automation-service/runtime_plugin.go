@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	browserautomationinternalv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/private/v1"
 	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/runtime/camoufox"
 	"github.com/byte-v-forge/browser-automation/internal/core"
@@ -10,9 +11,8 @@ import (
 )
 
 type runtimePlugin struct {
-	runtimeID       string
-	profileDefaults *browserautomationv1.BrowserProfile
-	build           func(config) (core.Runtime, error)
+	config *browserautomationinternalv1.BrowserRuntimeConfig
+	build  func(config) (core.Runtime, error)
 }
 
 func runtimePlugins() []runtimePlugin {
@@ -21,7 +21,7 @@ func runtimePlugins() []runtimePlugin {
 
 func runtimePluginByKey(key string) *runtimePlugin {
 	for _, plugin := range runtimePlugins() {
-		if plugin.runtimeID == key {
+		if plugin.config.GetRuntimeConfigId() == key {
 			return &plugin
 		}
 	}
@@ -35,17 +35,19 @@ func newRuntime(cfg config) (core.Runtime, error) {
 	}
 	runtime, err := plugin.build(cfg)
 	if err != nil {
-		return nil, fmt.Errorf("configure %s runtime: %w", plugin.runtimeID, err)
+		return nil, fmt.Errorf("configure %s runtime: %w", plugin.config.GetRuntimeConfigId(), err)
 	}
 	return runtime, nil
 }
 
 func camoufoxRuntimePlugin() runtimePlugin {
 	return runtimePlugin{
-		runtimeID: defaultRuntime,
-		profileDefaults: &browserautomationv1.BrowserProfile{
-			BrowserKind: browserautomationv1.BrowserKind_BROWSER_KIND_FIREFOX,
-			Labels:      map[string]string{"adapter": "camoufox"},
+		config: &browserautomationinternalv1.BrowserRuntimeConfig{
+			RuntimeConfigId:   defaultRuntime,
+			Kind:              browserautomationinternalv1.BrowserRuntimeKind_BROWSER_RUNTIME_KIND_CAMOUFOX_SIDECAR,
+			Enabled:           true,
+			SupportedBrowsers: []browserautomationv1.BrowserKind{browserautomationv1.BrowserKind_BROWSER_KIND_FIREFOX},
+			Labels:            map[string]string{"adapter": "camoufox"},
 		},
 		build: func(cfg config) (core.Runtime, error) {
 			return camoufox.NewRuntime(camoufox.Config{
@@ -65,10 +67,29 @@ func camoufoxRuntimePlugin() runtimePlugin {
 }
 
 func runtimePluginProfileDefaults() map[string]*browserautomationv1.BrowserProfile {
-	plugins := runtimePlugins()
-	out := make(map[string]*browserautomationv1.BrowserProfile, len(plugins))
-	for _, plugin := range plugins {
-		out[plugin.runtimeID] = proto.Clone(plugin.profileDefaults).(*browserautomationv1.BrowserProfile)
+	descriptors := runtimePluginDescriptors()
+	out := make(map[string]*browserautomationv1.BrowserProfile, len(descriptors))
+	for _, descriptor := range descriptors {
+		out[descriptor.GetRuntimeConfigId()] = &browserautomationv1.BrowserProfile{
+			BrowserKind: firstSupportedBrowser(descriptor.GetSupportedBrowsers()),
+			Labels:      descriptor.GetLabels(),
+		}
 	}
 	return out
+}
+
+func runtimePluginDescriptors() []*browserautomationinternalv1.BrowserRuntimeConfig {
+	plugins := runtimePlugins()
+	out := make([]*browserautomationinternalv1.BrowserRuntimeConfig, 0, len(plugins))
+	for _, plugin := range plugins {
+		out = append(out, proto.Clone(plugin.config).(*browserautomationinternalv1.BrowserRuntimeConfig))
+	}
+	return out
+}
+
+func firstSupportedBrowser(browsers []browserautomationv1.BrowserKind) browserautomationv1.BrowserKind {
+	if len(browsers) == 0 {
+		return browserautomationv1.BrowserKind_BROWSER_KIND_UNSPECIFIED
+	}
+	return browsers[0]
 }

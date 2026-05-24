@@ -1094,8 +1094,8 @@ const file_byte_v_forge_browserautomation_internal_v1_browser_automation_interna
 	"\x15UpsertInternalSession\x12H.byte.v.forge.browserautomation.internal.v1.UpsertInternalSessionRequest\x1aI.byte.v.forge.browserautomation.internal.v1.UpsertInternalSessionResponse\x12\xa3\x01\n" +
 	"\x12GetInternalSession\x12E.byte.v.forge.browserautomation.internal.v1.GetInternalSessionRequest\x1aF.byte.v.forge.browserautomation.internal.v1.GetInternalSessionResponse\x12\xa3\x01\n" +
 	"\x12UpsertInternalTask\x12E.byte.v.forge.browserautomation.internal.v1.UpsertInternalTaskRequest\x1aF.byte.v.forge.browserautomation.internal.v1.UpsertInternalTaskResponse\x12\x9a\x01\n" +
-	"\x0fGetInternalTask\x12B.byte.v.forge.browserautomation.internal.v1.GetInternalTaskRequest\x1aC.byte.v.forge.browserautomation.internal.v1.GetInternalTaskResponseB\xa0\x02\n" +
-	",com.bytevforge.browserautomation.internal.v1B\x1eBrowserAutomationInternalProtoP\x01Zxgithub.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/internal/v1;browserautomationinternalv1\xaa\x02(ByteVForge.BrowserAutomation.Internal.V1\xca\x02(ByteVForge\\BrowserAutomation\\Internal\\V1b\x06proto3"
+	"\x0fGetInternalTask\x12B.byte.v.forge.browserautomation.internal.v1.GetInternalTaskRequest\x1aC.byte.v.forge.browserautomation.internal.v1.GetInternalTaskResponseB\x9f\x02\n" +
+	",com.bytevforge.browserautomation.internal.v1B\x1eBrowserAutomationInternalProtoP\x01Zwgithub.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/private/v1;browserautomationinternalv1\xaa\x02(ByteVForge.BrowserAutomation.Internal.V1\xca\x02(ByteVForge\\BrowserAutomation\\Internal\\V1b\x06proto3"
 
 var (
 	file_byte_v_forge_browserautomation_internal_v1_browser_automation_internal_proto_rawDescOnce sync.Once
