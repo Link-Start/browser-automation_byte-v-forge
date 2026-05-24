@@ -20,9 +20,11 @@ func runtimePlugins() []runtimePlugin {
 }
 
 func runtimePluginByKey(key string) *runtimePlugin {
-	for _, plugin := range runtimePlugins() {
+	plugins := runtimePlugins()
+	for index := range plugins {
+		plugin := &plugins[index]
 		if plugin.config.GetRuntimeConfigId() == key {
-			return &plugin
+			return plugin
 		}
 	}
 	return nil
