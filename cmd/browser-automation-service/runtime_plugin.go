@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	browserautomationinternalv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/private/v1"
-	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/runtime/camoufox"
 	"github.com/byte-v-forge/browser-automation/internal/core"
+	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -15,6 +15,7 @@
 
 ```sh
 sh scripts/generate-proto.sh
+OUT_DIR=/tmp/browser-automation-python-proto sh scripts/generate-python-proto.sh
 GOPRIVATE=github.com/byte-v-forge/* GONOSUMDB=github.com/byte-v-forge/* go mod download
 go vet ./...
 ```

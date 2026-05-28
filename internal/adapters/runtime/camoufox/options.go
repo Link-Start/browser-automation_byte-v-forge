@@ -3,11 +3,11 @@ package camoufox
 import (
 	"encoding/json"
 	"fmt"
-	"net/url"
+	"github.com/byte-v-forge/common-lib/proxyurl"
 	"strconv"
 	"strings"
 
-	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
+	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
 )
 
 func serverOptions(cfg Config, session *browserautomationv1.BrowserSession) (map[string]any, error) {
@@ -89,32 +89,11 @@ func encodeOptions(options map[string]any) (string, error) {
 }
 
 func parseProxyOption(raw string) (map[string]string, error) {
-	parsed, err := url.Parse(strings.TrimSpace(raw))
+	parsed, err := proxyurl.Parse(raw, "http")
 	if err != nil {
 		return nil, err
 	}
-	if parsed.Scheme == "" || parsed.Host == "" {
-		return nil, fmt.Errorf("proxy URL must include scheme and host")
-	}
-	if parsed.Hostname() == "" {
-		return nil, fmt.Errorf("proxy URL host is invalid")
-	}
-	if parsed.RawQuery != "" || parsed.Fragment != "" || (parsed.Path != "" && parsed.Path != "/") {
-		return nil, fmt.Errorf("proxy URL must not include path, query, or fragment")
-	}
-	proxy := map[string]string{
-		"server": parsed.Scheme + "://" + parsed.Host,
-	}
-	if parsed.User != nil {
-		username := parsed.User.Username()
-		if username != "" {
-			proxy["username"] = username
-		}
-		if password, ok := parsed.User.Password(); ok {
-			proxy["password"] = password
-		}
-	}
-	return proxy, nil
+	return proxyurl.BrowserMap(parsed)
 }
 
 func setStringOption(options map[string]any, labels map[string]string, labelKey, optionKey string) {

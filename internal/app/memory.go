@@ -3,18 +3,12 @@ package app
 import (
 	"context"
 	"sort"
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/byte-v-forge/browser-automation/internal/core"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-)
-
-const (
-	defaultPageSize = 50
-	maxPageSize     = 200
 )
 
 type SystemClock struct{}
@@ -170,11 +164,11 @@ func (s *MemoryStore) GetTaskByRequestID(_ context.Context, requestID string) (*
 }
 
 func (s *MemoryStore) ListTasks(_ context.Context, filter *core.TaskFilter, pageSize int, pageToken string) (core.TaskListResult, error) {
-	offset, err := parsePageToken(pageToken)
+	offset, err := core.ParsePageToken(pageToken)
 	if err != nil {
 		return core.TaskListResult{}, err
 	}
-	pageSize = normalizePageSize(pageSize)
+	pageSize = core.NormalizePageSize(pageSize)
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	matched := make([]*core.Task, 0, len(s.tasks))
@@ -200,7 +194,7 @@ func (s *MemoryStore) ListTasks(_ context.Context, filter *core.TaskFilter, page
 	}
 	nextPageToken := ""
 	if end < len(matched) {
-		nextPageToken = strconv.Itoa(end)
+		nextPageToken = core.PageToken(end)
 	}
 	return core.TaskListResult{Tasks: matched[offset:end], NextPageToken: nextPageToken}, nil
 }
@@ -219,27 +213,6 @@ func (s *MemoryStore) UpdateTask(_ context.Context, task *core.Task) error {
 		s.taskRequestID[task.GetRequestId()] = task.GetTaskId()
 	}
 	return nil
-}
-
-func parsePageToken(pageToken string) (int, error) {
-	if pageToken == "" {
-		return 0, nil
-	}
-	offset, err := strconv.Atoi(pageToken)
-	if err != nil || offset < 0 {
-		return 0, core.NewError(core.CodeValidationFailed, "page_token must be a non-negative offset", false)
-	}
-	return offset, nil
-}
-
-func normalizePageSize(pageSize int) int {
-	if pageSize <= 0 {
-		return defaultPageSize
-	}
-	if pageSize > maxPageSize {
-		return maxPageSize
-	}
-	return pageSize
 }
 
 func taskMatches(filter *core.TaskFilter, task *core.Task) bool {

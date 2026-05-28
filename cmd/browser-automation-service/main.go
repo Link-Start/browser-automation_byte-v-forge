@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -11,19 +10,18 @@ import (
 	"os/signal"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
 
-	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	grpcadapter "github.com/byte-v-forge/browser-automation/internal/adapters/grpc"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/repository/postgres"
 	"github.com/byte-v-forge/browser-automation/internal/app"
+	"github.com/byte-v-forge/common-lib/envx"
+	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
+	"github.com/byte-v-forge/common-lib/grpchealth"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/health"
-	healthv1 "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 const (
@@ -109,10 +107,7 @@ func run() error {
 	server := grpc.NewServer()
 	browserautomationv1.RegisterBrowserAutomationServiceServer(server, grpcadapter.NewAutomationServer(service))
 
-	healthServer := health.NewServer()
-	healthv1.RegisterHealthServer(server, healthServer)
-	healthServer.SetServingStatus("", healthv1.HealthCheckResponse_SERVING)
-	healthServer.SetServingStatus(browserautomationv1.BrowserAutomationService_ServiceDesc.ServiceName, healthv1.HealthCheckResponse_SERVING)
+	healthServer := grpchealth.RegisterServing(server)
 
 	serveErr := make(chan error, 1)
 	go func() {
@@ -122,8 +117,7 @@ func run() error {
 
 	select {
 	case <-rootCtx.Done():
-		healthServer.SetServingStatus("", healthv1.HealthCheckResponse_NOT_SERVING)
-		healthServer.SetServingStatus(browserautomationv1.BrowserAutomationService_ServiceDesc.ServiceName, healthv1.HealthCheckResponse_NOT_SERVING)
+		grpchealth.SetNotServing(healthServer)
 		stopped := make(chan struct{})
 		go func() {
 			server.GracefulStop()
@@ -145,30 +139,30 @@ func run() error {
 }
 
 func loadConfig() (config, error) {
-	proxyRefs, err := envStringMap("BROWSER_AUTOMATION_PROXY_REFS_JSON")
+	proxyRefs, err := envx.JSONStringMap("BROWSER_AUTOMATION_PROXY_REFS_JSON")
 	if err != nil {
 		return config{}, err
 	}
 	cfg := config{
-		ListenAddr:               envDefault("BROWSER_AUTOMATION_LISTEN_ADDR", defaultListenAddr),
-		PostgresDSN:              requiredEnv("BROWSER_AUTOMATION_POSTGRES_DSN"),
-		PostgresMaxConns:         int32(envInt("BROWSER_AUTOMATION_POSTGRES_MAX_CONNS", defaultPostgresMaxConns)),
-		PostgresConnectTimeout:   envDurationSeconds("BROWSER_AUTOMATION_POSTGRES_CONNECT_TIMEOUT_SECONDS", defaultConnectTimeout),
-		PostgresStatementTimeout: envDurationSeconds("BROWSER_AUTOMATION_POSTGRES_STATEMENT_TIMEOUT_SECONDS", defaultStatementTimeout),
-		ApplyMigrations:          envBool("BROWSER_AUTOMATION_APPLY_MIGRATIONS", false),
-		MigrationsDir:            envDefault("BROWSER_AUTOMATION_MIGRATIONS_DIR", defaultMigrationsDir),
-		ShutdownGrace:            envDurationSeconds("BROWSER_AUTOMATION_SHUTDOWN_GRACE_SECONDS", defaultShutdownGrace),
-		Runtime:                  strings.ToLower(envDefault("BROWSER_AUTOMATION_RUNTIME", defaultRuntime)),
+		ListenAddr:               envx.StringDefault("BROWSER_AUTOMATION_LISTEN_ADDR", defaultListenAddr),
+		PostgresDSN:              envx.String("BROWSER_AUTOMATION_POSTGRES_DSN"),
+		PostgresMaxConns:         int32(envx.Int("BROWSER_AUTOMATION_POSTGRES_MAX_CONNS", defaultPostgresMaxConns)),
+		PostgresConnectTimeout:   envx.DurationSeconds("BROWSER_AUTOMATION_POSTGRES_CONNECT_TIMEOUT_SECONDS", defaultConnectTimeout),
+		PostgresStatementTimeout: envx.DurationSeconds("BROWSER_AUTOMATION_POSTGRES_STATEMENT_TIMEOUT_SECONDS", defaultStatementTimeout),
+		ApplyMigrations:          envx.Bool("BROWSER_AUTOMATION_APPLY_MIGRATIONS", false),
+		MigrationsDir:            envx.StringDefault("BROWSER_AUTOMATION_MIGRATIONS_DIR", defaultMigrationsDir),
+		ShutdownGrace:            envx.DurationSeconds("BROWSER_AUTOMATION_SHUTDOWN_GRACE_SECONDS", defaultShutdownGrace),
+		Runtime:                  strings.ToLower(envx.StringDefault("BROWSER_AUTOMATION_RUNTIME", defaultRuntime)),
 
-		CamoufoxPythonPath:      envDefault("BROWSER_AUTOMATION_CAMOUFOX_PYTHON_PATH", "python3"),
-		CamoufoxArtifactsDir:    envDefault("BROWSER_AUTOMATION_ARTIFACTS_DIR", defaultArtifactsDir),
-		CamoufoxStartupTimeout:  envDurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_STARTUP_TIMEOUT_SECONDS", defaultCamoufoxStartup),
-		CamoufoxShutdownTimeout: envDurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_SHUTDOWN_TIMEOUT_SECONDS", defaultCamoufoxShutdown),
-		CamoufoxTaskTimeout:     envDurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_TASK_TIMEOUT_SECONDS", defaultCamoufoxTaskTimeout),
-		CamoufoxHeadless:        envBool("BROWSER_AUTOMATION_CAMOUFOX_HEADLESS", true),
-		CamoufoxServerPort:      envInt("BROWSER_AUTOMATION_CAMOUFOX_SERVER_PORT", 0),
-		CamoufoxWSPathPrefix:    envDefault("BROWSER_AUTOMATION_CAMOUFOX_WS_PATH_PREFIX", defaultCamoufoxWSPathPrefix),
-		CamoufoxExtraEnv:        envList("BROWSER_AUTOMATION_CAMOUFOX_EXTRA_ENV"),
+		CamoufoxPythonPath:      envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_PYTHON_PATH", "python3"),
+		CamoufoxArtifactsDir:    envx.StringDefault("BROWSER_AUTOMATION_ARTIFACTS_DIR", defaultArtifactsDir),
+		CamoufoxStartupTimeout:  envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_STARTUP_TIMEOUT_SECONDS", defaultCamoufoxStartup),
+		CamoufoxShutdownTimeout: envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_SHUTDOWN_TIMEOUT_SECONDS", defaultCamoufoxShutdown),
+		CamoufoxTaskTimeout:     envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_TASK_TIMEOUT_SECONDS", defaultCamoufoxTaskTimeout),
+		CamoufoxHeadless:        envx.Bool("BROWSER_AUTOMATION_CAMOUFOX_HEADLESS", true),
+		CamoufoxServerPort:      envx.Int("BROWSER_AUTOMATION_CAMOUFOX_SERVER_PORT", 0),
+		CamoufoxWSPathPrefix:    envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_WS_PATH_PREFIX", defaultCamoufoxWSPathPrefix),
+		CamoufoxExtraEnv:        envx.List("BROWSER_AUTOMATION_CAMOUFOX_EXTRA_ENV"),
 		CamoufoxProxyRefs:       proxyRefs,
 	}
 	if strings.TrimSpace(cfg.PostgresDSN) == "" {
@@ -210,91 +204,4 @@ func applyMigrations(ctx context.Context, pool *pgxpool.Pool, dir string) error 
 		slog.Info("applied browser automation migration", "file", filepath.Base(file))
 	}
 	return nil
-}
-
-func requiredEnv(name string) string {
-	return strings.TrimSpace(os.Getenv(name))
-}
-
-func envDefault(name string, fallback string) string {
-	value := strings.TrimSpace(os.Getenv(name))
-	if value == "" {
-		return fallback
-	}
-	return value
-}
-
-func envBool(name string, fallback bool) bool {
-	value := strings.ToLower(strings.TrimSpace(os.Getenv(name)))
-	if value == "" {
-		return fallback
-	}
-	return value == "1" || value == "true" || value == "yes" || value == "on"
-}
-
-func envInt(name string, fallback int) int {
-	value := strings.TrimSpace(os.Getenv(name))
-	if value == "" {
-		return fallback
-	}
-	parsed, err := strconv.Atoi(value)
-	if err != nil {
-		slog.Warn("invalid integer env; using fallback", "name", name, "value", value, "fallback", fallback)
-		return fallback
-	}
-	return parsed
-}
-
-func envDurationSeconds(name string, fallback time.Duration) time.Duration {
-	value := strings.TrimSpace(os.Getenv(name))
-	if value == "" {
-		return fallback
-	}
-	seconds, err := strconv.Atoi(value)
-	if err != nil {
-		slog.Warn("invalid duration env; using fallback", "name", name, "value", value, "fallback", fallback.String())
-		return fallback
-	}
-	return time.Duration(seconds) * time.Second
-}
-
-func envList(name string) []string {
-	value := strings.TrimSpace(os.Getenv(name))
-	if value == "" {
-		return nil
-	}
-	parts := strings.FieldsFunc(value, func(r rune) bool {
-		return r == '\n' || r == ','
-	})
-	items := make([]string, 0, len(parts))
-	for _, part := range parts {
-		if item := strings.TrimSpace(part); item != "" {
-			items = append(items, item)
-		}
-	}
-	return items
-}
-
-func envStringMap(name string) (map[string]string, error) {
-	value := strings.TrimSpace(os.Getenv(name))
-	if value == "" {
-		return nil, nil
-	}
-	items := map[string]string{}
-	if err := json.Unmarshal([]byte(value), &items); err != nil {
-		return nil, fmt.Errorf("%s must be a JSON object with string values: %w", name, err)
-	}
-	normalized := make(map[string]string, len(items))
-	for key, item := range items {
-		key = strings.TrimSpace(key)
-		item = strings.TrimSpace(item)
-		if key == "" {
-			return nil, fmt.Errorf("%s contains an empty key", name)
-		}
-		if item == "" {
-			return nil, fmt.Errorf("%s contains an empty value for key %q", name, key)
-		}
-		normalized[key] = item
-	}
-	return normalized, nil
 }

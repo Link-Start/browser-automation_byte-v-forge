@@ -2,7 +2,7 @@
 
 浏览器自动化能力服务。
 
-本仓库负责通用浏览器 session、task、profile、proxy 引用和 artifact 生命周期。GPT、Outlook 等业务服务通过本仓公开浏览器自动化契约调用本服务。
+本仓库负责通用浏览器 session、task、profile、proxy 引用和 artifact 生命周期。GPT、Outlook 等业务服务通过 `common-lib` 中的公开浏览器自动化契约调用本服务。
 
 ## 当前实现
 
@@ -24,7 +24,7 @@
 
 ## 职责
 
-- session/task/artifact 契约定义在本仓 `proto/byte/v/forge/contracts/browserautomation/v1/`。
+- session/task/artifact 公开契约定义在 `common-lib/proto/byte/v/forge/contracts/browserautomation/v1/`。
 - 提供通用浏览器执行能力。
 - 通过内部 adapter 管理 Playwright、CDP、远程浏览器或 Camoufox sidecar runtime 细节。
 - 根仓历史目录 `browser-reg` 中的可复用 runtime 能力进入本仓；站点执行逻辑回到对应业务仓。
@@ -34,10 +34,11 @@
 
 ```sh
 sh scripts/generate-proto.sh
+OUT_DIR=/tmp/browser-automation-python-proto sh scripts/generate-python-proto.sh
 ```
 
-脚本读取本仓 `proto/` 下的公开契约和内部契约，并生成到 `gen/`。
-`gen/` 下的生成物随契约一起提交。
+脚本读取 `common-lib/proto/` 的公开契约和本仓 `proto/` 的内部契约，并只生成本仓内部 `gen/`。
+公开 Go 契约类型来自 `common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1/`；Python runtime 需要 proto 类型时通过 `scripts/generate-python-proto.sh` 按需生成。
 
 ## 检查
 
@@ -46,8 +47,6 @@ GOPRIVATE=github.com/byte-v-forge/* GONOSUMDB=github.com/byte-v-forge/* go mod d
 go build ./...
 go vet ./...
 ```
-
-公开 Go 契约类型来自本仓 `gen/`。
 
 ## 运行
 

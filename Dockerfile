@@ -8,17 +8,19 @@ ENV GOPROXY=https://goproxy.cn,direct
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
     && apk add --no-cache git ca-certificates
 
-COPY go.mod go.sum ./
-RUN go mod download
+COPY common-lib /common-lib
+COPY browser-automation/go.mod browser-automation/go.sum ./
+RUN go mod edit -replace github.com/byte-v-forge/common-lib=/common-lib \
+    && go mod download
 
-COPY . .
+COPY browser-automation .
 RUN CGO_ENABLED=0 GOOS=linux go build -o /out/browser-automation-service ./cmd/browser-automation-service
 
 FROM ${BROWSER_AUTOMATION_RUNTIME_IMAGE}
 
 WORKDIR /app
 COPY --from=builder /out/browser-automation-service /usr/local/bin/browser-automation-service
-COPY migrations ./migrations
+COPY browser-automation/migrations ./migrations
 
 ENV BROWSER_AUTOMATION_LISTEN_ADDR=:50051 \
     BROWSER_AUTOMATION_RUNTIME=camoufox \

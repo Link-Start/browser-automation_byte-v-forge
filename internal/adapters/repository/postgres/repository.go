@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"strconv"
 	"time"
 
-	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/core"
+	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -166,11 +165,11 @@ func (r *Repository) GetTaskByRequestID(ctx context.Context, requestID string) (
 }
 
 func (r *Repository) ListTasks(ctx context.Context, filter *core.TaskFilter, pageSize int, pageToken string) (core.TaskListResult, error) {
-	offset, err := parsePageToken(pageToken)
+	offset, err := core.ParsePageToken(pageToken)
 	if err != nil {
 		return core.TaskListResult{}, err
 	}
-	pageSize = normalizePageSize(pageSize)
+	pageSize = core.NormalizePageSize(pageSize)
 	if filter == nil {
 		filter = &browserautomationv1.BrowserTaskFilter{}
 	}
@@ -227,7 +226,7 @@ func (r *Repository) ListTasks(ctx context.Context, filter *core.TaskFilter, pag
 	}
 	nextPageToken := ""
 	if hasMore {
-		nextPageToken = strconv.Itoa(offset + pageSize)
+		nextPageToken = core.PageToken(offset + pageSize)
 	}
 	return core.TaskListResult{Tasks: tasks, NextPageToken: nextPageToken}, nil
 }
@@ -370,27 +369,6 @@ func jsonMap(values map[string]string) ([]byte, error) {
 		return []byte(`{}`), nil
 	}
 	return json.Marshal(values)
-}
-
-func parsePageToken(pageToken string) (int, error) {
-	if pageToken == "" {
-		return 0, nil
-	}
-	offset, err := strconv.Atoi(pageToken)
-	if err != nil || offset < 0 {
-		return 0, core.NewError(core.CodeValidationFailed, "page_token must be a non-negative offset", false)
-	}
-	return offset, nil
-}
-
-func normalizePageSize(pageSize int) int {
-	if pageSize <= 0 {
-		return 50
-	}
-	if pageSize > 200 {
-		return 200
-	}
-	return pageSize
 }
 
 func mapUniqueViolation(err error, message string) error {

@@ -14,9 +14,9 @@ import (
 	"syscall"
 	"time"
 
-	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/core"
-	"google.golang.org/protobuf/encoding/protojson"
+	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
+	"github.com/byte-v-forge/common-lib/protojsonx"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -233,7 +233,7 @@ type sessionRuntime struct {
 
 func (s *sessionRuntime) executeTask(ctx context.Context, task *core.Task, defaultTimeout time.Duration) (core.TaskExecutionResult, error) {
 	timeout := taskTimeout(task, defaultTimeout)
-	taskJSON, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(task)
+	taskJSON, err := protojsonx.Marshal(task)
 	if err != nil {
 		return core.TaskExecutionResult{}, core.NewError(core.CodeInternal, err.Error(), false)
 	}
@@ -359,7 +359,7 @@ func decodeWorkerResponse(line string) (decodedWorkerResponse, error) {
 	if envelope.Type != "task_result" {
 		return decodedWorkerResponse{}, core.NewError(core.CodeBrowserUnavailable, "camoufox worker response type is invalid", true)
 	}
-	unmarshal := protojson.UnmarshalOptions{DiscardUnknown: true}
+	unmarshal := protojsonx.UnmarshalOptions
 	response := decodedWorkerResponse{
 		Results:   make([]*browserautomationv1.BrowserCommandResult, 0, len(envelope.Results)),
 		Artifacts: make([]*browserautomationv1.BrowserArtifact, 0, len(envelope.Artifacts)),
