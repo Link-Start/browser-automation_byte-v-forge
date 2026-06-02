@@ -16,6 +16,7 @@ import (
 
 	grpcadapter "github.com/byte-v-forge/browser-automation/internal/adapters/grpc"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/repository/postgres"
+	"github.com/byte-v-forge/browser-automation/internal/adapters/runtime/runtimeplugin"
 	"github.com/byte-v-forge/browser-automation/internal/app"
 	"github.com/byte-v-forge/common-lib/envx"
 	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
@@ -71,7 +72,11 @@ func main() {
 }
 
 func run() error {
-	cfg, err := loadConfig()
+	runtimeRegistry, err := newRuntimeRegistry()
+	if err != nil {
+		return err
+	}
+	cfg, err := loadConfig(runtimeRegistry)
 	if err != nil {
 		return err
 	}
@@ -91,7 +96,7 @@ func run() error {
 		}
 	}
 
-	runtime, err := newRuntime(cfg)
+	runtime, err := newRuntime(runtimeRegistry, cfg)
 	if err != nil {
 		return err
 	}
@@ -138,7 +143,7 @@ func run() error {
 	}
 }
 
-func loadConfig() (config, error) {
+func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error) {
 	proxyRefs, err := envx.JSONStringMap("BROWSER_AUTOMATION_PROXY_REFS_JSON")
 	if err != nil {
 		return config{}, err
@@ -171,7 +176,7 @@ func loadConfig() (config, error) {
 	if cfg.PostgresMaxConns < 1 {
 		return cfg, fmt.Errorf("BROWSER_AUTOMATION_POSTGRES_MAX_CONNS must be positive")
 	}
-	if runtimePluginByKey(cfg.Runtime) == nil {
+	if _, ok := runtimeRegistry.Get(cfg.Runtime); !ok {
 		return cfg, fmt.Errorf("unsupported BROWSER_AUTOMATION_RUNTIME %q", cfg.Runtime)
 	}
 	return cfg, nil
