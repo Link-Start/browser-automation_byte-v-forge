@@ -10,7 +10,7 @@ import (
 
 const defaultSessionTTL = 30 * time.Minute
 
-func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID string, profile *core.Profile, ttl time.Duration) (*core.Session, error) {
+func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID string, profile *core.Profile, ttl time.Duration, labels map[string]string) (*core.Session, error) {
 	if requestID != "" {
 		existing, err := s.store.GetSessionByRequestID(ctx, requestID)
 		if err == nil {
@@ -39,7 +39,7 @@ func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID s
 		RequestId: requestID,
 		Status:    browserautomationv1.BrowserSessionStatus_BROWSER_SESSION_STATUS_STARTING,
 		Profile:   profile,
-		Labels:    cloneMap(profile.GetLabels()),
+		Labels:    cloneMap(labels),
 		CreatedAt: timestamp(now),
 		UpdatedAt: timestamp(now),
 		ExpiresAt: timestamp(now.Add(ttl)),

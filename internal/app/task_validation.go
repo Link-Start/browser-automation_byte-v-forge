@@ -114,7 +114,10 @@ func validateCommand(command *browserautomationv1.BrowserCommand) error {
 	case *browserautomationv1.BrowserCommand_SubmitForm:
 		return requireSelector(operation.SubmitForm.GetSelector(), operation.SubmitForm.GetSelectorGroup(), "submit form selector is required")
 	case *browserautomationv1.BrowserCommand_Evaluate:
-		return requireString(operation.Evaluate.GetExpression(), "evaluate expression is required")
+		if operation.Evaluate.GetScriptRef() == "" && operation.Evaluate.GetInlineExpression() == "" {
+			return validationError("evaluate script_ref or inline_expression is required")
+		}
+		return nil
 	default:
 		return core.NewError(core.CodeUnsupportedOperation, "unsupported command operation", false)
 	}

@@ -20,7 +20,7 @@ func NewAutomationServer(service *app.AutomationService) *AutomationServer {
 }
 
 func (s *AutomationServer) StartBrowserSession(ctx context.Context, request *browserautomationv1.StartBrowserSessionRequest) (*browserautomationv1.StartBrowserSessionResponse, error) {
-	session, err := s.service.StartBrowserSession(ctx, request.GetRequestId(), request.GetProfile(), protoDuration(request.GetTtl()))
+	session, err := s.service.StartBrowserSession(ctx, request.GetRequestId(), request.GetProfile(), protoDuration(request.GetTtl()), request.GetLabels())
 	if err != nil {
 		return &browserautomationv1.StartBrowserSessionResponse{Session: session, Error: core.AutomationError(err)}, nil
 	}

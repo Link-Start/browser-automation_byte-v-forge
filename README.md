@@ -100,7 +100,7 @@ runtime, err := camoufox.NewRuntime(camoufox.Config{
 })
 ```
 
-`BrowserProfile` 会映射到 Camoufox / Playwright 运行参数：`locale`、`timezone`、`user_agent`、`viewport`、`device_scale_factor`、`extra_http_headers`、`init_scripts`。`proxy_ref` 通过服务端 `BROWSER_AUTOMATION_PROXY_REFS_JSON` 解析为 Camoufox proxy 配置。`labels` 可设置 `camoufox.os`、`camoufox.geoip`、`camoufox.headless`、`camoufox.block_images`、`camoufox.block_webrtc`、`camoufox.block_webgl`、`camoufox.disable_coop`、`camoufox.main_world_eval`、`camoufox.enable_cache`、`camoufox.humanize`。
+`BrowserProfile` 会映射到 Camoufox / Playwright 运行参数：`locale`、`timezone`、`user_agent`、`viewport`、`device_scale_factor`、`extra_http_headers`、`init_scripts`。`proxy_ref` 通过服务端 `BROWSER_AUTOMATION_PROXY_REFS_JSON` 解析为 Camoufox proxy 配置。`StartBrowserSessionRequest.labels` 仅保存业务侧会话元数据；runtime 参数由服务端配置和 runtime adapter 管理。需要在 main world 执行脚本时，调用方必须在单条 `EvaluateCommand` 上设置 `trusted=true`。
 
 ## 后续建设
 

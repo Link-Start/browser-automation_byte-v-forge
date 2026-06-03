@@ -102,7 +102,6 @@ func (r *Registry[C]) ProfileDefaults() map[string]*browserautomationv1.BrowserP
 	for _, descriptor := range descriptors {
 		out[descriptor.GetRuntimeConfigId()] = &browserautomationv1.BrowserProfile{
 			BrowserKind: firstSupportedBrowser(descriptor.GetSupportedBrowsers()),
-			Labels:      descriptor.GetLabels(),
 		}
 	}
 	return out
