@@ -21,6 +21,9 @@ func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID s
 		}
 	}
 	profile = cloneProfile(profile)
+	if err := validateProfile(profile); err != nil {
+		return nil, err
+	}
 	if profile.GetBrowserKind() == browserautomationv1.BrowserKind_BROWSER_KIND_UNSPECIFIED {
 		profile.BrowserKind = defaultBrowserKind(s.runtime)
 	}
