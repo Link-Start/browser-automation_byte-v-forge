@@ -2,6 +2,7 @@ import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { ArrowRight, Radio } from 'lucide-react';
 import { useNavigate } from 'react-router';
+import { PageFrame } from '../components/page-frame';
 import { PageHeader } from '../components/page-header';
 import { paths } from './paths';
 
@@ -18,7 +19,7 @@ export function OpenSessionRoute() {
   }
 
   return (
-    <main>
+    <PageFrame>
       <PageHeader
         description="只处理已有 session 的接管入口，实时画面、命令和任务记录继续走各自子路由。"
         pending={false}
@@ -49,6 +50,6 @@ export function OpenSessionRoute() {
           </div>
         </form>
       </div>
-    </main>
+    </PageFrame>
   );
 }

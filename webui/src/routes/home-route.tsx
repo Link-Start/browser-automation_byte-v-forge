@@ -1,5 +1,6 @@
 import { ArrowRight, MonitorDot, Plus, Radio, type LucideIcon } from 'lucide-react';
 import { Link } from 'react-router';
+import { PageFrame } from '../components/page-frame';
 import { PageHeader } from '../components/page-header';
 import { paths } from './paths';
 
@@ -33,7 +34,7 @@ const homeActions: HomeAction[] = [
 
 export function HomeRoute() {
   return (
-    <main className="home-page">
+    <PageFrame className="home-page">
       <PageHeader
         description="首页只保留入口和路由说明，具体配置、LiveView、命令和任务记录都进入独立页面。"
         pending={false}
@@ -54,7 +55,7 @@ export function HomeRoute() {
           </div>
         </div>
       </section>
-    </main>
+    </PageFrame>
   );
 }
 

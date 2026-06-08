@@ -8,7 +8,7 @@ type SessionRouteContext = {
 export function SessionRouteLayout() {
   const { sessionId = '' } = useParams();
   if (!sessionId.trim()) {
-    return <Navigate replace to={paths.newSession} />;
+    return <Navigate replace to={paths.home} />;
   }
   return <Outlet context={{ sessionId }} />;
 }

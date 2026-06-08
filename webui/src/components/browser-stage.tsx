@@ -20,7 +20,7 @@ export function BrowserStage(props: BrowserStageProps) {
   const currentUrl = props.frame?.current_url || props.targetUrl;
   const displayUrl = safeURL(currentUrl || 'about:blank');
   const title = props.frame?.title || props.placeholderTitle || (props.activeSessionId ? '等待浏览器画面' : '启动一个云端浏览器会话');
-  const preview = props.placeholderPreview || 'CDP Live View 会在启动会话后把远端 Chromium 画面推到这里。';
+  const preview = props.placeholderPreview || 'LiveView 会在启动会话后把远端浏览器画面推到这里。';
 
   function dispatch(input?: BrowserLiveInputEvent) {
     if (input) {

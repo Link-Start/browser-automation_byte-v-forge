@@ -12,12 +12,12 @@ export function SessionLiveRoute() {
   const navigate = useNavigate();
   const { sessionId } = useSessionRoute();
   const liveView = useLiveView(sessionId);
-  const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => navigate(paths.newSession) });
+  const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => navigate(paths.home) });
   const pending = !liveView.connected && !liveView.error;
   const message = liveView.connected ? 'LiveView 已连接。' : liveView.reconnecting ? 'LiveView 连接中断，正在自动重连。' : '正在连接远端浏览器画面。';
   return (
     <SessionPage
-      description="专注展示 CDP LiveView 画面和输入回放，不混入命令表单与任务列表。"
+      description="专注展示 LiveView 画面和输入回放，不混入命令表单与任务列表。"
       error={liveView.error || stop.error?.message}
       pending={pending || stop.isPending}
       sessionId={sessionId}

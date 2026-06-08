@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { PageFrame } from '../components/page-frame';
 import { PageHeader } from '../components/page-header';
 import { Status } from '../components/status';
 import { SessionTabs } from './session-tabs';
@@ -15,11 +16,11 @@ type SessionPageProps = {
 
 export function SessionPage({ children, description, error, pending, sessionId, statusMessage, title }: SessionPageProps) {
   return (
-    <main>
+    <PageFrame>
       <PageHeader activeSessionId={sessionId} description={description} error={error} pending={pending} title={title} />
       <SessionTabs sessionId={sessionId} />
       <Status error={error} message={statusMessage} />
       {children}
-    </main>
+    </PageFrame>
   );
 }

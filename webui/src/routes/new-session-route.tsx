@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { startSession } from '../api/browser-api';
+import { PageFrame } from '../components/page-frame';
 import { PageHeader } from '../components/page-header';
 import { SessionCard } from '../components/session-card';
 import { Status } from '../components/status';
@@ -27,7 +28,7 @@ export function NewSessionRoute() {
   }
 
   return (
-    <main>
+    <PageFrame>
       <PageHeader
         activeSessionId="新会话"
         description="只处理会话配置和启动，成功后进入实时浏览器子路由。"
@@ -51,6 +52,6 @@ export function NewSessionRoute() {
           validationError={validationError}
         />
       </div>
-    </main>
+    </PageFrame>
   );
 }
