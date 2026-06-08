@@ -45,7 +45,7 @@ main { margin: 0 auto; outline: none; padding: 34px 0 46px; position: relative; 
 .state-error, .notice-error { background: rgba(127, 29, 29, .52); border-color: rgba(248, 113, 113, .58); color: #fecaca; }
 .session-chip { background: rgba(2, 6, 23, .46); color: #cbd5e1; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; max-width: min(520px, 90vw); overflow: hidden; padding: 8px 12px; text-overflow: ellipsis; white-space: nowrap; }
 .notice { background: rgba(249, 115, 22, .13); border: 1px solid rgba(251, 146, 60, .36); border-radius: 14px; color: #ffedd5; margin: 0 0 16px; padding: 12px 14px; }
-.session-toolbar { align-items: center; background: rgba(15, 23, 42, .72); border: 1px solid rgba(251, 146, 60, .18); border-radius: 22px; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 18px; padding: 14px 16px; }
+.session-toolbar { align-items: center; background: rgba(15, 23, 42, .72); border: 1px solid rgba(251, 146, 60, .18); border-radius: 22px; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 18px; padding: 14px 16px; position: relative; }
 .session-toolbar-main, .session-toolbar-actions, .toolbar-link { align-items: center; display: flex; gap: 10px; }
 .session-toolbar strong { color: #fff7ed; display: block; }
 .session-toolbar p { color: #94a3b8; margin: 3px 0 0; }
@@ -54,6 +54,9 @@ main { margin: 0 auto; outline: none; padding: 34px 0 46px; position: relative; 
 .toolbar-link { background: rgba(2, 6, 23, .48); border: 1px solid rgba(251, 146, 60, .16); border-radius: 999px; color: #fed7aa; font-size: 13px; font-weight: 850; padding: 8px 11px; text-decoration: none; }
 .toolbar-live { color: #bbf7d0; }
 .toolbar-muted { color: #94a3b8; }
+.toolbar-feedback { bottom: -24px; color: #bbf7d0; font-size: 12px; font-weight: 850; position: absolute; right: 16px; }
+.toolbar-feedback:empty { display: none; }
+.toolbar-feedback-error { color: #fecaca; }
 .icon-button { background: rgba(148, 163, 184, .14); border: 1px solid rgba(251, 146, 60, .18); color: #ffedd5; padding: 9px; width: 38px; }
 .icon-button-danger { border-color: rgba(248, 113, 113, .28); color: #fecaca; }
 .browser-stage { margin-bottom: 18px; }

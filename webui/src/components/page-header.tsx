@@ -21,7 +21,7 @@ export function PageHeader({ activeSessionId, description, error, pending, title
         <p>{description}</p>
       </div>
       <div className="hero-state">
-        <div className={error ? 'state-pill state-error' : 'state-pill'}>
+        <div className={error ? 'state-pill state-error' : 'state-pill'} role={error ? 'alert' : 'status'} aria-live={error ? 'assertive' : 'polite'}>
           {pending ? <Loader2 className="spin" size={16} /> : <Activity size={16} />}
           <span>{error ? safeMessage(error) : pending ? '请求处理中' : '服务可用'}</span>
         </div>
