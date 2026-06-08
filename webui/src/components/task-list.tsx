@@ -1,9 +1,10 @@
-import { Code2, MonitorDot, RefreshCcw } from 'lucide-react';
+import { ClipboardList, Code2, MonitorDot, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
 import { safeMessage, safeURL } from '../api/safe-json';
 import { paths } from '../routes/paths';
+import { EmptyState } from './empty-state';
 
 type TaskListProps = {
   lastUpdatedAt?: number;
@@ -31,44 +32,52 @@ export function TaskList({ lastUpdatedAt, onRefresh, refreshing = false, session
         </div>
       </div>
       {lastUpdatedAt ? <p className="muted task-updated">上次刷新：{formatTaskTime(new Date(lastUpdatedAt).toISOString())}</p> : null}
-      <div className="table">
-        <div className="table-row task-row table-head">
-          <span>任务</span>
-          <span>状态</span>
-          <span>最近更新</span>
-          <span>页面</span>
-          <span>操作</span>
-        </div>
-        {tasks.map((task) => (
-          <div className="table-row task-row" key={task.task_id}>
-            <span title={task.task_id}>
-              <strong>{task.input?.task_key || task.task_id}</strong>
-              <small>{shortID(task.task_id)}</small>
-            </span>
-            <span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
-            <span>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</span>
-            <span title={taskDisplayURL(task)}>
-              {taskTitle(task)}
-              <small>{taskMeta(task)}</small>
-              {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
-            </span>
-            <span className="task-actions">
-              <Link className="mini-link" to={paths.sessionLive(sessionId)} title="打开实时浏览器"><MonitorDot size={14} />Live</Link>
-              <Link className="mini-link" to={paths.sessionCommands(sessionId)} title="继续执行命令"><Code2 size={14} />命令</Link>
-            </span>
-          </div>
-        ))}
-        {tasks.length === 0 ? <EmptyTasks sessionId={sessionId} /> : null}
-      </div>
+      {tasks.length === 0 ? <EmptyTasks sessionId={sessionId} /> : <TaskTable sessionId={sessionId} tasks={tasks} />}
     </section>
+  );
+}
+
+function TaskTable({ sessionId, tasks }: { sessionId: string; tasks: BrowserTask[] }) {
+  return (
+    <div className="table">
+      <div className="table-row task-row table-head">
+        <span>任务</span>
+        <span>状态</span>
+        <span>最近更新</span>
+        <span>页面</span>
+        <span>操作</span>
+      </div>
+      {tasks.map((task) => (
+        <div className="table-row task-row" key={task.task_id}>
+          <span title={task.task_id}>
+            <strong>{task.input?.task_key || task.task_id}</strong>
+            <small>{shortID(task.task_id)}</small>
+          </span>
+          <span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
+          <span>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</span>
+          <span title={taskDisplayURL(task)}>
+            {taskTitle(task)}
+            <small>{taskMeta(task)}</small>
+            {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
+          </span>
+          <span className="task-actions">
+            <Link className="mini-link" to={paths.sessionLive(sessionId)} title="打开实时浏览器"><MonitorDot size={14} />Live</Link>
+            <Link className="mini-link" to={paths.sessionCommands(sessionId)} title="继续执行命令"><Code2 size={14} />命令</Link>
+          </span>
+        </div>
+      ))}
+    </div>
   );
 }
 
 function EmptyTasks({ sessionId }: { sessionId: string }) {
   return (
-    <p className="muted empty">
-      暂无任务。<Link to={paths.sessionCommands(sessionId)}>去执行一次快捷命令</Link> 后会在这里展示历史记录。
-    </p>
+    <EmptyState
+      action={<Link className="mini-link" to={paths.sessionCommands(sessionId)}><Code2 size={14} />执行快捷命令</Link>}
+      description="当前 session 暂无任务。执行命令后，这里会显示状态、页面摘要和后续操作入口。"
+      icon={<ClipboardList size={22} />}
+      title="还没有任务记录"
+    />
   );
 }
 

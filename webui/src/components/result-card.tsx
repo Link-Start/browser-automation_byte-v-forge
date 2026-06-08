@@ -1,8 +1,9 @@
-import { Rows3 } from 'lucide-react';
+import { Rows3, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
 import { safeJSONStringify, safeMessage, safeTextPreview, safeURL } from '../api/safe-json';
+import { EmptyState } from './empty-state';
 
 type ResultCardProps = {
   task?: BrowserTask;
@@ -34,7 +35,14 @@ export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
           </details>
           {taskHistoryPath ? <Link className="mini-link" to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link> : null}
         </div>
-      ) : <p className="muted empty">执行任务后会在这里展示摘要、脱敏正文预览和脱敏 JSON。</p>}
+      ) : (
+        <EmptyState
+          action={taskHistoryPath ? <Link className="mini-link" to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link> : undefined}
+          description="执行命令后会在这里展示摘要、脱敏正文预览和脱敏 Proto JSON。"
+          icon={<Sparkles size={22} />}
+          title="等待最近结果"
+        />
+      )}
     </section>
   );
 }
