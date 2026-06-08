@@ -1,3 +1,4 @@
+import type { FormEvent } from 'react';
 import { Code2, PlayCircle, Wand2 } from 'lucide-react';
 import type { BrowserNavigationWaitUntil } from '../proto/browser/automation/v1/browser_automation';
 import { waitUntilLabel, waitUntilOptions } from '../api/defaults';
@@ -24,8 +25,17 @@ type CommandCardProps = {
 };
 
 export function CommandCard(props: CommandCardProps) {
+  const canExecute = !props.pending && Boolean(props.sessionId) && !props.validationError;
+
+  function submitCommand(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (canExecute) {
+      props.onExecute();
+    }
+  }
+
   return (
-    <section className="card command-card">
+    <form className="card command-card" onSubmit={submitCommand}>
       <div className="card-title">
         <div>
           <p className="section-kicker">Step 02</p>
@@ -34,13 +44,22 @@ export function CommandCard(props: CommandCardProps) {
         <span>表单生成 Proto JSON</span>
       </div>
       <div className="form-grid command-builder">
-        <label className="wide">
+        <label className="wide" htmlFor="command-target-url">
           目标 URL
-          <input autoComplete="url" inputMode="url" value={props.targetUrl} onChange={(event) => props.onTargetUrlChange(event.target.value)} placeholder="https://example.com" />
+          <input
+            id="command-target-url"
+            autoComplete="url"
+            inputMode="url"
+            aria-describedby="command-validation-feedback"
+            aria-invalid={Boolean(props.validationError)}
+            value={props.targetUrl}
+            onChange={(event) => props.onTargetUrlChange(event.target.value)}
+            placeholder="https://example.com"
+          />
         </label>
-        <label>
+        <label htmlFor="command-wait-until">
           等待策略
-          <select value={props.waitUntil} onChange={(event) => props.onWaitUntilChange(event.target.value as BrowserNavigationWaitUntil)}>
+          <select id="command-wait-until" value={props.waitUntil} onChange={(event) => props.onWaitUntilChange(event.target.value as BrowserNavigationWaitUntil)}>
             {waitUntilOptions.map((item) => (
               <option key={item} value={item}>{waitUntilLabel(item)}</option>
             ))}
@@ -56,17 +75,17 @@ export function CommandCard(props: CommandCardProps) {
         <button className="secondary" onClick={props.onApplyTemplate} type="button">
           <Wand2 size={16} />生成命令
         </button>
-        <button className="primary" disabled={props.pending || !props.sessionId || Boolean(props.validationError)} onClick={props.onExecute} type="button">
+        <button className="primary" disabled={!canExecute} type="submit">
           <PlayCircle size={16} />执行
         </button>
       </div>
-      <p className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'}>
+      <p id="command-validation-feedback" className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'} role={props.validationError ? 'alert' : 'status'} aria-live="polite">
         {props.validationError || `${props.commandCount} 条命令已通过校验。`}
       </p>
       <details className="json-editor">
         <summary><Code2 size={15} />高级 Proto JSON<span className="summary-hint">按需编辑</span></summary>
         <textarea spellCheck={false} value={props.commandsText} onChange={(event) => props.onChange(event.target.value)} aria-label="Browser commands JSON" />
       </details>
-    </section>
+    </form>
   );
 }
