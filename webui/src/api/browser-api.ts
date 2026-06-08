@@ -7,20 +7,31 @@ import type {
   StartBrowserSessionResponse,
   StopBrowserSessionResponse
 } from '../proto/browser/automation/v1/browser_automation';
+import { ensureProtoSuccess, fetchProto, postProto } from './proto-http';
 
 const basePath = '/api/browser-automation';
 
 export async function startSession(request: StartBrowserSessionRequest): Promise<StartBrowserSessionResponse> {
-  return ensureSuccess(await postProto<StartBrowserSessionResponse>(`${basePath}/sessions`, request));
+  return ensureProtoSuccess(await postProto<StartBrowserSessionResponse>(`${basePath}/sessions`, request, {
+    timeoutMessage: '启动浏览器会话超时，请稍后重试或降低并发。',
+    timeoutMs: 150_000
+  }));
 }
 
 export async function createLiveView(sessionId: string): Promise<CreateBrowserLiveViewResponse> {
-  return ensureSuccess(await postProto<CreateBrowserLiveViewResponse>(`${basePath}/sessions/${encodeURIComponent(sessionId)}/live`, {
-    session_id: sessionId,
-    control_enabled: true,
-    max_width: 1280,
-    max_height: 900
-  }));
+  return ensureProtoSuccess(await postProto<CreateBrowserLiveViewResponse>(
+    `${basePath}/sessions/${encodeURIComponent(sessionId)}/live`,
+    {
+      session_id: sessionId,
+      control_enabled: true,
+      max_width: 1280,
+      max_height: 900
+    },
+    {
+      timeoutMessage: '创建 LiveView 超时，请确认会话仍在运行。',
+      timeoutMs: 30_000
+    }
+  ));
 }
 
 export function liveViewWebSocketPath(token: string) {
@@ -28,14 +39,24 @@ export function liveViewWebSocketPath(token: string) {
 }
 
 export async function stopSession(sessionId: string, reason: string): Promise<StopBrowserSessionResponse> {
-  return ensureSuccess(await postProto<StopBrowserSessionResponse>(`${basePath}/sessions/${encodeURIComponent(sessionId)}/stop`, {
-    session_id: sessionId,
-    reason
-  }));
+  return ensureProtoSuccess(await postProto<StopBrowserSessionResponse>(
+    `${basePath}/sessions/${encodeURIComponent(sessionId)}/stop`,
+    {
+      session_id: sessionId,
+      reason
+    },
+    {
+      timeoutMessage: '停止会话超时，请稍后刷新状态。',
+      timeoutMs: 20_000
+    }
+  ));
 }
 
 export async function executeCommands(request: ExecuteBrowserCommandsRequest): Promise<ExecuteBrowserCommandsResponse> {
-  return ensureSuccess(await postProto<ExecuteBrowserCommandsResponse>(`${basePath}/tasks/execute`, request));
+  return ensureProtoSuccess(await postProto<ExecuteBrowserCommandsResponse>(`${basePath}/tasks/execute`, request, {
+    timeoutMessage: '命令执行超时，请到任务记录页查看最终状态。',
+    timeoutMs: 120_000
+  }));
 }
 
 export async function listTasks(sessionId: string): Promise<ListBrowserTasksResponse> {
@@ -43,33 +64,8 @@ export async function listTasks(sessionId: string): Promise<ListBrowserTasksResp
   if (sessionId.trim()) {
     query.set('session_id', sessionId.trim());
   }
-  return ensureSuccess(await fetchProto<ListBrowserTasksResponse>(`${basePath}/tasks?${query.toString()}`));
-}
-
-async function postProto<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  return readProto<T>(response);
-}
-
-async function fetchProto<T>(path: string): Promise<T> {
-  return readProto<T>(await fetch(path));
-}
-
-async function readProto<T>(response: Response): Promise<T> {
-  const text = await response.text();
-  if (!response.ok) {
-    throw new Error(text || response.statusText);
-  }
-  return (text ? JSON.parse(text) : {}) as T;
-}
-
-function ensureSuccess<T extends { error?: { message?: string } }>(response: T): T {
-  if (response.error?.message) {
-    throw new Error(response.error.message);
-  }
-  return response;
+  return ensureProtoSuccess(await fetchProto<ListBrowserTasksResponse>(`${basePath}/tasks?${query.toString()}`, {
+    timeoutMessage: '加载任务记录超时，请稍后重试。',
+    timeoutMs: 20_000
+  }));
 }
