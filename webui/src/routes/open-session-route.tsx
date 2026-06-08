@@ -9,11 +9,13 @@ import { paths } from './paths';
 export function OpenSessionRoute() {
   const navigate = useNavigate();
   const [sessionId, setSessionId] = useState('');
+  const validationError = validateSessionId(sessionId);
+  const showValidationError = Boolean(sessionId) && Boolean(validationError);
 
   function openExistingSession(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedSessionId = sessionId.trim();
-    if (normalizedSessionId) {
+    if (!validationError) {
       navigate(paths.sessionLive(normalizedSessionId));
     }
   }
@@ -38,18 +40,34 @@ export function OpenSessionRoute() {
           <label>
             Session ID
             <input
+              autoComplete="off"
+              autoFocus
+              aria-describedby="session-id-feedback"
+              aria-invalid={showValidationError}
               onChange={(event) => setSessionId(event.target.value)}
               placeholder="browser-session-id"
+              spellCheck={false}
               value={sessionId}
             />
           </label>
           <div className="actions">
-            <button className="primary" disabled={!sessionId.trim()} type="submit">
+            <button className="primary" disabled={Boolean(validationError)} type="submit">
               打开实时浏览器<ArrowRight size={16} />
             </button>
           </div>
+          <p id="session-id-feedback" className={showValidationError ? 'form-feedback form-feedback-error' : 'form-feedback'} role={showValidationError ? 'alert' : 'status'} aria-live="polite">
+            {showValidationError ? validationError : '输入已有 session ID 后，可按 Enter 或点击按钮进入实时浏览器。'}
+          </p>
         </form>
       </div>
     </PageFrame>
   );
+}
+
+function validateSessionId(value: string) {
+  const sessionId = value.trim();
+  if (!sessionId) return '请输入 session ID。';
+  if (/\s/.test(sessionId)) return 'Session ID 不能包含空格。';
+  if (sessionId.length > 160) return 'Session ID 不能超过 160 个字符。';
+  return '';
 }
