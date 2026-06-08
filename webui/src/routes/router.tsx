@@ -1,4 +1,5 @@
 import { Navigate, createBrowserRouter } from 'react-router';
+import { AppRouteError } from './app-route-error';
 import { AppShell } from './app-shell';
 import { LiveViewRoute } from './live-view-route';
 import { NewSessionRoute } from './new-session-route';
@@ -13,6 +14,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     Component: AppShell,
+    errorElement: <AppRouteError />,
     children: [
       { index: true, element: <Navigate replace to={paths.newSession} /> },
       {
