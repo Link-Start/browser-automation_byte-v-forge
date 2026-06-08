@@ -3,8 +3,8 @@ FROM docker.m.daocloud.io/library/python:3.12-slim-bookworm
 ARG CAMOUFOX_VERSION=0.4.11
 ARG CLOAKBROWSER_VERSION=0.3.31
 ARG PLAYWRIGHT_VERSION=1.59.0
+ARG PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright
 ARG BROWSER_FETCH_PROXY=""
-ENV PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright
 
 RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list.d/debian.sources \
     && apt-get update \
@@ -48,11 +48,20 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
     && pip install --no-cache-dir \
         "camoufox[geoip]==${CAMOUFOX_VERSION}" \
         "cloakbrowser==${CLOAKBROWSER_VERSION}" \
-        "playwright==${PLAYWRIGHT_VERSION}" \
-    && if [ -n "$BROWSER_FETCH_PROXY" ]; then \
+        "playwright==${PLAYWRIGHT_VERSION}"
+
+RUN if [ -n "$BROWSER_FETCH_PROXY" ]; then \
          HTTP_PROXY="$BROWSER_FETCH_PROXY" HTTPS_PROXY="$BROWSER_FETCH_PROXY" python -m camoufox fetch; \
-         HTTP_PROXY="$BROWSER_FETCH_PROXY" HTTPS_PROXY="$BROWSER_FETCH_PROXY" python -m playwright install chromium; \
        else \
          python -m camoufox fetch; \
-         python -m playwright install chromium; \
+       fi
+
+RUN if PLAYWRIGHT_DOWNLOAD_HOST="$PLAYWRIGHT_DOWNLOAD_HOST" python -m playwright install chromium; then \
+         true; \
+       elif [ -n "$BROWSER_FETCH_PROXY" ]; then \
+         echo "Playwright mirror download failed; retrying via BROWSER_FETCH_PROXY"; \
+         unset PLAYWRIGHT_DOWNLOAD_HOST; \
+         HTTP_PROXY="$BROWSER_FETCH_PROXY" HTTPS_PROXY="$BROWSER_FETCH_PROXY" python -m playwright install chromium; \
+       else \
+         exit 1; \
        fi
