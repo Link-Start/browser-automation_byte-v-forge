@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router';
 import { AppRouteError } from './app-route-error';
 import { AppShell } from './app-shell';
+import { HomeRoute } from './home-route';
 import { LiveViewRoute } from './live-view-route';
 import { NewSessionRoute } from './new-session-route';
 import { OpenSessionRoute } from './open-session-route';
@@ -16,11 +17,11 @@ export const router = createBrowserRouter([
     Component: AppShell,
     errorElement: <AppRouteError />,
     children: [
-      { index: true, element: <Navigate replace to={paths.newSession} /> },
+      { index: true, Component: HomeRoute },
       {
         path: 'sessions',
         children: [
-          { index: true, element: <Navigate replace to={paths.newSession} /> },
+          { index: true, element: <Navigate replace to={paths.home} /> },
           { path: 'new', Component: NewSessionRoute },
           { path: 'open', Component: OpenSessionRoute },
           {
@@ -36,7 +37,7 @@ export const router = createBrowserRouter([
         ]
       },
       { path: 'live/:token', Component: LiveViewRoute },
-      { path: '*', element: <Navigate replace to={paths.newSession} /> }
+      { path: '*', element: <Navigate replace to={paths.home} /> }
     ]
   }
 ]);
