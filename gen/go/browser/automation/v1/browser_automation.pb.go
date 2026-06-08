@@ -680,6 +680,116 @@ func (BrowserArtifactKind) EnumDescriptor() ([]byte, []int) {
 	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{10}
 }
 
+type BrowserLiveViewProvider int32
+
+const (
+	BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED BrowserLiveViewProvider = 0
+	BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_CDP         BrowserLiveViewProvider = 1
+	BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_SCREENSHOT  BrowserLiveViewProvider = 2
+	BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_WEBRTC      BrowserLiveViewProvider = 3
+)
+
+// Enum value maps for BrowserLiveViewProvider.
+var (
+	BrowserLiveViewProvider_name = map[int32]string{
+		0: "BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED",
+		1: "BROWSER_LIVE_VIEW_PROVIDER_CDP",
+		2: "BROWSER_LIVE_VIEW_PROVIDER_SCREENSHOT",
+		3: "BROWSER_LIVE_VIEW_PROVIDER_WEBRTC",
+	}
+	BrowserLiveViewProvider_value = map[string]int32{
+		"BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED": 0,
+		"BROWSER_LIVE_VIEW_PROVIDER_CDP":         1,
+		"BROWSER_LIVE_VIEW_PROVIDER_SCREENSHOT":  2,
+		"BROWSER_LIVE_VIEW_PROVIDER_WEBRTC":      3,
+	}
+)
+
+func (x BrowserLiveViewProvider) Enum() *BrowserLiveViewProvider {
+	p := new(BrowserLiveViewProvider)
+	*p = x
+	return p
+}
+
+func (x BrowserLiveViewProvider) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BrowserLiveViewProvider) Descriptor() protoreflect.EnumDescriptor {
+	return file_browser_automation_v1_browser_automation_proto_enumTypes[11].Descriptor()
+}
+
+func (BrowserLiveViewProvider) Type() protoreflect.EnumType {
+	return &file_browser_automation_v1_browser_automation_proto_enumTypes[11]
+}
+
+func (x BrowserLiveViewProvider) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BrowserLiveViewProvider.Descriptor instead.
+func (BrowserLiveViewProvider) EnumDescriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{11}
+}
+
+type BrowserLiveInputKind int32
+
+const (
+	BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_UNSPECIFIED BrowserLiveInputKind = 0
+	BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_MOUSE_MOVE  BrowserLiveInputKind = 1
+	BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_MOUSE_CLICK BrowserLiveInputKind = 2
+	BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_MOUSE_WHEEL BrowserLiveInputKind = 3
+	BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_KEY_PRESS   BrowserLiveInputKind = 4
+	BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_TYPE_TEXT   BrowserLiveInputKind = 5
+)
+
+// Enum value maps for BrowserLiveInputKind.
+var (
+	BrowserLiveInputKind_name = map[int32]string{
+		0: "BROWSER_LIVE_INPUT_KIND_UNSPECIFIED",
+		1: "BROWSER_LIVE_INPUT_KIND_MOUSE_MOVE",
+		2: "BROWSER_LIVE_INPUT_KIND_MOUSE_CLICK",
+		3: "BROWSER_LIVE_INPUT_KIND_MOUSE_WHEEL",
+		4: "BROWSER_LIVE_INPUT_KIND_KEY_PRESS",
+		5: "BROWSER_LIVE_INPUT_KIND_TYPE_TEXT",
+	}
+	BrowserLiveInputKind_value = map[string]int32{
+		"BROWSER_LIVE_INPUT_KIND_UNSPECIFIED": 0,
+		"BROWSER_LIVE_INPUT_KIND_MOUSE_MOVE":  1,
+		"BROWSER_LIVE_INPUT_KIND_MOUSE_CLICK": 2,
+		"BROWSER_LIVE_INPUT_KIND_MOUSE_WHEEL": 3,
+		"BROWSER_LIVE_INPUT_KIND_KEY_PRESS":   4,
+		"BROWSER_LIVE_INPUT_KIND_TYPE_TEXT":   5,
+	}
+)
+
+func (x BrowserLiveInputKind) Enum() *BrowserLiveInputKind {
+	p := new(BrowserLiveInputKind)
+	*p = x
+	return p
+}
+
+func (x BrowserLiveInputKind) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BrowserLiveInputKind) Descriptor() protoreflect.EnumDescriptor {
+	return file_browser_automation_v1_browser_automation_proto_enumTypes[12].Descriptor()
+}
+
+func (BrowserLiveInputKind) Type() protoreflect.EnumType {
+	return &file_browser_automation_v1_browser_automation_proto_enumTypes[12]
+}
+
+func (x BrowserLiveInputKind) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BrowserLiveInputKind.Descriptor instead.
+func (BrowserLiveInputKind) EnumDescriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{12}
+}
+
 type EventMetadata struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -5214,6 +5324,442 @@ func (x *BrowserSession) GetExpiresAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type BrowserLiveView struct {
+	state          protoimpl.MessageState  `protogen:"open.v1"`
+	LiveViewId     string                  `protobuf:"bytes,1,opt,name=live_view_id,json=liveViewId,proto3" json:"live_view_id,omitempty"`
+	SessionId      string                  `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	Provider       BrowserLiveViewProvider `protobuf:"varint,3,opt,name=provider,proto3,enum=browser.automation.v1.BrowserLiveViewProvider" json:"provider,omitempty"`
+	ControlEnabled bool                    `protobuf:"varint,4,opt,name=control_enabled,json=controlEnabled,proto3" json:"control_enabled,omitempty"`
+	MaxWidth       int32                   `protobuf:"varint,5,opt,name=max_width,json=maxWidth,proto3" json:"max_width,omitempty"`
+	MaxHeight      int32                   `protobuf:"varint,6,opt,name=max_height,json=maxHeight,proto3" json:"max_height,omitempty"`
+	Url            string                  `protobuf:"bytes,7,opt,name=url,proto3" json:"url,omitempty"`
+	WebsocketUrl   string                  `protobuf:"bytes,8,opt,name=websocket_url,json=websocketUrl,proto3" json:"websocket_url,omitempty"`
+	CreatedAt      *timestamppb.Timestamp  `protobuf:"bytes,30,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ExpiresAt      *timestamppb.Timestamp  `protobuf:"bytes,31,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BrowserLiveView) Reset() {
+	*x = BrowserLiveView{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BrowserLiveView) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BrowserLiveView) ProtoMessage() {}
+
+func (x *BrowserLiveView) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BrowserLiveView.ProtoReflect.Descriptor instead.
+func (*BrowserLiveView) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *BrowserLiveView) GetLiveViewId() string {
+	if x != nil {
+		return x.LiveViewId
+	}
+	return ""
+}
+
+func (x *BrowserLiveView) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *BrowserLiveView) GetProvider() BrowserLiveViewProvider {
+	if x != nil {
+		return x.Provider
+	}
+	return BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED
+}
+
+func (x *BrowserLiveView) GetControlEnabled() bool {
+	if x != nil {
+		return x.ControlEnabled
+	}
+	return false
+}
+
+func (x *BrowserLiveView) GetMaxWidth() int32 {
+	if x != nil {
+		return x.MaxWidth
+	}
+	return 0
+}
+
+func (x *BrowserLiveView) GetMaxHeight() int32 {
+	if x != nil {
+		return x.MaxHeight
+	}
+	return 0
+}
+
+func (x *BrowserLiveView) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *BrowserLiveView) GetWebsocketUrl() string {
+	if x != nil {
+		return x.WebsocketUrl
+	}
+	return ""
+}
+
+func (x *BrowserLiveView) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *BrowserLiveView) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+type BrowserLiveFrame struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	LiveViewId    string                  `protobuf:"bytes,1,opt,name=live_view_id,json=liveViewId,proto3" json:"live_view_id,omitempty"`
+	Sequence      int64                   `protobuf:"varint,2,opt,name=sequence,proto3" json:"sequence,omitempty"`
+	Provider      BrowserLiveViewProvider `protobuf:"varint,3,opt,name=provider,proto3,enum=browser.automation.v1.BrowserLiveViewProvider" json:"provider,omitempty"`
+	ContentType   string                  `protobuf:"bytes,4,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	ImageBase64   string                  `protobuf:"bytes,5,opt,name=image_base64,json=imageBase64,proto3" json:"image_base64,omitempty"`
+	Width         int32                   `protobuf:"varint,6,opt,name=width,proto3" json:"width,omitempty"`
+	Height        int32                   `protobuf:"varint,7,opt,name=height,proto3" json:"height,omitempty"`
+	CurrentUrl    string                  `protobuf:"bytes,8,opt,name=current_url,json=currentUrl,proto3" json:"current_url,omitempty"`
+	Title         string                  `protobuf:"bytes,9,opt,name=title,proto3" json:"title,omitempty"`
+	CapturedAt    *timestamppb.Timestamp  `protobuf:"bytes,30,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BrowserLiveFrame) Reset() {
+	*x = BrowserLiveFrame{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BrowserLiveFrame) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BrowserLiveFrame) ProtoMessage() {}
+
+func (x *BrowserLiveFrame) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BrowserLiveFrame.ProtoReflect.Descriptor instead.
+func (*BrowserLiveFrame) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{55}
+}
+
+func (x *BrowserLiveFrame) GetLiveViewId() string {
+	if x != nil {
+		return x.LiveViewId
+	}
+	return ""
+}
+
+func (x *BrowserLiveFrame) GetSequence() int64 {
+	if x != nil {
+		return x.Sequence
+	}
+	return 0
+}
+
+func (x *BrowserLiveFrame) GetProvider() BrowserLiveViewProvider {
+	if x != nil {
+		return x.Provider
+	}
+	return BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED
+}
+
+func (x *BrowserLiveFrame) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
+}
+
+func (x *BrowserLiveFrame) GetImageBase64() string {
+	if x != nil {
+		return x.ImageBase64
+	}
+	return ""
+}
+
+func (x *BrowserLiveFrame) GetWidth() int32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *BrowserLiveFrame) GetHeight() int32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+func (x *BrowserLiveFrame) GetCurrentUrl() string {
+	if x != nil {
+		return x.CurrentUrl
+	}
+	return ""
+}
+
+func (x *BrowserLiveFrame) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *BrowserLiveFrame) GetCapturedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CapturedAt
+	}
+	return nil
+}
+
+type BrowserLiveInputEvent struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Kind          BrowserLiveInputKind   `protobuf:"varint,1,opt,name=kind,proto3,enum=browser.automation.v1.BrowserLiveInputKind" json:"kind,omitempty"`
+	X             float64                `protobuf:"fixed64,2,opt,name=x,proto3" json:"x,omitempty"`
+	Y             float64                `protobuf:"fixed64,3,opt,name=y,proto3" json:"y,omitempty"`
+	DeltaX        float64                `protobuf:"fixed64,4,opt,name=delta_x,json=deltaX,proto3" json:"delta_x,omitempty"`
+	DeltaY        float64                `protobuf:"fixed64,5,opt,name=delta_y,json=deltaY,proto3" json:"delta_y,omitempty"`
+	Button        BrowserMouseButton     `protobuf:"varint,6,opt,name=button,proto3,enum=browser.automation.v1.BrowserMouseButton" json:"button,omitempty"`
+	Key           string                 `protobuf:"bytes,7,opt,name=key,proto3" json:"key,omitempty"`
+	Text          string                 `protobuf:"bytes,8,opt,name=text,proto3" json:"text,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BrowserLiveInputEvent) Reset() {
+	*x = BrowserLiveInputEvent{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BrowserLiveInputEvent) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BrowserLiveInputEvent) ProtoMessage() {}
+
+func (x *BrowserLiveInputEvent) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BrowserLiveInputEvent.ProtoReflect.Descriptor instead.
+func (*BrowserLiveInputEvent) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{56}
+}
+
+func (x *BrowserLiveInputEvent) GetKind() BrowserLiveInputKind {
+	if x != nil {
+		return x.Kind
+	}
+	return BrowserLiveInputKind_BROWSER_LIVE_INPUT_KIND_UNSPECIFIED
+}
+
+func (x *BrowserLiveInputEvent) GetX() float64 {
+	if x != nil {
+		return x.X
+	}
+	return 0
+}
+
+func (x *BrowserLiveInputEvent) GetY() float64 {
+	if x != nil {
+		return x.Y
+	}
+	return 0
+}
+
+func (x *BrowserLiveInputEvent) GetDeltaX() float64 {
+	if x != nil {
+		return x.DeltaX
+	}
+	return 0
+}
+
+func (x *BrowserLiveInputEvent) GetDeltaY() float64 {
+	if x != nil {
+		return x.DeltaY
+	}
+	return 0
+}
+
+func (x *BrowserLiveInputEvent) GetButton() BrowserMouseButton {
+	if x != nil {
+		return x.Button
+	}
+	return BrowserMouseButton_BROWSER_MOUSE_BUTTON_UNSPECIFIED
+}
+
+func (x *BrowserLiveInputEvent) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *BrowserLiveInputEvent) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+type BrowserLiveClientMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AckSequence   int64                  `protobuf:"varint,1,opt,name=ack_sequence,json=ackSequence,proto3" json:"ack_sequence,omitempty"`
+	Input         *BrowserLiveInputEvent `protobuf:"bytes,2,opt,name=input,proto3" json:"input,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BrowserLiveClientMessage) Reset() {
+	*x = BrowserLiveClientMessage{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BrowserLiveClientMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BrowserLiveClientMessage) ProtoMessage() {}
+
+func (x *BrowserLiveClientMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BrowserLiveClientMessage.ProtoReflect.Descriptor instead.
+func (*BrowserLiveClientMessage) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{57}
+}
+
+func (x *BrowserLiveClientMessage) GetAckSequence() int64 {
+	if x != nil {
+		return x.AckSequence
+	}
+	return 0
+}
+
+func (x *BrowserLiveClientMessage) GetInput() *BrowserLiveInputEvent {
+	if x != nil {
+		return x.Input
+	}
+	return nil
+}
+
+type BrowserLiveServerMessage struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Frame         *BrowserLiveFrame       `protobuf:"bytes,1,opt,name=frame,proto3" json:"frame,omitempty"`
+	Error         *BrowserAutomationError `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BrowserLiveServerMessage) Reset() {
+	*x = BrowserLiveServerMessage{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BrowserLiveServerMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BrowserLiveServerMessage) ProtoMessage() {}
+
+func (x *BrowserLiveServerMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BrowserLiveServerMessage.ProtoReflect.Descriptor instead.
+func (*BrowserLiveServerMessage) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{58}
+}
+
+func (x *BrowserLiveServerMessage) GetFrame() *BrowserLiveFrame {
+	if x != nil {
+		return x.Frame
+	}
+	return nil
+}
+
+func (x *BrowserLiveServerMessage) GetError() *BrowserAutomationError {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
 type BrowserTaskInput struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	SessionId      string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
@@ -5230,7 +5776,7 @@ type BrowserTaskInput struct {
 
 func (x *BrowserTaskInput) Reset() {
 	*x = BrowserTaskInput{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[54]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5242,7 +5788,7 @@ func (x *BrowserTaskInput) String() string {
 func (*BrowserTaskInput) ProtoMessage() {}
 
 func (x *BrowserTaskInput) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[54]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5255,7 +5801,7 @@ func (x *BrowserTaskInput) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserTaskInput.ProtoReflect.Descriptor instead.
 func (*BrowserTaskInput) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{54}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *BrowserTaskInput) GetSessionId() string {
@@ -5334,7 +5880,7 @@ type BrowserTask struct {
 
 func (x *BrowserTask) Reset() {
 	*x = BrowserTask{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[55]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5346,7 +5892,7 @@ func (x *BrowserTask) String() string {
 func (*BrowserTask) ProtoMessage() {}
 
 func (x *BrowserTask) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[55]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5359,7 +5905,7 @@ func (x *BrowserTask) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserTask.ProtoReflect.Descriptor instead.
 func (*BrowserTask) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{55}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *BrowserTask) GetTaskId() string {
@@ -5462,7 +6008,7 @@ type BrowserTaskFilter struct {
 
 func (x *BrowserTaskFilter) Reset() {
 	*x = BrowserTaskFilter{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[56]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5474,7 +6020,7 @@ func (x *BrowserTaskFilter) String() string {
 func (*BrowserTaskFilter) ProtoMessage() {}
 
 func (x *BrowserTaskFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[56]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5487,7 +6033,7 @@ func (x *BrowserTaskFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserTaskFilter.ProtoReflect.Descriptor instead.
 func (*BrowserTaskFilter) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{56}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *BrowserTaskFilter) GetSessionId() string {
@@ -5559,7 +6105,7 @@ type StartBrowserSessionRequest struct {
 
 func (x *StartBrowserSessionRequest) Reset() {
 	*x = StartBrowserSessionRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[57]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5571,7 +6117,7 @@ func (x *StartBrowserSessionRequest) String() string {
 func (*StartBrowserSessionRequest) ProtoMessage() {}
 
 func (x *StartBrowserSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[57]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5584,7 +6130,7 @@ func (x *StartBrowserSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartBrowserSessionRequest.ProtoReflect.Descriptor instead.
 func (*StartBrowserSessionRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{57}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *StartBrowserSessionRequest) GetRequestId() string {
@@ -5632,7 +6178,7 @@ type StartBrowserSessionResponse struct {
 
 func (x *StartBrowserSessionResponse) Reset() {
 	*x = StartBrowserSessionResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[58]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5644,7 +6190,7 @@ func (x *StartBrowserSessionResponse) String() string {
 func (*StartBrowserSessionResponse) ProtoMessage() {}
 
 func (x *StartBrowserSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[58]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5657,7 +6203,7 @@ func (x *StartBrowserSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartBrowserSessionResponse.ProtoReflect.Descriptor instead.
 func (*StartBrowserSessionResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{58}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *StartBrowserSessionResponse) GetSession() *BrowserSession {
@@ -5683,7 +6229,7 @@ type GetBrowserSessionRequest struct {
 
 func (x *GetBrowserSessionRequest) Reset() {
 	*x = GetBrowserSessionRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[59]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5695,7 +6241,7 @@ func (x *GetBrowserSessionRequest) String() string {
 func (*GetBrowserSessionRequest) ProtoMessage() {}
 
 func (x *GetBrowserSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[59]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5708,7 +6254,7 @@ func (x *GetBrowserSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBrowserSessionRequest.ProtoReflect.Descriptor instead.
 func (*GetBrowserSessionRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{59}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *GetBrowserSessionRequest) GetSessionId() string {
@@ -5728,7 +6274,7 @@ type GetBrowserSessionResponse struct {
 
 func (x *GetBrowserSessionResponse) Reset() {
 	*x = GetBrowserSessionResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[60]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5740,7 +6286,7 @@ func (x *GetBrowserSessionResponse) String() string {
 func (*GetBrowserSessionResponse) ProtoMessage() {}
 
 func (x *GetBrowserSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[60]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5753,7 +6299,7 @@ func (x *GetBrowserSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBrowserSessionResponse.ProtoReflect.Descriptor instead.
 func (*GetBrowserSessionResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{60}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *GetBrowserSessionResponse) GetSession() *BrowserSession {
@@ -5780,7 +6326,7 @@ type StopBrowserSessionRequest struct {
 
 func (x *StopBrowserSessionRequest) Reset() {
 	*x = StopBrowserSessionRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[61]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5792,7 +6338,7 @@ func (x *StopBrowserSessionRequest) String() string {
 func (*StopBrowserSessionRequest) ProtoMessage() {}
 
 func (x *StopBrowserSessionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[61]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5805,7 +6351,7 @@ func (x *StopBrowserSessionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopBrowserSessionRequest.ProtoReflect.Descriptor instead.
 func (*StopBrowserSessionRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{61}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *StopBrowserSessionRequest) GetSessionId() string {
@@ -5832,7 +6378,7 @@ type StopBrowserSessionResponse struct {
 
 func (x *StopBrowserSessionResponse) Reset() {
 	*x = StopBrowserSessionResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[62]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5844,7 +6390,7 @@ func (x *StopBrowserSessionResponse) String() string {
 func (*StopBrowserSessionResponse) ProtoMessage() {}
 
 func (x *StopBrowserSessionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[62]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5857,7 +6403,7 @@ func (x *StopBrowserSessionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopBrowserSessionResponse.ProtoReflect.Descriptor instead.
 func (*StopBrowserSessionResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{62}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *StopBrowserSessionResponse) GetSession() *BrowserSession {
@@ -5874,6 +6420,142 @@ func (x *StopBrowserSessionResponse) GetError() *BrowserAutomationError {
 	return nil
 }
 
+type CreateBrowserLiveViewRequest struct {
+	state          protoimpl.MessageState  `protogen:"open.v1"`
+	SessionId      string                  `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	Provider       BrowserLiveViewProvider `protobuf:"varint,2,opt,name=provider,proto3,enum=browser.automation.v1.BrowserLiveViewProvider" json:"provider,omitempty"`
+	ControlEnabled bool                    `protobuf:"varint,3,opt,name=control_enabled,json=controlEnabled,proto3" json:"control_enabled,omitempty"`
+	MaxWidth       int32                   `protobuf:"varint,4,opt,name=max_width,json=maxWidth,proto3" json:"max_width,omitempty"`
+	MaxHeight      int32                   `protobuf:"varint,5,opt,name=max_height,json=maxHeight,proto3" json:"max_height,omitempty"`
+	Ttl            *durationpb.Duration    `protobuf:"bytes,6,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *CreateBrowserLiveViewRequest) Reset() {
+	*x = CreateBrowserLiveViewRequest{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[68]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateBrowserLiveViewRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateBrowserLiveViewRequest) ProtoMessage() {}
+
+func (x *CreateBrowserLiveViewRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[68]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateBrowserLiveViewRequest.ProtoReflect.Descriptor instead.
+func (*CreateBrowserLiveViewRequest) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{68}
+}
+
+func (x *CreateBrowserLiveViewRequest) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *CreateBrowserLiveViewRequest) GetProvider() BrowserLiveViewProvider {
+	if x != nil {
+		return x.Provider
+	}
+	return BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED
+}
+
+func (x *CreateBrowserLiveViewRequest) GetControlEnabled() bool {
+	if x != nil {
+		return x.ControlEnabled
+	}
+	return false
+}
+
+func (x *CreateBrowserLiveViewRequest) GetMaxWidth() int32 {
+	if x != nil {
+		return x.MaxWidth
+	}
+	return 0
+}
+
+func (x *CreateBrowserLiveViewRequest) GetMaxHeight() int32 {
+	if x != nil {
+		return x.MaxHeight
+	}
+	return 0
+}
+
+func (x *CreateBrowserLiveViewRequest) GetTtl() *durationpb.Duration {
+	if x != nil {
+		return x.Ttl
+	}
+	return nil
+}
+
+type CreateBrowserLiveViewResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	LiveView      *BrowserLiveView        `protobuf:"bytes,1,opt,name=live_view,json=liveView,proto3" json:"live_view,omitempty"`
+	Error         *BrowserAutomationError `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateBrowserLiveViewResponse) Reset() {
+	*x = CreateBrowserLiveViewResponse{}
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[69]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateBrowserLiveViewResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateBrowserLiveViewResponse) ProtoMessage() {}
+
+func (x *CreateBrowserLiveViewResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[69]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateBrowserLiveViewResponse.ProtoReflect.Descriptor instead.
+func (*CreateBrowserLiveViewResponse) Descriptor() ([]byte, []int) {
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{69}
+}
+
+func (x *CreateBrowserLiveViewResponse) GetLiveView() *BrowserLiveView {
+	if x != nil {
+		return x.LiveView
+	}
+	return nil
+}
+
+func (x *CreateBrowserLiveViewResponse) GetError() *BrowserAutomationError {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
 type StartBrowserTaskRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RequestId     string                 `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
@@ -5884,7 +6566,7 @@ type StartBrowserTaskRequest struct {
 
 func (x *StartBrowserTaskRequest) Reset() {
 	*x = StartBrowserTaskRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[63]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5896,7 +6578,7 @@ func (x *StartBrowserTaskRequest) String() string {
 func (*StartBrowserTaskRequest) ProtoMessage() {}
 
 func (x *StartBrowserTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[63]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5909,7 +6591,7 @@ func (x *StartBrowserTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartBrowserTaskRequest.ProtoReflect.Descriptor instead.
 func (*StartBrowserTaskRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{63}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *StartBrowserTaskRequest) GetRequestId() string {
@@ -5936,7 +6618,7 @@ type StartBrowserTaskResponse struct {
 
 func (x *StartBrowserTaskResponse) Reset() {
 	*x = StartBrowserTaskResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[64]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5948,7 +6630,7 @@ func (x *StartBrowserTaskResponse) String() string {
 func (*StartBrowserTaskResponse) ProtoMessage() {}
 
 func (x *StartBrowserTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[64]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5961,7 +6643,7 @@ func (x *StartBrowserTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartBrowserTaskResponse.ProtoReflect.Descriptor instead.
 func (*StartBrowserTaskResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{64}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *StartBrowserTaskResponse) GetTask() *BrowserTask {
@@ -5988,7 +6670,7 @@ type ExecuteBrowserCommandsRequest struct {
 
 func (x *ExecuteBrowserCommandsRequest) Reset() {
 	*x = ExecuteBrowserCommandsRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[65]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6000,7 +6682,7 @@ func (x *ExecuteBrowserCommandsRequest) String() string {
 func (*ExecuteBrowserCommandsRequest) ProtoMessage() {}
 
 func (x *ExecuteBrowserCommandsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[65]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6013,7 +6695,7 @@ func (x *ExecuteBrowserCommandsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExecuteBrowserCommandsRequest.ProtoReflect.Descriptor instead.
 func (*ExecuteBrowserCommandsRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{65}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *ExecuteBrowserCommandsRequest) GetRequestId() string {
@@ -6041,7 +6723,7 @@ type ExecuteBrowserCommandsResponse struct {
 
 func (x *ExecuteBrowserCommandsResponse) Reset() {
 	*x = ExecuteBrowserCommandsResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[66]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6053,7 +6735,7 @@ func (x *ExecuteBrowserCommandsResponse) String() string {
 func (*ExecuteBrowserCommandsResponse) ProtoMessage() {}
 
 func (x *ExecuteBrowserCommandsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[66]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6066,7 +6748,7 @@ func (x *ExecuteBrowserCommandsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExecuteBrowserCommandsResponse.ProtoReflect.Descriptor instead.
 func (*ExecuteBrowserCommandsResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{66}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *ExecuteBrowserCommandsResponse) GetTask() *BrowserTask {
@@ -6099,7 +6781,7 @@ type GetBrowserTaskRequest struct {
 
 func (x *GetBrowserTaskRequest) Reset() {
 	*x = GetBrowserTaskRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[67]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6111,7 +6793,7 @@ func (x *GetBrowserTaskRequest) String() string {
 func (*GetBrowserTaskRequest) ProtoMessage() {}
 
 func (x *GetBrowserTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[67]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6124,7 +6806,7 @@ func (x *GetBrowserTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBrowserTaskRequest.ProtoReflect.Descriptor instead.
 func (*GetBrowserTaskRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{67}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *GetBrowserTaskRequest) GetTaskId() string {
@@ -6144,7 +6826,7 @@ type GetBrowserTaskResponse struct {
 
 func (x *GetBrowserTaskResponse) Reset() {
 	*x = GetBrowserTaskResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[68]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6156,7 +6838,7 @@ func (x *GetBrowserTaskResponse) String() string {
 func (*GetBrowserTaskResponse) ProtoMessage() {}
 
 func (x *GetBrowserTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[68]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6169,7 +6851,7 @@ func (x *GetBrowserTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBrowserTaskResponse.ProtoReflect.Descriptor instead.
 func (*GetBrowserTaskResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{68}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *GetBrowserTaskResponse) GetTask() *BrowserTask {
@@ -6197,7 +6879,7 @@ type ListBrowserTasksRequest struct {
 
 func (x *ListBrowserTasksRequest) Reset() {
 	*x = ListBrowserTasksRequest{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[69]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6209,7 +6891,7 @@ func (x *ListBrowserTasksRequest) String() string {
 func (*ListBrowserTasksRequest) ProtoMessage() {}
 
 func (x *ListBrowserTasksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[69]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6222,7 +6904,7 @@ func (x *ListBrowserTasksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBrowserTasksRequest.ProtoReflect.Descriptor instead.
 func (*ListBrowserTasksRequest) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{69}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *ListBrowserTasksRequest) GetFilter() *BrowserTaskFilter {
@@ -6257,7 +6939,7 @@ type ListBrowserTasksResponse struct {
 
 func (x *ListBrowserTasksResponse) Reset() {
 	*x = ListBrowserTasksResponse{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[70]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6269,7 +6951,7 @@ func (x *ListBrowserTasksResponse) String() string {
 func (*ListBrowserTasksResponse) ProtoMessage() {}
 
 func (x *ListBrowserTasksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[70]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6282,7 +6964,7 @@ func (x *ListBrowserTasksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBrowserTasksResponse.ProtoReflect.Descriptor instead.
 func (*ListBrowserTasksResponse) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{70}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *ListBrowserTasksResponse) GetTasks() []*BrowserTask {
@@ -6316,7 +6998,7 @@ type BrowserSessionStartedEvent struct {
 
 func (x *BrowserSessionStartedEvent) Reset() {
 	*x = BrowserSessionStartedEvent{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[71]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6328,7 +7010,7 @@ func (x *BrowserSessionStartedEvent) String() string {
 func (*BrowserSessionStartedEvent) ProtoMessage() {}
 
 func (x *BrowserSessionStartedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[71]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6341,7 +7023,7 @@ func (x *BrowserSessionStartedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserSessionStartedEvent.ProtoReflect.Descriptor instead.
 func (*BrowserSessionStartedEvent) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{71}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *BrowserSessionStartedEvent) GetMetadata() *EventMetadata {
@@ -6370,7 +7052,7 @@ type BrowserSessionStoppedEvent struct {
 
 func (x *BrowserSessionStoppedEvent) Reset() {
 	*x = BrowserSessionStoppedEvent{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[72]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6382,7 +7064,7 @@ func (x *BrowserSessionStoppedEvent) String() string {
 func (*BrowserSessionStoppedEvent) ProtoMessage() {}
 
 func (x *BrowserSessionStoppedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[72]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6395,7 +7077,7 @@ func (x *BrowserSessionStoppedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserSessionStoppedEvent.ProtoReflect.Descriptor instead.
 func (*BrowserSessionStoppedEvent) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{72}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *BrowserSessionStoppedEvent) GetMetadata() *EventMetadata {
@@ -6439,7 +7121,7 @@ type BrowserTaskStatusChangedEvent struct {
 
 func (x *BrowserTaskStatusChangedEvent) Reset() {
 	*x = BrowserTaskStatusChangedEvent{}
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[73]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6451,7 +7133,7 @@ func (x *BrowserTaskStatusChangedEvent) String() string {
 func (*BrowserTaskStatusChangedEvent) ProtoMessage() {}
 
 func (x *BrowserTaskStatusChangedEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[73]
+	mi := &file_browser_automation_v1_browser_automation_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6464,7 +7146,7 @@ func (x *BrowserTaskStatusChangedEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserTaskStatusChangedEvent.ProtoReflect.Descriptor instead.
 func (*BrowserTaskStatusChangedEvent) Descriptor() ([]byte, []int) {
-	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{73}
+	return file_browser_automation_v1_browser_automation_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *BrowserTaskStatusChangedEvent) GetMetadata() *EventMetadata {
@@ -6913,7 +7595,52 @@ const file_browser_automation_v1_browser_automation_proto_rawDesc = "" +
 	"expires_at\x18\" \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe5\x03\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb0\x03\n" +
+	"\x0fBrowserLiveView\x12 \n" +
+	"\flive_view_id\x18\x01 \x01(\tR\n" +
+	"liveViewId\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\x12J\n" +
+	"\bprovider\x18\x03 \x01(\x0e2..browser.automation.v1.BrowserLiveViewProviderR\bprovider\x12'\n" +
+	"\x0fcontrol_enabled\x18\x04 \x01(\bR\x0econtrolEnabled\x12\x1b\n" +
+	"\tmax_width\x18\x05 \x01(\x05R\bmaxWidth\x12\x1d\n" +
+	"\n" +
+	"max_height\x18\x06 \x01(\x05R\tmaxHeight\x12\x10\n" +
+	"\x03url\x18\a \x01(\tR\x03url\x12#\n" +
+	"\rwebsocket_url\x18\b \x01(\tR\fwebsocketUrl\x129\n" +
+	"\n" +
+	"created_at\x18\x1e \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"expires_at\x18\x1f \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt\"\x84\x03\n" +
+	"\x10BrowserLiveFrame\x12 \n" +
+	"\flive_view_id\x18\x01 \x01(\tR\n" +
+	"liveViewId\x12\x1a\n" +
+	"\bsequence\x18\x02 \x01(\x03R\bsequence\x12J\n" +
+	"\bprovider\x18\x03 \x01(\x0e2..browser.automation.v1.BrowserLiveViewProviderR\bprovider\x12!\n" +
+	"\fcontent_type\x18\x04 \x01(\tR\vcontentType\x12!\n" +
+	"\fimage_base64\x18\x05 \x01(\tR\vimageBase64\x12\x14\n" +
+	"\x05width\x18\x06 \x01(\x05R\x05width\x12\x16\n" +
+	"\x06height\x18\a \x01(\x05R\x06height\x12\x1f\n" +
+	"\vcurrent_url\x18\b \x01(\tR\n" +
+	"currentUrl\x12\x14\n" +
+	"\x05title\x18\t \x01(\tR\x05title\x12;\n" +
+	"\vcaptured_at\x18\x1e \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"capturedAt\"\x8f\x02\n" +
+	"\x15BrowserLiveInputEvent\x12?\n" +
+	"\x04kind\x18\x01 \x01(\x0e2+.browser.automation.v1.BrowserLiveInputKindR\x04kind\x12\f\n" +
+	"\x01x\x18\x02 \x01(\x01R\x01x\x12\f\n" +
+	"\x01y\x18\x03 \x01(\x01R\x01y\x12\x17\n" +
+	"\adelta_x\x18\x04 \x01(\x01R\x06deltaX\x12\x17\n" +
+	"\adelta_y\x18\x05 \x01(\x01R\x06deltaY\x12A\n" +
+	"\x06button\x18\x06 \x01(\x0e2).browser.automation.v1.BrowserMouseButtonR\x06button\x12\x10\n" +
+	"\x03key\x18\a \x01(\tR\x03key\x12\x12\n" +
+	"\x04text\x18\b \x01(\tR\x04text\"\x81\x01\n" +
+	"\x18BrowserLiveClientMessage\x12!\n" +
+	"\fack_sequence\x18\x01 \x01(\x03R\vackSequence\x12B\n" +
+	"\x05input\x18\x02 \x01(\v2,.browser.automation.v1.BrowserLiveInputEventR\x05input\"\x9e\x01\n" +
+	"\x18BrowserLiveServerMessage\x12=\n" +
+	"\x05frame\x18\x01 \x01(\v2'.browser.automation.v1.BrowserLiveFrameR\x05frame\x12C\n" +
+	"\x05error\x18\x02 \x01(\v2-.browser.automation.v1.BrowserAutomationErrorR\x05error\"\xe5\x03\n" +
 	"\x10BrowserTaskInput\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x19\n" +
@@ -6985,6 +7712,18 @@ const file_browser_automation_v1_browser_automation_proto_rawDesc = "" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\"\xa2\x01\n" +
 	"\x1aStopBrowserSessionResponse\x12?\n" +
 	"\asession\x18\x01 \x01(\v2%.browser.automation.v1.BrowserSessionR\asession\x12C\n" +
+	"\x05error\x18\x02 \x01(\v2-.browser.automation.v1.BrowserAutomationErrorR\x05error\"\x9b\x02\n" +
+	"\x1cCreateBrowserLiveViewRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12J\n" +
+	"\bprovider\x18\x02 \x01(\x0e2..browser.automation.v1.BrowserLiveViewProviderR\bprovider\x12'\n" +
+	"\x0fcontrol_enabled\x18\x03 \x01(\bR\x0econtrolEnabled\x12\x1b\n" +
+	"\tmax_width\x18\x04 \x01(\x05R\bmaxWidth\x12\x1d\n" +
+	"\n" +
+	"max_height\x18\x05 \x01(\x05R\tmaxHeight\x12+\n" +
+	"\x03ttl\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\"\xa9\x01\n" +
+	"\x1dCreateBrowserLiveViewResponse\x12C\n" +
+	"\tlive_view\x18\x01 \x01(\v2&.browser.automation.v1.BrowserLiveViewR\bliveView\x12C\n" +
 	"\x05error\x18\x02 \x01(\v2-.browser.automation.v1.BrowserAutomationErrorR\x05error\"w\n" +
 	"\x17StartBrowserTaskRequest\x12\x1d\n" +
 	"\n" +
@@ -7113,11 +7852,24 @@ const file_browser_automation_v1_browser_automation_proto_rawDesc = "" +
 	"\x19BROWSER_ARTIFACT_KIND_HAR\x10\x04\x12%\n" +
 	"!BROWSER_ARTIFACT_KIND_CONSOLE_LOG\x10\x05\x12%\n" +
 	"!BROWSER_ARTIFACT_KIND_NETWORK_LOG\x10\x06\x12\"\n" +
-	"\x1eBROWSER_ARTIFACT_KIND_DOWNLOAD\x10\a2\xec\x06\n" +
+	"\x1eBROWSER_ARTIFACT_KIND_DOWNLOAD\x10\a*\xbb\x01\n" +
+	"\x17BrowserLiveViewProvider\x12*\n" +
+	"&BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eBROWSER_LIVE_VIEW_PROVIDER_CDP\x10\x01\x12)\n" +
+	"%BROWSER_LIVE_VIEW_PROVIDER_SCREENSHOT\x10\x02\x12%\n" +
+	"!BROWSER_LIVE_VIEW_PROVIDER_WEBRTC\x10\x03*\x87\x02\n" +
+	"\x14BrowserLiveInputKind\x12'\n" +
+	"#BROWSER_LIVE_INPUT_KIND_UNSPECIFIED\x10\x00\x12&\n" +
+	"\"BROWSER_LIVE_INPUT_KIND_MOUSE_MOVE\x10\x01\x12'\n" +
+	"#BROWSER_LIVE_INPUT_KIND_MOUSE_CLICK\x10\x02\x12'\n" +
+	"#BROWSER_LIVE_INPUT_KIND_MOUSE_WHEEL\x10\x03\x12%\n" +
+	"!BROWSER_LIVE_INPUT_KIND_KEY_PRESS\x10\x04\x12%\n" +
+	"!BROWSER_LIVE_INPUT_KIND_TYPE_TEXT\x10\x052\xf1\a\n" +
 	"\x18BrowserAutomationService\x12|\n" +
 	"\x13StartBrowserSession\x121.browser.automation.v1.StartBrowserSessionRequest\x1a2.browser.automation.v1.StartBrowserSessionResponse\x12v\n" +
 	"\x11GetBrowserSession\x12/.browser.automation.v1.GetBrowserSessionRequest\x1a0.browser.automation.v1.GetBrowserSessionResponse\x12y\n" +
-	"\x12StopBrowserSession\x120.browser.automation.v1.StopBrowserSessionRequest\x1a1.browser.automation.v1.StopBrowserSessionResponse\x12s\n" +
+	"\x12StopBrowserSession\x120.browser.automation.v1.StopBrowserSessionRequest\x1a1.browser.automation.v1.StopBrowserSessionResponse\x12\x82\x01\n" +
+	"\x15CreateBrowserLiveView\x123.browser.automation.v1.CreateBrowserLiveViewRequest\x1a4.browser.automation.v1.CreateBrowserLiveViewResponse\x12s\n" +
 	"\x10StartBrowserTask\x12..browser.automation.v1.StartBrowserTaskRequest\x1a/.browser.automation.v1.StartBrowserTaskResponse\x12\x85\x01\n" +
 	"\x16ExecuteBrowserCommands\x124.browser.automation.v1.ExecuteBrowserCommandsRequest\x1a5.browser.automation.v1.ExecuteBrowserCommandsResponse\x12m\n" +
 	"\x0eGetBrowserTask\x12,.browser.automation.v1.GetBrowserTaskRequest\x1a-.browser.automation.v1.GetBrowserTaskResponse\x12s\n" +
@@ -7136,8 +7888,8 @@ func file_browser_automation_v1_browser_automation_proto_rawDescGZIP() []byte {
 	return file_browser_automation_v1_browser_automation_proto_rawDescData
 }
 
-var file_browser_automation_v1_browser_automation_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_browser_automation_v1_browser_automation_proto_msgTypes = make([]protoimpl.MessageInfo, 82)
+var file_browser_automation_v1_browser_automation_proto_enumTypes = make([]protoimpl.EnumInfo, 13)
+var file_browser_automation_v1_browser_automation_proto_msgTypes = make([]protoimpl.MessageInfo, 89)
 var file_browser_automation_v1_browser_automation_proto_goTypes = []any{
 	(BrowserAutomationErrorCode)(0),        // 0: browser.automation.v1.BrowserAutomationErrorCode
 	(BrowserKind)(0),                       // 1: browser.automation.v1.BrowserKind
@@ -7150,333 +7902,358 @@ var file_browser_automation_v1_browser_automation_proto_goTypes = []any{
 	(BrowserLoadState)(0),                  // 8: browser.automation.v1.BrowserLoadState
 	(BrowserMouseButton)(0),                // 9: browser.automation.v1.BrowserMouseButton
 	(BrowserArtifactKind)(0),               // 10: browser.automation.v1.BrowserArtifactKind
-	(*EventMetadata)(nil),                  // 11: browser.automation.v1.EventMetadata
-	(*SecretRef)(nil),                      // 12: browser.automation.v1.SecretRef
-	(*ArtifactRef)(nil),                    // 13: browser.automation.v1.ArtifactRef
-	(*BrowserAutomationError)(nil),         // 14: browser.automation.v1.BrowserAutomationError
-	(*BrowserViewport)(nil),                // 15: browser.automation.v1.BrowserViewport
-	(*BrowserProfile)(nil),                 // 16: browser.automation.v1.BrowserProfile
-	(*BrowserArtifact)(nil),                // 17: browser.automation.v1.BrowserArtifact
-	(*BrowserSecurityPolicy)(nil),          // 18: browser.automation.v1.BrowserSecurityPolicy
-	(*BrowserSelector)(nil),                // 19: browser.automation.v1.BrowserSelector
-	(*BrowserSelectorGroup)(nil),           // 20: browser.automation.v1.BrowserSelectorGroup
-	(*BrowserPoint)(nil),                   // 21: browser.automation.v1.BrowserPoint
-	(*BrowserRect)(nil),                    // 22: browser.automation.v1.BrowserRect
-	(*NavigateCommand)(nil),                // 23: browser.automation.v1.NavigateCommand
-	(*ReloadCommand)(nil),                  // 24: browser.automation.v1.ReloadCommand
-	(*GoBackCommand)(nil),                  // 25: browser.automation.v1.GoBackCommand
-	(*GoForwardCommand)(nil),               // 26: browser.automation.v1.GoForwardCommand
-	(*ClickCommand)(nil),                   // 27: browser.automation.v1.ClickCommand
-	(*FillCommand)(nil),                    // 28: browser.automation.v1.FillCommand
-	(*SetCheckedCommand)(nil),              // 29: browser.automation.v1.SetCheckedCommand
-	(*TypeTextCommand)(nil),                // 30: browser.automation.v1.TypeTextCommand
-	(*ClearCommand)(nil),                   // 31: browser.automation.v1.ClearCommand
-	(*PressCommand)(nil),                   // 32: browser.automation.v1.PressCommand
-	(*FocusCommand)(nil),                   // 33: browser.automation.v1.FocusCommand
-	(*BlurCommand)(nil),                    // 34: browser.automation.v1.BlurCommand
-	(*HoverCommand)(nil),                   // 35: browser.automation.v1.HoverCommand
-	(*MouseMoveCommand)(nil),               // 36: browser.automation.v1.MouseMoveCommand
-	(*MouseClickCommand)(nil),              // 37: browser.automation.v1.MouseClickCommand
-	(*MouseDownCommand)(nil),               // 38: browser.automation.v1.MouseDownCommand
-	(*MouseUpCommand)(nil),                 // 39: browser.automation.v1.MouseUpCommand
-	(*DragCommand)(nil),                    // 40: browser.automation.v1.DragCommand
-	(*ScrollCommand)(nil),                  // 41: browser.automation.v1.ScrollCommand
-	(*WaitForSelectorCommand)(nil),         // 42: browser.automation.v1.WaitForSelectorCommand
-	(*WaitForTextCommand)(nil),             // 43: browser.automation.v1.WaitForTextCommand
-	(*WaitForURLCommand)(nil),              // 44: browser.automation.v1.WaitForURLCommand
-	(*WaitForLoadStateCommand)(nil),        // 45: browser.automation.v1.WaitForLoadStateCommand
-	(*WaitForTimeoutCommand)(nil),          // 46: browser.automation.v1.WaitForTimeoutCommand
-	(*GetPageStateCommand)(nil),            // 47: browser.automation.v1.GetPageStateCommand
-	(*ExtractTextCommand)(nil),             // 48: browser.automation.v1.ExtractTextCommand
-	(*GetAttributeCommand)(nil),            // 49: browser.automation.v1.GetAttributeCommand
-	(*CountElementsCommand)(nil),           // 50: browser.automation.v1.CountElementsCommand
-	(*ExtractElementCommand)(nil),          // 51: browser.automation.v1.ExtractElementCommand
-	(*ScreenshotCommand)(nil),              // 52: browser.automation.v1.ScreenshotCommand
-	(*UploadFileCommand)(nil),              // 53: browser.automation.v1.UploadFileCommand
-	(*SelectOptionCommand)(nil),            // 54: browser.automation.v1.SelectOptionCommand
-	(*SubmitFormCommand)(nil),              // 55: browser.automation.v1.SubmitFormCommand
-	(*EvaluateCommand)(nil),                // 56: browser.automation.v1.EvaluateCommand
-	(*GetCookiesCommand)(nil),              // 57: browser.automation.v1.GetCookiesCommand
-	(*GetStorageStateCommand)(nil),         // 58: browser.automation.v1.GetStorageStateCommand
-	(*BrowserNetworkRequestFilter)(nil),    // 59: browser.automation.v1.BrowserNetworkRequestFilter
-	(*WaitForNetworkRequestCommand)(nil),   // 60: browser.automation.v1.WaitForNetworkRequestCommand
-	(*GetNetworkRequestsCommand)(nil),      // 61: browser.automation.v1.GetNetworkRequestsCommand
-	(*BrowserCommand)(nil),                 // 62: browser.automation.v1.BrowserCommand
-	(*BrowserCommandResult)(nil),           // 63: browser.automation.v1.BrowserCommandResult
-	(*BrowserSession)(nil),                 // 64: browser.automation.v1.BrowserSession
-	(*BrowserTaskInput)(nil),               // 65: browser.automation.v1.BrowserTaskInput
-	(*BrowserTask)(nil),                    // 66: browser.automation.v1.BrowserTask
-	(*BrowserTaskFilter)(nil),              // 67: browser.automation.v1.BrowserTaskFilter
-	(*StartBrowserSessionRequest)(nil),     // 68: browser.automation.v1.StartBrowserSessionRequest
-	(*StartBrowserSessionResponse)(nil),    // 69: browser.automation.v1.StartBrowserSessionResponse
-	(*GetBrowserSessionRequest)(nil),       // 70: browser.automation.v1.GetBrowserSessionRequest
-	(*GetBrowserSessionResponse)(nil),      // 71: browser.automation.v1.GetBrowserSessionResponse
-	(*StopBrowserSessionRequest)(nil),      // 72: browser.automation.v1.StopBrowserSessionRequest
-	(*StopBrowserSessionResponse)(nil),     // 73: browser.automation.v1.StopBrowserSessionResponse
-	(*StartBrowserTaskRequest)(nil),        // 74: browser.automation.v1.StartBrowserTaskRequest
-	(*StartBrowserTaskResponse)(nil),       // 75: browser.automation.v1.StartBrowserTaskResponse
-	(*ExecuteBrowserCommandsRequest)(nil),  // 76: browser.automation.v1.ExecuteBrowserCommandsRequest
-	(*ExecuteBrowserCommandsResponse)(nil), // 77: browser.automation.v1.ExecuteBrowserCommandsResponse
-	(*GetBrowserTaskRequest)(nil),          // 78: browser.automation.v1.GetBrowserTaskRequest
-	(*GetBrowserTaskResponse)(nil),         // 79: browser.automation.v1.GetBrowserTaskResponse
-	(*ListBrowserTasksRequest)(nil),        // 80: browser.automation.v1.ListBrowserTasksRequest
-	(*ListBrowserTasksResponse)(nil),       // 81: browser.automation.v1.ListBrowserTasksResponse
-	(*BrowserSessionStartedEvent)(nil),     // 82: browser.automation.v1.BrowserSessionStartedEvent
-	(*BrowserSessionStoppedEvent)(nil),     // 83: browser.automation.v1.BrowserSessionStoppedEvent
-	(*BrowserTaskStatusChangedEvent)(nil),  // 84: browser.automation.v1.BrowserTaskStatusChangedEvent
-	nil,                                    // 85: browser.automation.v1.BrowserProfile.ExtraHttpHeadersEntry
-	nil,                                    // 86: browser.automation.v1.BrowserArtifact.LabelsEntry
-	nil,                                    // 87: browser.automation.v1.BrowserCommand.LabelsEntry
-	nil,                                    // 88: browser.automation.v1.BrowserCommandResult.AttributesEntry
-	nil,                                    // 89: browser.automation.v1.BrowserSession.LabelsEntry
-	nil,                                    // 90: browser.automation.v1.BrowserTaskInput.LabelsEntry
-	nil,                                    // 91: browser.automation.v1.BrowserTask.LabelsEntry
-	nil,                                    // 92: browser.automation.v1.StartBrowserSessionRequest.LabelsEntry
-	(*timestamppb.Timestamp)(nil),          // 93: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),            // 94: google.protobuf.Duration
-	(*structpb.Struct)(nil),                // 95: google.protobuf.Struct
-	(*structpb.Value)(nil),                 // 96: google.protobuf.Value
+	(BrowserLiveViewProvider)(0),           // 11: browser.automation.v1.BrowserLiveViewProvider
+	(BrowserLiveInputKind)(0),              // 12: browser.automation.v1.BrowserLiveInputKind
+	(*EventMetadata)(nil),                  // 13: browser.automation.v1.EventMetadata
+	(*SecretRef)(nil),                      // 14: browser.automation.v1.SecretRef
+	(*ArtifactRef)(nil),                    // 15: browser.automation.v1.ArtifactRef
+	(*BrowserAutomationError)(nil),         // 16: browser.automation.v1.BrowserAutomationError
+	(*BrowserViewport)(nil),                // 17: browser.automation.v1.BrowserViewport
+	(*BrowserProfile)(nil),                 // 18: browser.automation.v1.BrowserProfile
+	(*BrowserArtifact)(nil),                // 19: browser.automation.v1.BrowserArtifact
+	(*BrowserSecurityPolicy)(nil),          // 20: browser.automation.v1.BrowserSecurityPolicy
+	(*BrowserSelector)(nil),                // 21: browser.automation.v1.BrowserSelector
+	(*BrowserSelectorGroup)(nil),           // 22: browser.automation.v1.BrowserSelectorGroup
+	(*BrowserPoint)(nil),                   // 23: browser.automation.v1.BrowserPoint
+	(*BrowserRect)(nil),                    // 24: browser.automation.v1.BrowserRect
+	(*NavigateCommand)(nil),                // 25: browser.automation.v1.NavigateCommand
+	(*ReloadCommand)(nil),                  // 26: browser.automation.v1.ReloadCommand
+	(*GoBackCommand)(nil),                  // 27: browser.automation.v1.GoBackCommand
+	(*GoForwardCommand)(nil),               // 28: browser.automation.v1.GoForwardCommand
+	(*ClickCommand)(nil),                   // 29: browser.automation.v1.ClickCommand
+	(*FillCommand)(nil),                    // 30: browser.automation.v1.FillCommand
+	(*SetCheckedCommand)(nil),              // 31: browser.automation.v1.SetCheckedCommand
+	(*TypeTextCommand)(nil),                // 32: browser.automation.v1.TypeTextCommand
+	(*ClearCommand)(nil),                   // 33: browser.automation.v1.ClearCommand
+	(*PressCommand)(nil),                   // 34: browser.automation.v1.PressCommand
+	(*FocusCommand)(nil),                   // 35: browser.automation.v1.FocusCommand
+	(*BlurCommand)(nil),                    // 36: browser.automation.v1.BlurCommand
+	(*HoverCommand)(nil),                   // 37: browser.automation.v1.HoverCommand
+	(*MouseMoveCommand)(nil),               // 38: browser.automation.v1.MouseMoveCommand
+	(*MouseClickCommand)(nil),              // 39: browser.automation.v1.MouseClickCommand
+	(*MouseDownCommand)(nil),               // 40: browser.automation.v1.MouseDownCommand
+	(*MouseUpCommand)(nil),                 // 41: browser.automation.v1.MouseUpCommand
+	(*DragCommand)(nil),                    // 42: browser.automation.v1.DragCommand
+	(*ScrollCommand)(nil),                  // 43: browser.automation.v1.ScrollCommand
+	(*WaitForSelectorCommand)(nil),         // 44: browser.automation.v1.WaitForSelectorCommand
+	(*WaitForTextCommand)(nil),             // 45: browser.automation.v1.WaitForTextCommand
+	(*WaitForURLCommand)(nil),              // 46: browser.automation.v1.WaitForURLCommand
+	(*WaitForLoadStateCommand)(nil),        // 47: browser.automation.v1.WaitForLoadStateCommand
+	(*WaitForTimeoutCommand)(nil),          // 48: browser.automation.v1.WaitForTimeoutCommand
+	(*GetPageStateCommand)(nil),            // 49: browser.automation.v1.GetPageStateCommand
+	(*ExtractTextCommand)(nil),             // 50: browser.automation.v1.ExtractTextCommand
+	(*GetAttributeCommand)(nil),            // 51: browser.automation.v1.GetAttributeCommand
+	(*CountElementsCommand)(nil),           // 52: browser.automation.v1.CountElementsCommand
+	(*ExtractElementCommand)(nil),          // 53: browser.automation.v1.ExtractElementCommand
+	(*ScreenshotCommand)(nil),              // 54: browser.automation.v1.ScreenshotCommand
+	(*UploadFileCommand)(nil),              // 55: browser.automation.v1.UploadFileCommand
+	(*SelectOptionCommand)(nil),            // 56: browser.automation.v1.SelectOptionCommand
+	(*SubmitFormCommand)(nil),              // 57: browser.automation.v1.SubmitFormCommand
+	(*EvaluateCommand)(nil),                // 58: browser.automation.v1.EvaluateCommand
+	(*GetCookiesCommand)(nil),              // 59: browser.automation.v1.GetCookiesCommand
+	(*GetStorageStateCommand)(nil),         // 60: browser.automation.v1.GetStorageStateCommand
+	(*BrowserNetworkRequestFilter)(nil),    // 61: browser.automation.v1.BrowserNetworkRequestFilter
+	(*WaitForNetworkRequestCommand)(nil),   // 62: browser.automation.v1.WaitForNetworkRequestCommand
+	(*GetNetworkRequestsCommand)(nil),      // 63: browser.automation.v1.GetNetworkRequestsCommand
+	(*BrowserCommand)(nil),                 // 64: browser.automation.v1.BrowserCommand
+	(*BrowserCommandResult)(nil),           // 65: browser.automation.v1.BrowserCommandResult
+	(*BrowserSession)(nil),                 // 66: browser.automation.v1.BrowserSession
+	(*BrowserLiveView)(nil),                // 67: browser.automation.v1.BrowserLiveView
+	(*BrowserLiveFrame)(nil),               // 68: browser.automation.v1.BrowserLiveFrame
+	(*BrowserLiveInputEvent)(nil),          // 69: browser.automation.v1.BrowserLiveInputEvent
+	(*BrowserLiveClientMessage)(nil),       // 70: browser.automation.v1.BrowserLiveClientMessage
+	(*BrowserLiveServerMessage)(nil),       // 71: browser.automation.v1.BrowserLiveServerMessage
+	(*BrowserTaskInput)(nil),               // 72: browser.automation.v1.BrowserTaskInput
+	(*BrowserTask)(nil),                    // 73: browser.automation.v1.BrowserTask
+	(*BrowserTaskFilter)(nil),              // 74: browser.automation.v1.BrowserTaskFilter
+	(*StartBrowserSessionRequest)(nil),     // 75: browser.automation.v1.StartBrowserSessionRequest
+	(*StartBrowserSessionResponse)(nil),    // 76: browser.automation.v1.StartBrowserSessionResponse
+	(*GetBrowserSessionRequest)(nil),       // 77: browser.automation.v1.GetBrowserSessionRequest
+	(*GetBrowserSessionResponse)(nil),      // 78: browser.automation.v1.GetBrowserSessionResponse
+	(*StopBrowserSessionRequest)(nil),      // 79: browser.automation.v1.StopBrowserSessionRequest
+	(*StopBrowserSessionResponse)(nil),     // 80: browser.automation.v1.StopBrowserSessionResponse
+	(*CreateBrowserLiveViewRequest)(nil),   // 81: browser.automation.v1.CreateBrowserLiveViewRequest
+	(*CreateBrowserLiveViewResponse)(nil),  // 82: browser.automation.v1.CreateBrowserLiveViewResponse
+	(*StartBrowserTaskRequest)(nil),        // 83: browser.automation.v1.StartBrowserTaskRequest
+	(*StartBrowserTaskResponse)(nil),       // 84: browser.automation.v1.StartBrowserTaskResponse
+	(*ExecuteBrowserCommandsRequest)(nil),  // 85: browser.automation.v1.ExecuteBrowserCommandsRequest
+	(*ExecuteBrowserCommandsResponse)(nil), // 86: browser.automation.v1.ExecuteBrowserCommandsResponse
+	(*GetBrowserTaskRequest)(nil),          // 87: browser.automation.v1.GetBrowserTaskRequest
+	(*GetBrowserTaskResponse)(nil),         // 88: browser.automation.v1.GetBrowserTaskResponse
+	(*ListBrowserTasksRequest)(nil),        // 89: browser.automation.v1.ListBrowserTasksRequest
+	(*ListBrowserTasksResponse)(nil),       // 90: browser.automation.v1.ListBrowserTasksResponse
+	(*BrowserSessionStartedEvent)(nil),     // 91: browser.automation.v1.BrowserSessionStartedEvent
+	(*BrowserSessionStoppedEvent)(nil),     // 92: browser.automation.v1.BrowserSessionStoppedEvent
+	(*BrowserTaskStatusChangedEvent)(nil),  // 93: browser.automation.v1.BrowserTaskStatusChangedEvent
+	nil,                                    // 94: browser.automation.v1.BrowserProfile.ExtraHttpHeadersEntry
+	nil,                                    // 95: browser.automation.v1.BrowserArtifact.LabelsEntry
+	nil,                                    // 96: browser.automation.v1.BrowserCommand.LabelsEntry
+	nil,                                    // 97: browser.automation.v1.BrowserCommandResult.AttributesEntry
+	nil,                                    // 98: browser.automation.v1.BrowserSession.LabelsEntry
+	nil,                                    // 99: browser.automation.v1.BrowserTaskInput.LabelsEntry
+	nil,                                    // 100: browser.automation.v1.BrowserTask.LabelsEntry
+	nil,                                    // 101: browser.automation.v1.StartBrowserSessionRequest.LabelsEntry
+	(*timestamppb.Timestamp)(nil),          // 102: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),            // 103: google.protobuf.Duration
+	(*structpb.Struct)(nil),                // 104: google.protobuf.Struct
+	(*structpb.Value)(nil),                 // 105: google.protobuf.Value
 }
 var file_browser_automation_v1_browser_automation_proto_depIdxs = []int32{
-	93,  // 0: browser.automation.v1.EventMetadata.time:type_name -> google.protobuf.Timestamp
-	93,  // 1: browser.automation.v1.SecretRef.expires_at:type_name -> google.protobuf.Timestamp
-	93,  // 2: browser.automation.v1.ArtifactRef.expires_at:type_name -> google.protobuf.Timestamp
+	102, // 0: browser.automation.v1.EventMetadata.time:type_name -> google.protobuf.Timestamp
+	102, // 1: browser.automation.v1.SecretRef.expires_at:type_name -> google.protobuf.Timestamp
+	102, // 2: browser.automation.v1.ArtifactRef.expires_at:type_name -> google.protobuf.Timestamp
 	0,   // 3: browser.automation.v1.BrowserAutomationError.code:type_name -> browser.automation.v1.BrowserAutomationErrorCode
 	1,   // 4: browser.automation.v1.BrowserProfile.browser_kind:type_name -> browser.automation.v1.BrowserKind
-	15,  // 5: browser.automation.v1.BrowserProfile.viewport:type_name -> browser.automation.v1.BrowserViewport
-	12,  // 6: browser.automation.v1.BrowserProfile.storage_state_secret_ref:type_name -> browser.automation.v1.SecretRef
-	85,  // 7: browser.automation.v1.BrowserProfile.extra_http_headers:type_name -> browser.automation.v1.BrowserProfile.ExtraHttpHeadersEntry
+	17,  // 5: browser.automation.v1.BrowserProfile.viewport:type_name -> browser.automation.v1.BrowserViewport
+	14,  // 6: browser.automation.v1.BrowserProfile.storage_state_secret_ref:type_name -> browser.automation.v1.SecretRef
+	94,  // 7: browser.automation.v1.BrowserProfile.extra_http_headers:type_name -> browser.automation.v1.BrowserProfile.ExtraHttpHeadersEntry
 	10,  // 8: browser.automation.v1.BrowserArtifact.kind:type_name -> browser.automation.v1.BrowserArtifactKind
-	13,  // 9: browser.automation.v1.BrowserArtifact.ref:type_name -> browser.automation.v1.ArtifactRef
-	86,  // 10: browser.automation.v1.BrowserArtifact.labels:type_name -> browser.automation.v1.BrowserArtifact.LabelsEntry
-	93,  // 11: browser.automation.v1.BrowserArtifact.created_at:type_name -> google.protobuf.Timestamp
+	15,  // 9: browser.automation.v1.BrowserArtifact.ref:type_name -> browser.automation.v1.ArtifactRef
+	95,  // 10: browser.automation.v1.BrowserArtifact.labels:type_name -> browser.automation.v1.BrowserArtifact.LabelsEntry
+	102, // 11: browser.automation.v1.BrowserArtifact.created_at:type_name -> google.protobuf.Timestamp
 	5,   // 12: browser.automation.v1.BrowserSelector.kind:type_name -> browser.automation.v1.BrowserSelectorKind
-	94,  // 13: browser.automation.v1.BrowserSelector.timeout:type_name -> google.protobuf.Duration
-	19,  // 14: browser.automation.v1.BrowserSelectorGroup.selectors:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 15: browser.automation.v1.BrowserSelectorGroup.timeout:type_name -> google.protobuf.Duration
+	103, // 13: browser.automation.v1.BrowserSelector.timeout:type_name -> google.protobuf.Duration
+	21,  // 14: browser.automation.v1.BrowserSelectorGroup.selectors:type_name -> browser.automation.v1.BrowserSelector
+	103, // 15: browser.automation.v1.BrowserSelectorGroup.timeout:type_name -> google.protobuf.Duration
 	7,   // 16: browser.automation.v1.NavigateCommand.wait_until:type_name -> browser.automation.v1.BrowserNavigationWaitUntil
-	94,  // 17: browser.automation.v1.NavigateCommand.timeout:type_name -> google.protobuf.Duration
+	103, // 17: browser.automation.v1.NavigateCommand.timeout:type_name -> google.protobuf.Duration
 	7,   // 18: browser.automation.v1.ReloadCommand.wait_until:type_name -> browser.automation.v1.BrowserNavigationWaitUntil
-	94,  // 19: browser.automation.v1.ReloadCommand.timeout:type_name -> google.protobuf.Duration
+	103, // 19: browser.automation.v1.ReloadCommand.timeout:type_name -> google.protobuf.Duration
 	7,   // 20: browser.automation.v1.GoBackCommand.wait_until:type_name -> browser.automation.v1.BrowserNavigationWaitUntil
-	94,  // 21: browser.automation.v1.GoBackCommand.timeout:type_name -> google.protobuf.Duration
+	103, // 21: browser.automation.v1.GoBackCommand.timeout:type_name -> google.protobuf.Duration
 	7,   // 22: browser.automation.v1.GoForwardCommand.wait_until:type_name -> browser.automation.v1.BrowserNavigationWaitUntil
-	94,  // 23: browser.automation.v1.GoForwardCommand.timeout:type_name -> google.protobuf.Duration
-	19,  // 24: browser.automation.v1.ClickCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 25: browser.automation.v1.ClickCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 26: browser.automation.v1.ClickCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	103, // 23: browser.automation.v1.GoForwardCommand.timeout:type_name -> google.protobuf.Duration
+	21,  // 24: browser.automation.v1.ClickCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 25: browser.automation.v1.ClickCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 26: browser.automation.v1.ClickCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
 	9,   // 27: browser.automation.v1.ClickCommand.button:type_name -> browser.automation.v1.BrowserMouseButton
-	21,  // 28: browser.automation.v1.ClickCommand.position:type_name -> browser.automation.v1.BrowserPoint
-	94,  // 29: browser.automation.v1.ClickCommand.delay:type_name -> google.protobuf.Duration
-	94,  // 30: browser.automation.v1.ClickCommand.hold_duration:type_name -> google.protobuf.Duration
-	19,  // 31: browser.automation.v1.FillCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 32: browser.automation.v1.FillCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 33: browser.automation.v1.FillCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 34: browser.automation.v1.SetCheckedCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 35: browser.automation.v1.SetCheckedCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 36: browser.automation.v1.SetCheckedCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 37: browser.automation.v1.TypeTextCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 38: browser.automation.v1.TypeTextCommand.delay:type_name -> google.protobuf.Duration
-	94,  // 39: browser.automation.v1.TypeTextCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 40: browser.automation.v1.TypeTextCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 41: browser.automation.v1.ClearCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 42: browser.automation.v1.ClearCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 43: browser.automation.v1.ClearCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 44: browser.automation.v1.PressCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 45: browser.automation.v1.PressCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 46: browser.automation.v1.PressCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 47: browser.automation.v1.FocusCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 48: browser.automation.v1.FocusCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 49: browser.automation.v1.FocusCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 50: browser.automation.v1.BlurCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 51: browser.automation.v1.BlurCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 52: browser.automation.v1.BlurCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 53: browser.automation.v1.HoverCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	21,  // 54: browser.automation.v1.HoverCommand.position:type_name -> browser.automation.v1.BrowserPoint
-	94,  // 55: browser.automation.v1.HoverCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 56: browser.automation.v1.HoverCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	21,  // 57: browser.automation.v1.MouseMoveCommand.point:type_name -> browser.automation.v1.BrowserPoint
-	21,  // 58: browser.automation.v1.MouseMoveCommand.path:type_name -> browser.automation.v1.BrowserPoint
-	94,  // 59: browser.automation.v1.MouseMoveCommand.duration:type_name -> google.protobuf.Duration
-	21,  // 60: browser.automation.v1.MouseClickCommand.point:type_name -> browser.automation.v1.BrowserPoint
+	23,  // 28: browser.automation.v1.ClickCommand.position:type_name -> browser.automation.v1.BrowserPoint
+	103, // 29: browser.automation.v1.ClickCommand.delay:type_name -> google.protobuf.Duration
+	103, // 30: browser.automation.v1.ClickCommand.hold_duration:type_name -> google.protobuf.Duration
+	21,  // 31: browser.automation.v1.FillCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 32: browser.automation.v1.FillCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 33: browser.automation.v1.FillCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 34: browser.automation.v1.SetCheckedCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 35: browser.automation.v1.SetCheckedCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 36: browser.automation.v1.SetCheckedCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 37: browser.automation.v1.TypeTextCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 38: browser.automation.v1.TypeTextCommand.delay:type_name -> google.protobuf.Duration
+	103, // 39: browser.automation.v1.TypeTextCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 40: browser.automation.v1.TypeTextCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 41: browser.automation.v1.ClearCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 42: browser.automation.v1.ClearCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 43: browser.automation.v1.ClearCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 44: browser.automation.v1.PressCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 45: browser.automation.v1.PressCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 46: browser.automation.v1.PressCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 47: browser.automation.v1.FocusCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 48: browser.automation.v1.FocusCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 49: browser.automation.v1.FocusCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 50: browser.automation.v1.BlurCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 51: browser.automation.v1.BlurCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 52: browser.automation.v1.BlurCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 53: browser.automation.v1.HoverCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	23,  // 54: browser.automation.v1.HoverCommand.position:type_name -> browser.automation.v1.BrowserPoint
+	103, // 55: browser.automation.v1.HoverCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 56: browser.automation.v1.HoverCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	23,  // 57: browser.automation.v1.MouseMoveCommand.point:type_name -> browser.automation.v1.BrowserPoint
+	23,  // 58: browser.automation.v1.MouseMoveCommand.path:type_name -> browser.automation.v1.BrowserPoint
+	103, // 59: browser.automation.v1.MouseMoveCommand.duration:type_name -> google.protobuf.Duration
+	23,  // 60: browser.automation.v1.MouseClickCommand.point:type_name -> browser.automation.v1.BrowserPoint
 	9,   // 61: browser.automation.v1.MouseClickCommand.button:type_name -> browser.automation.v1.BrowserMouseButton
-	94,  // 62: browser.automation.v1.MouseClickCommand.delay:type_name -> google.protobuf.Duration
-	94,  // 63: browser.automation.v1.MouseClickCommand.hold_duration:type_name -> google.protobuf.Duration
+	103, // 62: browser.automation.v1.MouseClickCommand.delay:type_name -> google.protobuf.Duration
+	103, // 63: browser.automation.v1.MouseClickCommand.hold_duration:type_name -> google.protobuf.Duration
 	9,   // 64: browser.automation.v1.MouseDownCommand.button:type_name -> browser.automation.v1.BrowserMouseButton
 	9,   // 65: browser.automation.v1.MouseUpCommand.button:type_name -> browser.automation.v1.BrowserMouseButton
-	19,  // 66: browser.automation.v1.DragCommand.source_selector:type_name -> browser.automation.v1.BrowserSelector
-	19,  // 67: browser.automation.v1.DragCommand.target_selector:type_name -> browser.automation.v1.BrowserSelector
-	21,  // 68: browser.automation.v1.DragCommand.source_point:type_name -> browser.automation.v1.BrowserPoint
-	21,  // 69: browser.automation.v1.DragCommand.target_point:type_name -> browser.automation.v1.BrowserPoint
-	94,  // 70: browser.automation.v1.DragCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 71: browser.automation.v1.DragCommand.source_selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	20,  // 72: browser.automation.v1.DragCommand.target_selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 73: browser.automation.v1.ScrollCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	20,  // 74: browser.automation.v1.ScrollCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	94,  // 75: browser.automation.v1.ScrollCommand.timeout:type_name -> google.protobuf.Duration
-	19,  // 76: browser.automation.v1.WaitForSelectorCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	21,  // 66: browser.automation.v1.DragCommand.source_selector:type_name -> browser.automation.v1.BrowserSelector
+	21,  // 67: browser.automation.v1.DragCommand.target_selector:type_name -> browser.automation.v1.BrowserSelector
+	23,  // 68: browser.automation.v1.DragCommand.source_point:type_name -> browser.automation.v1.BrowserPoint
+	23,  // 69: browser.automation.v1.DragCommand.target_point:type_name -> browser.automation.v1.BrowserPoint
+	103, // 70: browser.automation.v1.DragCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 71: browser.automation.v1.DragCommand.source_selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	22,  // 72: browser.automation.v1.DragCommand.target_selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 73: browser.automation.v1.ScrollCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	22,  // 74: browser.automation.v1.ScrollCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	103, // 75: browser.automation.v1.ScrollCommand.timeout:type_name -> google.protobuf.Duration
+	21,  // 76: browser.automation.v1.WaitForSelectorCommand.selector:type_name -> browser.automation.v1.BrowserSelector
 	6,   // 77: browser.automation.v1.WaitForSelectorCommand.state:type_name -> browser.automation.v1.BrowserSelectorState
-	94,  // 78: browser.automation.v1.WaitForSelectorCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 79: browser.automation.v1.WaitForSelectorCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	94,  // 80: browser.automation.v1.WaitForTextCommand.timeout:type_name -> google.protobuf.Duration
-	94,  // 81: browser.automation.v1.WaitForURLCommand.timeout:type_name -> google.protobuf.Duration
+	103, // 78: browser.automation.v1.WaitForSelectorCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 79: browser.automation.v1.WaitForSelectorCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	103, // 80: browser.automation.v1.WaitForTextCommand.timeout:type_name -> google.protobuf.Duration
+	103, // 81: browser.automation.v1.WaitForURLCommand.timeout:type_name -> google.protobuf.Duration
 	8,   // 82: browser.automation.v1.WaitForLoadStateCommand.state:type_name -> browser.automation.v1.BrowserLoadState
-	94,  // 83: browser.automation.v1.WaitForLoadStateCommand.timeout:type_name -> google.protobuf.Duration
-	94,  // 84: browser.automation.v1.WaitForTimeoutCommand.duration:type_name -> google.protobuf.Duration
-	19,  // 85: browser.automation.v1.ExtractTextCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 86: browser.automation.v1.ExtractTextCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 87: browser.automation.v1.ExtractTextCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 88: browser.automation.v1.GetAttributeCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 89: browser.automation.v1.GetAttributeCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 90: browser.automation.v1.GetAttributeCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 91: browser.automation.v1.CountElementsCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 92: browser.automation.v1.CountElementsCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 93: browser.automation.v1.CountElementsCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 94: browser.automation.v1.ExtractElementCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 95: browser.automation.v1.ExtractElementCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 96: browser.automation.v1.ExtractElementCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 97: browser.automation.v1.ScreenshotCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 98: browser.automation.v1.ScreenshotCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 99: browser.automation.v1.ScreenshotCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 100: browser.automation.v1.UploadFileCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	12,  // 101: browser.automation.v1.UploadFileCommand.file_secret_refs:type_name -> browser.automation.v1.SecretRef
-	94,  // 102: browser.automation.v1.UploadFileCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 103: browser.automation.v1.UploadFileCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 104: browser.automation.v1.SelectOptionCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 105: browser.automation.v1.SelectOptionCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 106: browser.automation.v1.SelectOptionCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	19,  // 107: browser.automation.v1.SubmitFormCommand.selector:type_name -> browser.automation.v1.BrowserSelector
-	94,  // 108: browser.automation.v1.SubmitFormCommand.timeout:type_name -> google.protobuf.Duration
-	20,  // 109: browser.automation.v1.SubmitFormCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
-	95,  // 110: browser.automation.v1.EvaluateCommand.args:type_name -> google.protobuf.Struct
-	94,  // 111: browser.automation.v1.EvaluateCommand.timeout:type_name -> google.protobuf.Duration
-	59,  // 112: browser.automation.v1.WaitForNetworkRequestCommand.filter:type_name -> browser.automation.v1.BrowserNetworkRequestFilter
-	94,  // 113: browser.automation.v1.WaitForNetworkRequestCommand.timeout:type_name -> google.protobuf.Duration
-	59,  // 114: browser.automation.v1.GetNetworkRequestsCommand.filter:type_name -> browser.automation.v1.BrowserNetworkRequestFilter
-	94,  // 115: browser.automation.v1.BrowserCommand.timeout:type_name -> google.protobuf.Duration
-	87,  // 116: browser.automation.v1.BrowserCommand.labels:type_name -> browser.automation.v1.BrowserCommand.LabelsEntry
-	23,  // 117: browser.automation.v1.BrowserCommand.navigate:type_name -> browser.automation.v1.NavigateCommand
-	27,  // 118: browser.automation.v1.BrowserCommand.click:type_name -> browser.automation.v1.ClickCommand
-	28,  // 119: browser.automation.v1.BrowserCommand.fill:type_name -> browser.automation.v1.FillCommand
-	32,  // 120: browser.automation.v1.BrowserCommand.press:type_name -> browser.automation.v1.PressCommand
-	42,  // 121: browser.automation.v1.BrowserCommand.wait_for_selector:type_name -> browser.automation.v1.WaitForSelectorCommand
-	43,  // 122: browser.automation.v1.BrowserCommand.wait_for_text:type_name -> browser.automation.v1.WaitForTextCommand
-	48,  // 123: browser.automation.v1.BrowserCommand.extract_text:type_name -> browser.automation.v1.ExtractTextCommand
-	52,  // 124: browser.automation.v1.BrowserCommand.screenshot:type_name -> browser.automation.v1.ScreenshotCommand
-	53,  // 125: browser.automation.v1.BrowserCommand.upload_file:type_name -> browser.automation.v1.UploadFileCommand
-	56,  // 126: browser.automation.v1.BrowserCommand.evaluate:type_name -> browser.automation.v1.EvaluateCommand
-	54,  // 127: browser.automation.v1.BrowserCommand.select_option:type_name -> browser.automation.v1.SelectOptionCommand
-	24,  // 128: browser.automation.v1.BrowserCommand.reload:type_name -> browser.automation.v1.ReloadCommand
-	25,  // 129: browser.automation.v1.BrowserCommand.go_back:type_name -> browser.automation.v1.GoBackCommand
-	26,  // 130: browser.automation.v1.BrowserCommand.go_forward:type_name -> browser.automation.v1.GoForwardCommand
-	44,  // 131: browser.automation.v1.BrowserCommand.wait_for_url:type_name -> browser.automation.v1.WaitForURLCommand
-	45,  // 132: browser.automation.v1.BrowserCommand.wait_for_load_state:type_name -> browser.automation.v1.WaitForLoadStateCommand
-	46,  // 133: browser.automation.v1.BrowserCommand.wait_for_timeout:type_name -> browser.automation.v1.WaitForTimeoutCommand
-	30,  // 134: browser.automation.v1.BrowserCommand.type_text:type_name -> browser.automation.v1.TypeTextCommand
-	31,  // 135: browser.automation.v1.BrowserCommand.clear:type_name -> browser.automation.v1.ClearCommand
-	33,  // 136: browser.automation.v1.BrowserCommand.focus:type_name -> browser.automation.v1.FocusCommand
-	34,  // 137: browser.automation.v1.BrowserCommand.blur:type_name -> browser.automation.v1.BlurCommand
-	35,  // 138: browser.automation.v1.BrowserCommand.hover:type_name -> browser.automation.v1.HoverCommand
-	36,  // 139: browser.automation.v1.BrowserCommand.mouse_move:type_name -> browser.automation.v1.MouseMoveCommand
-	37,  // 140: browser.automation.v1.BrowserCommand.mouse_click:type_name -> browser.automation.v1.MouseClickCommand
-	38,  // 141: browser.automation.v1.BrowserCommand.mouse_down:type_name -> browser.automation.v1.MouseDownCommand
-	39,  // 142: browser.automation.v1.BrowserCommand.mouse_up:type_name -> browser.automation.v1.MouseUpCommand
-	40,  // 143: browser.automation.v1.BrowserCommand.drag:type_name -> browser.automation.v1.DragCommand
-	55,  // 144: browser.automation.v1.BrowserCommand.submit_form:type_name -> browser.automation.v1.SubmitFormCommand
-	49,  // 145: browser.automation.v1.BrowserCommand.get_attribute:type_name -> browser.automation.v1.GetAttributeCommand
-	51,  // 146: browser.automation.v1.BrowserCommand.extract_element:type_name -> browser.automation.v1.ExtractElementCommand
-	29,  // 147: browser.automation.v1.BrowserCommand.set_checked:type_name -> browser.automation.v1.SetCheckedCommand
-	41,  // 148: browser.automation.v1.BrowserCommand.scroll:type_name -> browser.automation.v1.ScrollCommand
-	47,  // 149: browser.automation.v1.BrowserCommand.get_page_state:type_name -> browser.automation.v1.GetPageStateCommand
-	50,  // 150: browser.automation.v1.BrowserCommand.count_elements:type_name -> browser.automation.v1.CountElementsCommand
-	57,  // 151: browser.automation.v1.BrowserCommand.get_cookies:type_name -> browser.automation.v1.GetCookiesCommand
-	58,  // 152: browser.automation.v1.BrowserCommand.get_storage_state:type_name -> browser.automation.v1.GetStorageStateCommand
-	60,  // 153: browser.automation.v1.BrowserCommand.wait_for_network_request:type_name -> browser.automation.v1.WaitForNetworkRequestCommand
-	61,  // 154: browser.automation.v1.BrowserCommand.get_network_requests:type_name -> browser.automation.v1.GetNetworkRequestsCommand
+	103, // 83: browser.automation.v1.WaitForLoadStateCommand.timeout:type_name -> google.protobuf.Duration
+	103, // 84: browser.automation.v1.WaitForTimeoutCommand.duration:type_name -> google.protobuf.Duration
+	21,  // 85: browser.automation.v1.ExtractTextCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 86: browser.automation.v1.ExtractTextCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 87: browser.automation.v1.ExtractTextCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 88: browser.automation.v1.GetAttributeCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 89: browser.automation.v1.GetAttributeCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 90: browser.automation.v1.GetAttributeCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 91: browser.automation.v1.CountElementsCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 92: browser.automation.v1.CountElementsCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 93: browser.automation.v1.CountElementsCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 94: browser.automation.v1.ExtractElementCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 95: browser.automation.v1.ExtractElementCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 96: browser.automation.v1.ExtractElementCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 97: browser.automation.v1.ScreenshotCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 98: browser.automation.v1.ScreenshotCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 99: browser.automation.v1.ScreenshotCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 100: browser.automation.v1.UploadFileCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	14,  // 101: browser.automation.v1.UploadFileCommand.file_secret_refs:type_name -> browser.automation.v1.SecretRef
+	103, // 102: browser.automation.v1.UploadFileCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 103: browser.automation.v1.UploadFileCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 104: browser.automation.v1.SelectOptionCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 105: browser.automation.v1.SelectOptionCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 106: browser.automation.v1.SelectOptionCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	21,  // 107: browser.automation.v1.SubmitFormCommand.selector:type_name -> browser.automation.v1.BrowserSelector
+	103, // 108: browser.automation.v1.SubmitFormCommand.timeout:type_name -> google.protobuf.Duration
+	22,  // 109: browser.automation.v1.SubmitFormCommand.selector_group:type_name -> browser.automation.v1.BrowserSelectorGroup
+	104, // 110: browser.automation.v1.EvaluateCommand.args:type_name -> google.protobuf.Struct
+	103, // 111: browser.automation.v1.EvaluateCommand.timeout:type_name -> google.protobuf.Duration
+	61,  // 112: browser.automation.v1.WaitForNetworkRequestCommand.filter:type_name -> browser.automation.v1.BrowserNetworkRequestFilter
+	103, // 113: browser.automation.v1.WaitForNetworkRequestCommand.timeout:type_name -> google.protobuf.Duration
+	61,  // 114: browser.automation.v1.GetNetworkRequestsCommand.filter:type_name -> browser.automation.v1.BrowserNetworkRequestFilter
+	103, // 115: browser.automation.v1.BrowserCommand.timeout:type_name -> google.protobuf.Duration
+	96,  // 116: browser.automation.v1.BrowserCommand.labels:type_name -> browser.automation.v1.BrowserCommand.LabelsEntry
+	25,  // 117: browser.automation.v1.BrowserCommand.navigate:type_name -> browser.automation.v1.NavigateCommand
+	29,  // 118: browser.automation.v1.BrowserCommand.click:type_name -> browser.automation.v1.ClickCommand
+	30,  // 119: browser.automation.v1.BrowserCommand.fill:type_name -> browser.automation.v1.FillCommand
+	34,  // 120: browser.automation.v1.BrowserCommand.press:type_name -> browser.automation.v1.PressCommand
+	44,  // 121: browser.automation.v1.BrowserCommand.wait_for_selector:type_name -> browser.automation.v1.WaitForSelectorCommand
+	45,  // 122: browser.automation.v1.BrowserCommand.wait_for_text:type_name -> browser.automation.v1.WaitForTextCommand
+	50,  // 123: browser.automation.v1.BrowserCommand.extract_text:type_name -> browser.automation.v1.ExtractTextCommand
+	54,  // 124: browser.automation.v1.BrowserCommand.screenshot:type_name -> browser.automation.v1.ScreenshotCommand
+	55,  // 125: browser.automation.v1.BrowserCommand.upload_file:type_name -> browser.automation.v1.UploadFileCommand
+	58,  // 126: browser.automation.v1.BrowserCommand.evaluate:type_name -> browser.automation.v1.EvaluateCommand
+	56,  // 127: browser.automation.v1.BrowserCommand.select_option:type_name -> browser.automation.v1.SelectOptionCommand
+	26,  // 128: browser.automation.v1.BrowserCommand.reload:type_name -> browser.automation.v1.ReloadCommand
+	27,  // 129: browser.automation.v1.BrowserCommand.go_back:type_name -> browser.automation.v1.GoBackCommand
+	28,  // 130: browser.automation.v1.BrowserCommand.go_forward:type_name -> browser.automation.v1.GoForwardCommand
+	46,  // 131: browser.automation.v1.BrowserCommand.wait_for_url:type_name -> browser.automation.v1.WaitForURLCommand
+	47,  // 132: browser.automation.v1.BrowserCommand.wait_for_load_state:type_name -> browser.automation.v1.WaitForLoadStateCommand
+	48,  // 133: browser.automation.v1.BrowserCommand.wait_for_timeout:type_name -> browser.automation.v1.WaitForTimeoutCommand
+	32,  // 134: browser.automation.v1.BrowserCommand.type_text:type_name -> browser.automation.v1.TypeTextCommand
+	33,  // 135: browser.automation.v1.BrowserCommand.clear:type_name -> browser.automation.v1.ClearCommand
+	35,  // 136: browser.automation.v1.BrowserCommand.focus:type_name -> browser.automation.v1.FocusCommand
+	36,  // 137: browser.automation.v1.BrowserCommand.blur:type_name -> browser.automation.v1.BlurCommand
+	37,  // 138: browser.automation.v1.BrowserCommand.hover:type_name -> browser.automation.v1.HoverCommand
+	38,  // 139: browser.automation.v1.BrowserCommand.mouse_move:type_name -> browser.automation.v1.MouseMoveCommand
+	39,  // 140: browser.automation.v1.BrowserCommand.mouse_click:type_name -> browser.automation.v1.MouseClickCommand
+	40,  // 141: browser.automation.v1.BrowserCommand.mouse_down:type_name -> browser.automation.v1.MouseDownCommand
+	41,  // 142: browser.automation.v1.BrowserCommand.mouse_up:type_name -> browser.automation.v1.MouseUpCommand
+	42,  // 143: browser.automation.v1.BrowserCommand.drag:type_name -> browser.automation.v1.DragCommand
+	57,  // 144: browser.automation.v1.BrowserCommand.submit_form:type_name -> browser.automation.v1.SubmitFormCommand
+	51,  // 145: browser.automation.v1.BrowserCommand.get_attribute:type_name -> browser.automation.v1.GetAttributeCommand
+	53,  // 146: browser.automation.v1.BrowserCommand.extract_element:type_name -> browser.automation.v1.ExtractElementCommand
+	31,  // 147: browser.automation.v1.BrowserCommand.set_checked:type_name -> browser.automation.v1.SetCheckedCommand
+	43,  // 148: browser.automation.v1.BrowserCommand.scroll:type_name -> browser.automation.v1.ScrollCommand
+	49,  // 149: browser.automation.v1.BrowserCommand.get_page_state:type_name -> browser.automation.v1.GetPageStateCommand
+	52,  // 150: browser.automation.v1.BrowserCommand.count_elements:type_name -> browser.automation.v1.CountElementsCommand
+	59,  // 151: browser.automation.v1.BrowserCommand.get_cookies:type_name -> browser.automation.v1.GetCookiesCommand
+	60,  // 152: browser.automation.v1.BrowserCommand.get_storage_state:type_name -> browser.automation.v1.GetStorageStateCommand
+	62,  // 153: browser.automation.v1.BrowserCommand.wait_for_network_request:type_name -> browser.automation.v1.WaitForNetworkRequestCommand
+	63,  // 154: browser.automation.v1.BrowserCommand.get_network_requests:type_name -> browser.automation.v1.GetNetworkRequestsCommand
 	4,   // 155: browser.automation.v1.BrowserCommandResult.status:type_name -> browser.automation.v1.BrowserCommandStatus
-	14,  // 156: browser.automation.v1.BrowserCommandResult.error:type_name -> browser.automation.v1.BrowserAutomationError
-	96,  // 157: browser.automation.v1.BrowserCommandResult.json_value:type_name -> google.protobuf.Value
-	17,  // 158: browser.automation.v1.BrowserCommandResult.artifact:type_name -> browser.automation.v1.BrowserArtifact
-	88,  // 159: browser.automation.v1.BrowserCommandResult.attributes:type_name -> browser.automation.v1.BrowserCommandResult.AttributesEntry
-	22,  // 160: browser.automation.v1.BrowserCommandResult.bounding_box:type_name -> browser.automation.v1.BrowserRect
-	12,  // 161: browser.automation.v1.BrowserCommandResult.secret_ref:type_name -> browser.automation.v1.SecretRef
-	13,  // 162: browser.automation.v1.BrowserCommandResult.artifact_ref:type_name -> browser.automation.v1.ArtifactRef
-	93,  // 163: browser.automation.v1.BrowserCommandResult.completed_at:type_name -> google.protobuf.Timestamp
+	16,  // 156: browser.automation.v1.BrowserCommandResult.error:type_name -> browser.automation.v1.BrowserAutomationError
+	105, // 157: browser.automation.v1.BrowserCommandResult.json_value:type_name -> google.protobuf.Value
+	19,  // 158: browser.automation.v1.BrowserCommandResult.artifact:type_name -> browser.automation.v1.BrowserArtifact
+	97,  // 159: browser.automation.v1.BrowserCommandResult.attributes:type_name -> browser.automation.v1.BrowserCommandResult.AttributesEntry
+	24,  // 160: browser.automation.v1.BrowserCommandResult.bounding_box:type_name -> browser.automation.v1.BrowserRect
+	14,  // 161: browser.automation.v1.BrowserCommandResult.secret_ref:type_name -> browser.automation.v1.SecretRef
+	15,  // 162: browser.automation.v1.BrowserCommandResult.artifact_ref:type_name -> browser.automation.v1.ArtifactRef
+	102, // 163: browser.automation.v1.BrowserCommandResult.completed_at:type_name -> google.protobuf.Timestamp
 	2,   // 164: browser.automation.v1.BrowserSession.status:type_name -> browser.automation.v1.BrowserSessionStatus
-	16,  // 165: browser.automation.v1.BrowserSession.profile:type_name -> browser.automation.v1.BrowserProfile
-	14,  // 166: browser.automation.v1.BrowserSession.last_error:type_name -> browser.automation.v1.BrowserAutomationError
-	17,  // 167: browser.automation.v1.BrowserSession.artifacts:type_name -> browser.automation.v1.BrowserArtifact
-	89,  // 168: browser.automation.v1.BrowserSession.labels:type_name -> browser.automation.v1.BrowserSession.LabelsEntry
-	93,  // 169: browser.automation.v1.BrowserSession.created_at:type_name -> google.protobuf.Timestamp
-	93,  // 170: browser.automation.v1.BrowserSession.started_at:type_name -> google.protobuf.Timestamp
-	93,  // 171: browser.automation.v1.BrowserSession.updated_at:type_name -> google.protobuf.Timestamp
-	93,  // 172: browser.automation.v1.BrowserSession.stopped_at:type_name -> google.protobuf.Timestamp
-	93,  // 173: browser.automation.v1.BrowserSession.expires_at:type_name -> google.protobuf.Timestamp
-	94,  // 174: browser.automation.v1.BrowserTaskInput.timeout:type_name -> google.protobuf.Duration
-	62,  // 175: browser.automation.v1.BrowserTaskInput.commands:type_name -> browser.automation.v1.BrowserCommand
-	18,  // 176: browser.automation.v1.BrowserTaskInput.security_policy:type_name -> browser.automation.v1.BrowserSecurityPolicy
-	90,  // 177: browser.automation.v1.BrowserTaskInput.labels:type_name -> browser.automation.v1.BrowserTaskInput.LabelsEntry
-	3,   // 178: browser.automation.v1.BrowserTask.status:type_name -> browser.automation.v1.BrowserTaskStatus
-	65,  // 179: browser.automation.v1.BrowserTask.input:type_name -> browser.automation.v1.BrowserTaskInput
-	14,  // 180: browser.automation.v1.BrowserTask.last_error:type_name -> browser.automation.v1.BrowserAutomationError
-	17,  // 181: browser.automation.v1.BrowserTask.artifacts:type_name -> browser.automation.v1.BrowserArtifact
-	63,  // 182: browser.automation.v1.BrowserTask.results:type_name -> browser.automation.v1.BrowserCommandResult
-	91,  // 183: browser.automation.v1.BrowserTask.labels:type_name -> browser.automation.v1.BrowserTask.LabelsEntry
-	93,  // 184: browser.automation.v1.BrowserTask.created_at:type_name -> google.protobuf.Timestamp
-	93,  // 185: browser.automation.v1.BrowserTask.started_at:type_name -> google.protobuf.Timestamp
-	93,  // 186: browser.automation.v1.BrowserTask.updated_at:type_name -> google.protobuf.Timestamp
-	93,  // 187: browser.automation.v1.BrowserTask.completed_at:type_name -> google.protobuf.Timestamp
-	3,   // 188: browser.automation.v1.BrowserTaskFilter.status:type_name -> browser.automation.v1.BrowserTaskStatus
-	93,  // 189: browser.automation.v1.BrowserTaskFilter.created_after:type_name -> google.protobuf.Timestamp
-	93,  // 190: browser.automation.v1.BrowserTaskFilter.created_before:type_name -> google.protobuf.Timestamp
-	16,  // 191: browser.automation.v1.StartBrowserSessionRequest.profile:type_name -> browser.automation.v1.BrowserProfile
-	94,  // 192: browser.automation.v1.StartBrowserSessionRequest.ttl:type_name -> google.protobuf.Duration
-	18,  // 193: browser.automation.v1.StartBrowserSessionRequest.security_policy:type_name -> browser.automation.v1.BrowserSecurityPolicy
-	92,  // 194: browser.automation.v1.StartBrowserSessionRequest.labels:type_name -> browser.automation.v1.StartBrowserSessionRequest.LabelsEntry
-	64,  // 195: browser.automation.v1.StartBrowserSessionResponse.session:type_name -> browser.automation.v1.BrowserSession
-	14,  // 196: browser.automation.v1.StartBrowserSessionResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	64,  // 197: browser.automation.v1.GetBrowserSessionResponse.session:type_name -> browser.automation.v1.BrowserSession
-	14,  // 198: browser.automation.v1.GetBrowserSessionResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	64,  // 199: browser.automation.v1.StopBrowserSessionResponse.session:type_name -> browser.automation.v1.BrowserSession
-	14,  // 200: browser.automation.v1.StopBrowserSessionResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	65,  // 201: browser.automation.v1.StartBrowserTaskRequest.input:type_name -> browser.automation.v1.BrowserTaskInput
-	66,  // 202: browser.automation.v1.StartBrowserTaskResponse.task:type_name -> browser.automation.v1.BrowserTask
-	14,  // 203: browser.automation.v1.StartBrowserTaskResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	65,  // 204: browser.automation.v1.ExecuteBrowserCommandsRequest.input:type_name -> browser.automation.v1.BrowserTaskInput
-	66,  // 205: browser.automation.v1.ExecuteBrowserCommandsResponse.task:type_name -> browser.automation.v1.BrowserTask
-	63,  // 206: browser.automation.v1.ExecuteBrowserCommandsResponse.results:type_name -> browser.automation.v1.BrowserCommandResult
-	14,  // 207: browser.automation.v1.ExecuteBrowserCommandsResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	66,  // 208: browser.automation.v1.GetBrowserTaskResponse.task:type_name -> browser.automation.v1.BrowserTask
-	14,  // 209: browser.automation.v1.GetBrowserTaskResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	67,  // 210: browser.automation.v1.ListBrowserTasksRequest.filter:type_name -> browser.automation.v1.BrowserTaskFilter
-	66,  // 211: browser.automation.v1.ListBrowserTasksResponse.tasks:type_name -> browser.automation.v1.BrowserTask
-	14,  // 212: browser.automation.v1.ListBrowserTasksResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
-	11,  // 213: browser.automation.v1.BrowserSessionStartedEvent.metadata:type_name -> browser.automation.v1.EventMetadata
-	64,  // 214: browser.automation.v1.BrowserSessionStartedEvent.session:type_name -> browser.automation.v1.BrowserSession
-	11,  // 215: browser.automation.v1.BrowserSessionStoppedEvent.metadata:type_name -> browser.automation.v1.EventMetadata
-	2,   // 216: browser.automation.v1.BrowserSessionStoppedEvent.status:type_name -> browser.automation.v1.BrowserSessionStatus
-	11,  // 217: browser.automation.v1.BrowserTaskStatusChangedEvent.metadata:type_name -> browser.automation.v1.EventMetadata
-	3,   // 218: browser.automation.v1.BrowserTaskStatusChangedEvent.previous_status:type_name -> browser.automation.v1.BrowserTaskStatus
-	3,   // 219: browser.automation.v1.BrowserTaskStatusChangedEvent.current_status:type_name -> browser.automation.v1.BrowserTaskStatus
-	68,  // 220: browser.automation.v1.BrowserAutomationService.StartBrowserSession:input_type -> browser.automation.v1.StartBrowserSessionRequest
-	70,  // 221: browser.automation.v1.BrowserAutomationService.GetBrowserSession:input_type -> browser.automation.v1.GetBrowserSessionRequest
-	72,  // 222: browser.automation.v1.BrowserAutomationService.StopBrowserSession:input_type -> browser.automation.v1.StopBrowserSessionRequest
-	74,  // 223: browser.automation.v1.BrowserAutomationService.StartBrowserTask:input_type -> browser.automation.v1.StartBrowserTaskRequest
-	76,  // 224: browser.automation.v1.BrowserAutomationService.ExecuteBrowserCommands:input_type -> browser.automation.v1.ExecuteBrowserCommandsRequest
-	78,  // 225: browser.automation.v1.BrowserAutomationService.GetBrowserTask:input_type -> browser.automation.v1.GetBrowserTaskRequest
-	80,  // 226: browser.automation.v1.BrowserAutomationService.ListBrowserTasks:input_type -> browser.automation.v1.ListBrowserTasksRequest
-	69,  // 227: browser.automation.v1.BrowserAutomationService.StartBrowserSession:output_type -> browser.automation.v1.StartBrowserSessionResponse
-	71,  // 228: browser.automation.v1.BrowserAutomationService.GetBrowserSession:output_type -> browser.automation.v1.GetBrowserSessionResponse
-	73,  // 229: browser.automation.v1.BrowserAutomationService.StopBrowserSession:output_type -> browser.automation.v1.StopBrowserSessionResponse
-	75,  // 230: browser.automation.v1.BrowserAutomationService.StartBrowserTask:output_type -> browser.automation.v1.StartBrowserTaskResponse
-	77,  // 231: browser.automation.v1.BrowserAutomationService.ExecuteBrowserCommands:output_type -> browser.automation.v1.ExecuteBrowserCommandsResponse
-	79,  // 232: browser.automation.v1.BrowserAutomationService.GetBrowserTask:output_type -> browser.automation.v1.GetBrowserTaskResponse
-	81,  // 233: browser.automation.v1.BrowserAutomationService.ListBrowserTasks:output_type -> browser.automation.v1.ListBrowserTasksResponse
-	227, // [227:234] is the sub-list for method output_type
-	220, // [220:227] is the sub-list for method input_type
-	220, // [220:220] is the sub-list for extension type_name
-	220, // [220:220] is the sub-list for extension extendee
-	0,   // [0:220] is the sub-list for field type_name
+	18,  // 165: browser.automation.v1.BrowserSession.profile:type_name -> browser.automation.v1.BrowserProfile
+	16,  // 166: browser.automation.v1.BrowserSession.last_error:type_name -> browser.automation.v1.BrowserAutomationError
+	19,  // 167: browser.automation.v1.BrowserSession.artifacts:type_name -> browser.automation.v1.BrowserArtifact
+	98,  // 168: browser.automation.v1.BrowserSession.labels:type_name -> browser.automation.v1.BrowserSession.LabelsEntry
+	102, // 169: browser.automation.v1.BrowserSession.created_at:type_name -> google.protobuf.Timestamp
+	102, // 170: browser.automation.v1.BrowserSession.started_at:type_name -> google.protobuf.Timestamp
+	102, // 171: browser.automation.v1.BrowserSession.updated_at:type_name -> google.protobuf.Timestamp
+	102, // 172: browser.automation.v1.BrowserSession.stopped_at:type_name -> google.protobuf.Timestamp
+	102, // 173: browser.automation.v1.BrowserSession.expires_at:type_name -> google.protobuf.Timestamp
+	11,  // 174: browser.automation.v1.BrowserLiveView.provider:type_name -> browser.automation.v1.BrowserLiveViewProvider
+	102, // 175: browser.automation.v1.BrowserLiveView.created_at:type_name -> google.protobuf.Timestamp
+	102, // 176: browser.automation.v1.BrowserLiveView.expires_at:type_name -> google.protobuf.Timestamp
+	11,  // 177: browser.automation.v1.BrowserLiveFrame.provider:type_name -> browser.automation.v1.BrowserLiveViewProvider
+	102, // 178: browser.automation.v1.BrowserLiveFrame.captured_at:type_name -> google.protobuf.Timestamp
+	12,  // 179: browser.automation.v1.BrowserLiveInputEvent.kind:type_name -> browser.automation.v1.BrowserLiveInputKind
+	9,   // 180: browser.automation.v1.BrowserLiveInputEvent.button:type_name -> browser.automation.v1.BrowserMouseButton
+	69,  // 181: browser.automation.v1.BrowserLiveClientMessage.input:type_name -> browser.automation.v1.BrowserLiveInputEvent
+	68,  // 182: browser.automation.v1.BrowserLiveServerMessage.frame:type_name -> browser.automation.v1.BrowserLiveFrame
+	16,  // 183: browser.automation.v1.BrowserLiveServerMessage.error:type_name -> browser.automation.v1.BrowserAutomationError
+	103, // 184: browser.automation.v1.BrowserTaskInput.timeout:type_name -> google.protobuf.Duration
+	64,  // 185: browser.automation.v1.BrowserTaskInput.commands:type_name -> browser.automation.v1.BrowserCommand
+	20,  // 186: browser.automation.v1.BrowserTaskInput.security_policy:type_name -> browser.automation.v1.BrowserSecurityPolicy
+	99,  // 187: browser.automation.v1.BrowserTaskInput.labels:type_name -> browser.automation.v1.BrowserTaskInput.LabelsEntry
+	3,   // 188: browser.automation.v1.BrowserTask.status:type_name -> browser.automation.v1.BrowserTaskStatus
+	72,  // 189: browser.automation.v1.BrowserTask.input:type_name -> browser.automation.v1.BrowserTaskInput
+	16,  // 190: browser.automation.v1.BrowserTask.last_error:type_name -> browser.automation.v1.BrowserAutomationError
+	19,  // 191: browser.automation.v1.BrowserTask.artifacts:type_name -> browser.automation.v1.BrowserArtifact
+	65,  // 192: browser.automation.v1.BrowserTask.results:type_name -> browser.automation.v1.BrowserCommandResult
+	100, // 193: browser.automation.v1.BrowserTask.labels:type_name -> browser.automation.v1.BrowserTask.LabelsEntry
+	102, // 194: browser.automation.v1.BrowserTask.created_at:type_name -> google.protobuf.Timestamp
+	102, // 195: browser.automation.v1.BrowserTask.started_at:type_name -> google.protobuf.Timestamp
+	102, // 196: browser.automation.v1.BrowserTask.updated_at:type_name -> google.protobuf.Timestamp
+	102, // 197: browser.automation.v1.BrowserTask.completed_at:type_name -> google.protobuf.Timestamp
+	3,   // 198: browser.automation.v1.BrowserTaskFilter.status:type_name -> browser.automation.v1.BrowserTaskStatus
+	102, // 199: browser.automation.v1.BrowserTaskFilter.created_after:type_name -> google.protobuf.Timestamp
+	102, // 200: browser.automation.v1.BrowserTaskFilter.created_before:type_name -> google.protobuf.Timestamp
+	18,  // 201: browser.automation.v1.StartBrowserSessionRequest.profile:type_name -> browser.automation.v1.BrowserProfile
+	103, // 202: browser.automation.v1.StartBrowserSessionRequest.ttl:type_name -> google.protobuf.Duration
+	20,  // 203: browser.automation.v1.StartBrowserSessionRequest.security_policy:type_name -> browser.automation.v1.BrowserSecurityPolicy
+	101, // 204: browser.automation.v1.StartBrowserSessionRequest.labels:type_name -> browser.automation.v1.StartBrowserSessionRequest.LabelsEntry
+	66,  // 205: browser.automation.v1.StartBrowserSessionResponse.session:type_name -> browser.automation.v1.BrowserSession
+	16,  // 206: browser.automation.v1.StartBrowserSessionResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	66,  // 207: browser.automation.v1.GetBrowserSessionResponse.session:type_name -> browser.automation.v1.BrowserSession
+	16,  // 208: browser.automation.v1.GetBrowserSessionResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	66,  // 209: browser.automation.v1.StopBrowserSessionResponse.session:type_name -> browser.automation.v1.BrowserSession
+	16,  // 210: browser.automation.v1.StopBrowserSessionResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	11,  // 211: browser.automation.v1.CreateBrowserLiveViewRequest.provider:type_name -> browser.automation.v1.BrowserLiveViewProvider
+	103, // 212: browser.automation.v1.CreateBrowserLiveViewRequest.ttl:type_name -> google.protobuf.Duration
+	67,  // 213: browser.automation.v1.CreateBrowserLiveViewResponse.live_view:type_name -> browser.automation.v1.BrowserLiveView
+	16,  // 214: browser.automation.v1.CreateBrowserLiveViewResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	72,  // 215: browser.automation.v1.StartBrowserTaskRequest.input:type_name -> browser.automation.v1.BrowserTaskInput
+	73,  // 216: browser.automation.v1.StartBrowserTaskResponse.task:type_name -> browser.automation.v1.BrowserTask
+	16,  // 217: browser.automation.v1.StartBrowserTaskResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	72,  // 218: browser.automation.v1.ExecuteBrowserCommandsRequest.input:type_name -> browser.automation.v1.BrowserTaskInput
+	73,  // 219: browser.automation.v1.ExecuteBrowserCommandsResponse.task:type_name -> browser.automation.v1.BrowserTask
+	65,  // 220: browser.automation.v1.ExecuteBrowserCommandsResponse.results:type_name -> browser.automation.v1.BrowserCommandResult
+	16,  // 221: browser.automation.v1.ExecuteBrowserCommandsResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	73,  // 222: browser.automation.v1.GetBrowserTaskResponse.task:type_name -> browser.automation.v1.BrowserTask
+	16,  // 223: browser.automation.v1.GetBrowserTaskResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	74,  // 224: browser.automation.v1.ListBrowserTasksRequest.filter:type_name -> browser.automation.v1.BrowserTaskFilter
+	73,  // 225: browser.automation.v1.ListBrowserTasksResponse.tasks:type_name -> browser.automation.v1.BrowserTask
+	16,  // 226: browser.automation.v1.ListBrowserTasksResponse.error:type_name -> browser.automation.v1.BrowserAutomationError
+	13,  // 227: browser.automation.v1.BrowserSessionStartedEvent.metadata:type_name -> browser.automation.v1.EventMetadata
+	66,  // 228: browser.automation.v1.BrowserSessionStartedEvent.session:type_name -> browser.automation.v1.BrowserSession
+	13,  // 229: browser.automation.v1.BrowserSessionStoppedEvent.metadata:type_name -> browser.automation.v1.EventMetadata
+	2,   // 230: browser.automation.v1.BrowserSessionStoppedEvent.status:type_name -> browser.automation.v1.BrowserSessionStatus
+	13,  // 231: browser.automation.v1.BrowserTaskStatusChangedEvent.metadata:type_name -> browser.automation.v1.EventMetadata
+	3,   // 232: browser.automation.v1.BrowserTaskStatusChangedEvent.previous_status:type_name -> browser.automation.v1.BrowserTaskStatus
+	3,   // 233: browser.automation.v1.BrowserTaskStatusChangedEvent.current_status:type_name -> browser.automation.v1.BrowserTaskStatus
+	75,  // 234: browser.automation.v1.BrowserAutomationService.StartBrowserSession:input_type -> browser.automation.v1.StartBrowserSessionRequest
+	77,  // 235: browser.automation.v1.BrowserAutomationService.GetBrowserSession:input_type -> browser.automation.v1.GetBrowserSessionRequest
+	79,  // 236: browser.automation.v1.BrowserAutomationService.StopBrowserSession:input_type -> browser.automation.v1.StopBrowserSessionRequest
+	81,  // 237: browser.automation.v1.BrowserAutomationService.CreateBrowserLiveView:input_type -> browser.automation.v1.CreateBrowserLiveViewRequest
+	83,  // 238: browser.automation.v1.BrowserAutomationService.StartBrowserTask:input_type -> browser.automation.v1.StartBrowserTaskRequest
+	85,  // 239: browser.automation.v1.BrowserAutomationService.ExecuteBrowserCommands:input_type -> browser.automation.v1.ExecuteBrowserCommandsRequest
+	87,  // 240: browser.automation.v1.BrowserAutomationService.GetBrowserTask:input_type -> browser.automation.v1.GetBrowserTaskRequest
+	89,  // 241: browser.automation.v1.BrowserAutomationService.ListBrowserTasks:input_type -> browser.automation.v1.ListBrowserTasksRequest
+	76,  // 242: browser.automation.v1.BrowserAutomationService.StartBrowserSession:output_type -> browser.automation.v1.StartBrowserSessionResponse
+	78,  // 243: browser.automation.v1.BrowserAutomationService.GetBrowserSession:output_type -> browser.automation.v1.GetBrowserSessionResponse
+	80,  // 244: browser.automation.v1.BrowserAutomationService.StopBrowserSession:output_type -> browser.automation.v1.StopBrowserSessionResponse
+	82,  // 245: browser.automation.v1.BrowserAutomationService.CreateBrowserLiveView:output_type -> browser.automation.v1.CreateBrowserLiveViewResponse
+	84,  // 246: browser.automation.v1.BrowserAutomationService.StartBrowserTask:output_type -> browser.automation.v1.StartBrowserTaskResponse
+	86,  // 247: browser.automation.v1.BrowserAutomationService.ExecuteBrowserCommands:output_type -> browser.automation.v1.ExecuteBrowserCommandsResponse
+	88,  // 248: browser.automation.v1.BrowserAutomationService.GetBrowserTask:output_type -> browser.automation.v1.GetBrowserTaskResponse
+	90,  // 249: browser.automation.v1.BrowserAutomationService.ListBrowserTasks:output_type -> browser.automation.v1.ListBrowserTasksResponse
+	242, // [242:250] is the sub-list for method output_type
+	234, // [234:242] is the sub-list for method input_type
+	234, // [234:234] is the sub-list for extension type_name
+	234, // [234:234] is the sub-list for extension extendee
+	0,   // [0:234] is the sub-list for field type_name
 }
 
 func init() { file_browser_automation_v1_browser_automation_proto_init() }
@@ -7529,8 +8306,8 @@ func file_browser_automation_v1_browser_automation_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_browser_automation_v1_browser_automation_proto_rawDesc), len(file_browser_automation_v1_browser_automation_proto_rawDesc)),
-			NumEnums:      11,
-			NumMessages:   82,
+			NumEnums:      13,
+			NumMessages:   89,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

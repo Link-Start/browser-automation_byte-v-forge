@@ -43,6 +43,14 @@ func (s *AutomationServer) StopBrowserSession(ctx context.Context, request *brow
 	return &browserautomationv1.StopBrowserSessionResponse{Session: session}, nil
 }
 
+func (s *AutomationServer) CreateBrowserLiveView(ctx context.Context, request *browserautomationv1.CreateBrowserLiveViewRequest) (*browserautomationv1.CreateBrowserLiveViewResponse, error) {
+	liveView, err := s.service.CreateBrowserLiveView(ctx, request)
+	if err != nil {
+		return &browserautomationv1.CreateBrowserLiveViewResponse{LiveView: liveView, Error: core.AutomationError(err)}, nil
+	}
+	return &browserautomationv1.CreateBrowserLiveViewResponse{LiveView: liveView}, nil
+}
+
 func (s *AutomationServer) StartBrowserTask(ctx context.Context, request *browserautomationv1.StartBrowserTaskRequest) (*browserautomationv1.StartBrowserTaskResponse, error) {
 	task, err := s.service.StartBrowserTask(ctx, request.GetRequestId(), request.GetInput())
 	if err != nil {

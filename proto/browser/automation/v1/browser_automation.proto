@@ -17,6 +17,7 @@ service BrowserAutomationService {
   rpc StartBrowserSession(StartBrowserSessionRequest) returns (StartBrowserSessionResponse);
   rpc GetBrowserSession(GetBrowserSessionRequest) returns (GetBrowserSessionResponse);
   rpc StopBrowserSession(StopBrowserSessionRequest) returns (StopBrowserSessionResponse);
+  rpc CreateBrowserLiveView(CreateBrowserLiveViewRequest) returns (CreateBrowserLiveViewResponse);
   rpc StartBrowserTask(StartBrowserTaskRequest) returns (StartBrowserTaskResponse);
   rpc ExecuteBrowserCommands(ExecuteBrowserCommandsRequest) returns (ExecuteBrowserCommandsResponse);
   rpc GetBrowserTask(GetBrowserTaskRequest) returns (GetBrowserTaskResponse);
@@ -126,6 +127,22 @@ enum BrowserArtifactKind {
   BROWSER_ARTIFACT_KIND_CONSOLE_LOG = 5;
   BROWSER_ARTIFACT_KIND_NETWORK_LOG = 6;
   BROWSER_ARTIFACT_KIND_DOWNLOAD = 7;
+}
+
+enum BrowserLiveViewProvider {
+  BROWSER_LIVE_VIEW_PROVIDER_UNSPECIFIED = 0;
+  BROWSER_LIVE_VIEW_PROVIDER_CDP = 1;
+  BROWSER_LIVE_VIEW_PROVIDER_SCREENSHOT = 2;
+  BROWSER_LIVE_VIEW_PROVIDER_WEBRTC = 3;
+}
+
+enum BrowserLiveInputKind {
+  BROWSER_LIVE_INPUT_KIND_UNSPECIFIED = 0;
+  BROWSER_LIVE_INPUT_KIND_MOUSE_MOVE = 1;
+  BROWSER_LIVE_INPUT_KIND_MOUSE_CLICK = 2;
+  BROWSER_LIVE_INPUT_KIND_MOUSE_WHEEL = 3;
+  BROWSER_LIVE_INPUT_KIND_KEY_PRESS = 4;
+  BROWSER_LIVE_INPUT_KIND_TYPE_TEXT = 5;
 }
 
 
@@ -580,6 +597,53 @@ message BrowserSession {
   google.protobuf.Timestamp expires_at = 34;
 }
 
+message BrowserLiveView {
+  string live_view_id = 1;
+  string session_id = 2;
+  BrowserLiveViewProvider provider = 3;
+  bool control_enabled = 4;
+  int32 max_width = 5;
+  int32 max_height = 6;
+  string url = 7;
+  string websocket_url = 8;
+  google.protobuf.Timestamp created_at = 30;
+  google.protobuf.Timestamp expires_at = 31;
+}
+
+message BrowserLiveFrame {
+  string live_view_id = 1;
+  int64 sequence = 2;
+  BrowserLiveViewProvider provider = 3;
+  string content_type = 4;
+  string image_base64 = 5;
+  int32 width = 6;
+  int32 height = 7;
+  string current_url = 8;
+  string title = 9;
+  google.protobuf.Timestamp captured_at = 30;
+}
+
+message BrowserLiveInputEvent {
+  BrowserLiveInputKind kind = 1;
+  double x = 2;
+  double y = 3;
+  double delta_x = 4;
+  double delta_y = 5;
+  BrowserMouseButton button = 6;
+  string key = 7;
+  string text = 8;
+}
+
+message BrowserLiveClientMessage {
+  int64 ack_sequence = 1;
+  BrowserLiveInputEvent input = 2;
+}
+
+message BrowserLiveServerMessage {
+  BrowserLiveFrame frame = 1;
+  BrowserAutomationError error = 2;
+}
+
 message BrowserTaskInput {
   string session_id = 1;
   string task_key = 2;
@@ -646,6 +710,20 @@ message StopBrowserSessionRequest {
 
 message StopBrowserSessionResponse {
   BrowserSession session = 1;
+  BrowserAutomationError error = 2;
+}
+
+message CreateBrowserLiveViewRequest {
+  string session_id = 1;
+  BrowserLiveViewProvider provider = 2;
+  bool control_enabled = 3;
+  int32 max_width = 4;
+  int32 max_height = 5;
+  google.protobuf.Duration ttl = 6;
+}
+
+message CreateBrowserLiveViewResponse {
+  BrowserLiveView live_view = 1;
   BrowserAutomationError error = 2;
 }
 

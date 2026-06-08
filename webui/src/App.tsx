@@ -16,6 +16,7 @@ import { SessionCard } from './components/session-card';
 import { Status } from './components/status';
 import { SummaryCard } from './components/summary-card';
 import { TaskList } from './components/task-list';
+import { useLiveView } from './hooks/use-live-view';
 
 export function App() {
   const [browserKind, setBrowserKind] = useState<BrowserKind>(BrowserKind.BROWSER_KIND_CHROMIUM);
@@ -27,10 +28,11 @@ export function App() {
   const [sessionId, setSessionId] = useState('');
   const [timezone, setTimezone] = useState('America/New_York');
   const tasks = useQuery({ queryKey: ['tasks', sessionId], queryFn: () => listTasks(sessionId), refetchInterval: 8000 });
+  const liveView = useLiveView(sessionId);
   const start = useMutation({ mutationFn: handleStart, onSuccess: (response) => setSessionId(response.session?.session_id || '') });
   const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => setSessionId('') });
   const execute = useMutation({ mutationFn: handleExecute, onSuccess: (response) => setLastTask(response.task) });
-  const error = start.error?.message || stop.error?.message || execute.error?.message || tasks.error?.message;
+  const error = start.error?.message || stop.error?.message || execute.error?.message || tasks.error?.message || liveView.error;
   const pending = start.isPending || stop.isPending || execute.isPending;
   const taskItems = useMemo(() => tasks.data?.tasks || [], [tasks.data?.tasks]);
   const summary = useMemo(() => summarizeTasks(taskItems), [taskItems]);
@@ -91,7 +93,7 @@ export function App() {
     <main>
       <PageHeader activeSessionId={sessionId} error={error} pending={pending} />
       <Status error={error} />
-      <BrowserStage activeSessionId={sessionId} pending={pending} targetUrl={quickCommand.targetUrl} task={lastTask} />
+      <BrowserStage activeSessionId={sessionId} connected={liveView.connected} error={liveView.error} frame={liveView.frame} onInput={liveView.sendInput} pending={pending} targetUrl={quickCommand.targetUrl} task={lastTask} />
       <SummaryCard {...summary} />
       <div className="layout">
         <SessionCard

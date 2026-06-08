@@ -1,5 +1,6 @@
 import type {
   ExecuteBrowserCommandsRequest,
+  CreateBrowserLiveViewResponse,
   ExecuteBrowserCommandsResponse,
   ListBrowserTasksResponse,
   StartBrowserSessionRequest,
@@ -11,6 +12,16 @@ const basePath = '/api/browser-automation';
 
 export async function startSession(request: StartBrowserSessionRequest): Promise<StartBrowserSessionResponse> {
   return postProto(`${basePath}/sessions`, request);
+}
+
+
+export async function createLiveView(sessionId: string): Promise<CreateBrowserLiveViewResponse> {
+  return postProto(`${basePath}/sessions/${encodeURIComponent(sessionId)}/live`, {
+    session_id: sessionId,
+    control_enabled: true,
+    max_width: 1280,
+    max_height: 900
+  });
 }
 
 export async function stopSession(sessionId: string, reason: string): Promise<StopBrowserSessionResponse> {

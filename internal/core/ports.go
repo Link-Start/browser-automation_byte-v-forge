@@ -34,6 +34,16 @@ type Runtime interface {
 	ExecuteTask(ctx context.Context, task *Task) (TaskExecutionResult, error)
 }
 
+type RuntimeLiveView interface {
+	SupportsLiveViewProvider(provider browserautomationv1.BrowserLiveViewProvider) bool
+	CaptureLiveFrame(ctx context.Context, sessionID string, liveView *browserautomationv1.BrowserLiveView, sequence int64) (*browserautomationv1.BrowserLiveFrame, error)
+	DispatchLiveInput(ctx context.Context, sessionID string, event *browserautomationv1.BrowserLiveInputEvent) error
+}
+
+type RuntimeLiveViewDefaults interface {
+	DefaultLiveViewProvider() browserautomationv1.BrowserLiveViewProvider
+}
+
 type RuntimeProfileDefaults interface {
 	DefaultBrowserKind() browserautomationv1.BrowserKind
 }

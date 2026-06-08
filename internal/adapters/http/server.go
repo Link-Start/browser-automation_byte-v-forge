@@ -1,9 +1,11 @@
 package httpadapter
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,11 +15,14 @@ import (
 	"github.com/byte-v-forge/browser-automation/internal/app"
 	"github.com/byte-v-forge/browser-automation/internal/core"
 	"github.com/byte-v-forge/browser-automation/internal/platform/protojsonx"
+	"github.com/gorilla/websocket"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 const maxRequestBodyBytes = 8 * 1024 * 1024
+const liveFrameInterval = 500 * time.Millisecond
+const liveOperationTimeout = 5 * time.Second
 
 type Server struct {
 	service *app.AutomationService
@@ -29,6 +34,14 @@ func NewServer(service *app.AutomationService, webDir string) *Server {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if strings.HasPrefix(r.URL.Path, "/ws/browser-automation/live/") {
+		s.serveLiveWebSocket(w, r, strings.TrimPrefix(r.URL.Path, "/ws/browser-automation/live/"))
+		return
+	}
+	if strings.HasPrefix(r.URL.Path, "/live/") {
+		s.serveStatic(w, r)
+		return
+	}
 	if strings.HasPrefix(r.URL.Path, "/api/browser-automation/") {
 		s.serveAPI(w, r)
 		return
@@ -47,6 +60,8 @@ func (s *Server) serveAPI(w http.ResponseWriter, r *http.Request) {
 		s.startSession(w, r)
 	case r.Method == http.MethodGet && strings.HasPrefix(path, "/sessions/"):
 		s.getSession(w, r, strings.TrimPrefix(path, "/sessions/"))
+	case r.Method == http.MethodPost && strings.HasPrefix(path, "/sessions/") && strings.HasSuffix(path, "/live"):
+		s.createLiveView(w, r, path)
 	case r.Method == http.MethodPost && strings.HasPrefix(path, "/sessions/") && strings.HasSuffix(path, "/stop"):
 		s.stopSession(w, r, path)
 	case r.Method == http.MethodPost && path == "/tasks/execute":
@@ -87,6 +102,19 @@ func (s *Server) stopSession(w http.ResponseWriter, r *http.Request, path string
 	writeProto(w, &browserautomationv1.StopBrowserSessionResponse{Session: session, Error: core.AutomationError(err)})
 }
 
+func (s *Server) createLiveView(w http.ResponseWriter, r *http.Request, path string) {
+	sessionID := strings.TrimSuffix(strings.TrimPrefix(path, "/sessions/"), "/live")
+	request := &browserautomationv1.CreateBrowserLiveViewRequest{}
+	if r.ContentLength != 0 && !readProto(w, r, request) {
+		return
+	}
+	if request.SessionId == "" {
+		request.SessionId = strings.TrimSpace(sessionID)
+	}
+	liveView, err := s.service.CreateBrowserLiveView(r.Context(), request)
+	writeProto(w, &browserautomationv1.CreateBrowserLiveViewResponse{LiveView: liveView, Error: core.AutomationError(err)})
+}
+
 func (s *Server) executeTask(w http.ResponseWriter, r *http.Request) {
 	request := &browserautomationv1.ExecuteBrowserCommandsRequest{}
 	if !readProto(w, r, request) {
@@ -114,6 +142,73 @@ func (s *Server) listTasks(w http.ResponseWriter, r *http.Request) {
 	writeProto(w, &browserautomationv1.ListBrowserTasksResponse{Tasks: result.Tasks, NextPageToken: result.NextPageToken, Error: core.AutomationError(err)})
 }
 
+func (s *Server) serveLiveWebSocket(w http.ResponseWriter, r *http.Request, token string) {
+	view, err := s.service.AuthorizeBrowserLiveView(r.Context(), token)
+	if err != nil {
+		writeProto(w, &browserautomationv1.BrowserLiveServerMessage{Error: core.AutomationError(err)})
+		return
+	}
+	upgrader := websocket.Upgrader{CheckOrigin: sameOrigin}
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		return
+	}
+	defer conn.Close()
+	conn.SetReadLimit(maxRequestBodyBytes)
+	errCh := make(chan error, 1)
+	go s.readLiveMessages(r.Context(), conn, view, errCh)
+	ticker := time.NewTicker(liveFrameInterval)
+	defer ticker.Stop()
+	var sequence int64
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case <-errCh:
+			return
+		case <-ticker.C:
+			sequence++
+			ctx, cancel := context.WithTimeout(r.Context(), liveOperationTimeout)
+			frame, captureErr := s.service.CaptureLiveFrame(ctx, view, sequence)
+			cancel()
+			message := &browserautomationv1.BrowserLiveServerMessage{Frame: frame, Error: core.AutomationError(captureErr)}
+			if err := writeWebSocketProto(conn, message); err != nil {
+				return
+			}
+			if captureErr != nil {
+				return
+			}
+		}
+	}
+}
+
+func (s *Server) readLiveMessages(ctx context.Context, conn *websocket.Conn, view *browserautomationv1.BrowserLiveView, errCh chan<- error) {
+	for {
+		_, data, err := conn.ReadMessage()
+		if err != nil {
+			select {
+			case errCh <- err:
+			default:
+			}
+			return
+		}
+		message := &browserautomationv1.BrowserLiveClientMessage{}
+		if err := protojsonx.UnmarshalOptions.Unmarshal(data, message); err != nil || message.GetInput() == nil {
+			continue
+		}
+		dispatchCtx, cancel := context.WithTimeout(ctx, liveOperationTimeout)
+		err = s.service.DispatchLiveInput(dispatchCtx, view, message.GetInput())
+		cancel()
+		if err != nil {
+			select {
+			case errCh <- err:
+			default:
+			}
+			return
+		}
+	}
+}
+
 func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request) {
 	if s.webDir == "" {
 		http.NotFound(w, r)
@@ -138,6 +233,26 @@ func (s *Server) serveStatic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.NotFound(w, r)
+}
+
+func writeWebSocketProto(conn *websocket.Conn, message proto.Message) error {
+	data, err := protojsonx.Marshal(message)
+	if err != nil {
+		return err
+	}
+	return conn.WriteMessage(websocket.TextMessage, data)
+}
+
+func sameOrigin(r *http.Request) bool {
+	origin := r.Header.Get("Origin")
+	if origin == "" {
+		return true
+	}
+	parsed, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	return strings.EqualFold(parsed.Host, r.Host)
 }
 
 func readProto(w http.ResponseWriter, r *http.Request, message proto.Message) bool {
