@@ -3,10 +3,9 @@ package app
 import (
 	"fmt"
 
+	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/core"
-	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
-	commonv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/common/v1"
-	"github.com/byte-v-forge/common-lib/secretref"
+	"github.com/byte-v-forge/browser-automation/internal/platform/secretref"
 )
 
 func validateProfile(profile *core.Profile) error {
@@ -182,7 +181,7 @@ func validateUploadFile(command *browserautomationv1.UploadFileCommand) error {
 	return nil
 }
 
-func validateSecretRefs(field string, refs []*commonv1.SecretRef) error {
+func validateSecretRefs(field string, refs []*browserautomationv1.SecretRef) error {
 	for index, ref := range refs {
 		if err := secretref.Validate(ref); err != nil {
 			return validationError(fmt.Sprintf("%s[%d] is invalid: %s", field, index, err.Error()))

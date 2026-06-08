@@ -1,8 +1,8 @@
 package postgres
 
 import (
+	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/core"
-	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"google.golang.org/protobuf/proto"
 )
 

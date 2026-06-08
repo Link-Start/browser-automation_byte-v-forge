@@ -5,21 +5,21 @@ import (
 	"sort"
 	"strings"
 
-	browserautomationinternalv1 "github.com/byte-v-forge/browser-automation/gen/go/byte/v/forge/browserautomation/private/v1"
+	browserautomationprivatev1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/private/v1"
+	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/v1"
 	"github.com/byte-v-forge/browser-automation/internal/core"
-	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
 	"google.golang.org/protobuf/proto"
 )
 
 type Factory[C any] func(C) (core.Runtime, error)
 
 type Plugin[C any] interface {
-	Config() *browserautomationinternalv1.BrowserRuntimeConfig
+	Config() *browserautomationprivatev1.BrowserRuntimeConfig
 	NewRuntime(C) (core.Runtime, error)
 }
 
 type Definition[C any] struct {
-	RuntimeConfig *browserautomationinternalv1.BrowserRuntimeConfig
+	RuntimeConfig *browserautomationprivatev1.BrowserRuntimeConfig
 	Factory       Factory[C]
 }
 
@@ -54,7 +54,7 @@ func NewRegistry[C any](plugins ...Plugin[C]) (*Registry[C], error) {
 	return registry, nil
 }
 
-func (p definitionPlugin[C]) Config() *browserautomationinternalv1.BrowserRuntimeConfig {
+func (p definitionPlugin[C]) Config() *browserautomationprivatev1.BrowserRuntimeConfig {
 	return cloneConfig(p.definition.RuntimeConfig)
 }
 
@@ -85,11 +85,11 @@ func (r *Registry[C]) NewRuntime(runtimeConfigID string, cfg C) (core.Runtime, e
 	return runtime, nil
 }
 
-func (r *Registry[C]) Descriptors() []*browserautomationinternalv1.BrowserRuntimeConfig {
+func (r *Registry[C]) Descriptors() []*browserautomationprivatev1.BrowserRuntimeConfig {
 	if r == nil {
 		return nil
 	}
-	out := make([]*browserautomationinternalv1.BrowserRuntimeConfig, 0, len(r.ids))
+	out := make([]*browserautomationprivatev1.BrowserRuntimeConfig, 0, len(r.ids))
 	for _, id := range r.ids {
 		out = append(out, r.plugins[id].Config())
 	}
@@ -107,14 +107,14 @@ func (r *Registry[C]) ProfileDefaults() map[string]*browserautomationv1.BrowserP
 	return out
 }
 
-func cloneConfig(config *browserautomationinternalv1.BrowserRuntimeConfig) *browserautomationinternalv1.BrowserRuntimeConfig {
+func cloneConfig(config *browserautomationprivatev1.BrowserRuntimeConfig) *browserautomationprivatev1.BrowserRuntimeConfig {
 	if config == nil {
-		return &browserautomationinternalv1.BrowserRuntimeConfig{}
+		return &browserautomationprivatev1.BrowserRuntimeConfig{}
 	}
-	return proto.Clone(config).(*browserautomationinternalv1.BrowserRuntimeConfig)
+	return proto.Clone(config).(*browserautomationprivatev1.BrowserRuntimeConfig)
 }
 
-func runtimeConfigID(config *browserautomationinternalv1.BrowserRuntimeConfig) string {
+func runtimeConfigID(config *browserautomationprivatev1.BrowserRuntimeConfig) string {
 	return normalizeRuntimeID(config.GetRuntimeConfigId())
 }
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -14,21 +15,24 @@ import (
 	"syscall"
 	"time"
 
+	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/v1"
 	grpcadapter "github.com/byte-v-forge/browser-automation/internal/adapters/grpc"
+	httpadapter "github.com/byte-v-forge/browser-automation/internal/adapters/http"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/repository/postgres"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/runtime/runtimeplugin"
 	"github.com/byte-v-forge/browser-automation/internal/app"
-	"github.com/byte-v-forge/common-lib/envx"
-	browserautomationv1 "github.com/byte-v-forge/common-lib/gen/go/byte/v/forge/contracts/browserautomation/v1"
-	"github.com/byte-v-forge/common-lib/grpchealth"
+	"github.com/byte-v-forge/browser-automation/internal/platform/envx"
+	"github.com/byte-v-forge/browser-automation/internal/platform/grpchealth"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
 )
 
 const (
 	defaultListenAddr           = ":50051"
-	defaultRuntime              = "camoufox"
+	defaultHTTPListenAddr       = ":8080"
+	defaultRuntime              = defaultCamoufoxRuntime
 	defaultMigrationsDir        = "migrations"
+	defaultWebDir               = "webui/dist"
 	defaultArtifactsDir         = "/tmp/browser-automation-artifacts"
 	defaultPostgresMaxConns     = 8
 	defaultConnectTimeout       = 10 * time.Second
@@ -37,11 +41,18 @@ const (
 	defaultCamoufoxStartup      = 30 * time.Second
 	defaultCamoufoxShutdown     = 5 * time.Second
 	defaultCamoufoxTaskTimeout  = 2 * time.Minute
+	defaultCloakBrowserStartup  = 30 * time.Second
+	defaultCloakBrowserShutdown = 5 * time.Second
+	defaultCloakBrowserTask     = 2 * time.Minute
 	defaultCamoufoxWSPathPrefix = "browser-session-"
+	defaultCamoufoxRuntime      = "camoufox"
+	defaultCloakBrowserRuntime  = "cloakbrowser"
 )
 
 type config struct {
 	ListenAddr               string
+	HTTPListenAddr           string
+	WebDir                   string
 	PostgresDSN              string
 	PostgresMaxConns         int32
 	PostgresConnectTimeout   time.Duration
@@ -53,7 +64,7 @@ type config struct {
 	Runtime string
 
 	CamoufoxPythonPath      string
-	CamoufoxArtifactsDir    string
+	ArtifactsDir            string
 	CamoufoxStartupTimeout  time.Duration
 	CamoufoxShutdownTimeout time.Duration
 	CamoufoxTaskTimeout     time.Duration
@@ -61,7 +72,15 @@ type config struct {
 	CamoufoxServerPort      int
 	CamoufoxWSPathPrefix    string
 	CamoufoxExtraEnv        []string
-	CamoufoxProxyRefs       map[string]string
+
+	CloakBrowserPythonPath      string
+	CloakBrowserStartupTimeout  time.Duration
+	CloakBrowserShutdownTimeout time.Duration
+	CloakBrowserTaskTimeout     time.Duration
+	CloakBrowserHeadless        bool
+	CloakBrowserHumanize        bool
+	CloakBrowserExtraEnv        []string
+	ProxyRefs                   map[string]string
 }
 
 func main() {
@@ -114,29 +133,29 @@ func run() error {
 
 	healthServer := grpchealth.RegisterServing(server)
 
-	serveErr := make(chan error, 1)
+	httpServer := &http.Server{
+		Addr:              cfg.HTTPListenAddr,
+		Handler:           httpadapter.NewServer(service, cfg.WebDir),
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
+	serveErr := make(chan error, 2)
 	go func() {
-		slog.Info("browser automation service listening", "addr", cfg.ListenAddr, "runtime", cfg.Runtime)
+		slog.Info("browser automation grpc listening", "addr", cfg.ListenAddr, "runtime", cfg.Runtime)
 		serveErr <- server.Serve(listener)
 	}()
+	if strings.TrimSpace(cfg.HTTPListenAddr) != "" {
+		go func() {
+			slog.Info("browser automation http listening", "addr", cfg.HTTPListenAddr, "web_dir", cfg.WebDir)
+			serveErr <- httpServer.ListenAndServe()
+		}()
+	}
 
 	select {
 	case <-rootCtx.Done():
-		grpchealth.SetNotServing(healthServer)
-		stopped := make(chan struct{})
-		go func() {
-			server.GracefulStop()
-			close(stopped)
-		}()
-		select {
-		case <-stopped:
-			return nil
-		case <-time.After(cfg.ShutdownGrace):
-			server.Stop()
-			return nil
-		}
+		return shutdownServers(server, healthServer, httpServer, cfg.ShutdownGrace)
 	case err := <-serveErr:
-		if errors.Is(err, grpc.ErrServerStopped) {
+		if errors.Is(err, grpc.ErrServerStopped) || errors.Is(err, http.ErrServerClosed) {
 			return nil
 		}
 		return err
@@ -150,6 +169,8 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 	}
 	cfg := config{
 		ListenAddr:               envx.StringDefault("BROWSER_AUTOMATION_LISTEN_ADDR", defaultListenAddr),
+		HTTPListenAddr:           envx.StringDefault("BROWSER_AUTOMATION_HTTP_LISTEN_ADDR", defaultHTTPListenAddr),
+		WebDir:                   envx.StringDefault("BROWSER_AUTOMATION_WEB_DIR", defaultWebDir),
 		PostgresDSN:              envx.String("BROWSER_AUTOMATION_POSTGRES_DSN"),
 		PostgresMaxConns:         int32(envx.Int("BROWSER_AUTOMATION_POSTGRES_MAX_CONNS", defaultPostgresMaxConns)),
 		PostgresConnectTimeout:   envx.DurationSeconds("BROWSER_AUTOMATION_POSTGRES_CONNECT_TIMEOUT_SECONDS", defaultConnectTimeout),
@@ -159,16 +180,23 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 		ShutdownGrace:            envx.DurationSeconds("BROWSER_AUTOMATION_SHUTDOWN_GRACE_SECONDS", defaultShutdownGrace),
 		Runtime:                  strings.ToLower(envx.StringDefault("BROWSER_AUTOMATION_RUNTIME", defaultRuntime)),
 
-		CamoufoxPythonPath:      envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_PYTHON_PATH", "python3"),
-		CamoufoxArtifactsDir:    envx.StringDefault("BROWSER_AUTOMATION_ARTIFACTS_DIR", defaultArtifactsDir),
-		CamoufoxStartupTimeout:  envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_STARTUP_TIMEOUT_SECONDS", defaultCamoufoxStartup),
-		CamoufoxShutdownTimeout: envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_SHUTDOWN_TIMEOUT_SECONDS", defaultCamoufoxShutdown),
-		CamoufoxTaskTimeout:     envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_TASK_TIMEOUT_SECONDS", defaultCamoufoxTaskTimeout),
-		CamoufoxHeadless:        envx.Bool("BROWSER_AUTOMATION_CAMOUFOX_HEADLESS", true),
-		CamoufoxServerPort:      envx.Int("BROWSER_AUTOMATION_CAMOUFOX_SERVER_PORT", 0),
-		CamoufoxWSPathPrefix:    envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_WS_PATH_PREFIX", defaultCamoufoxWSPathPrefix),
-		CamoufoxExtraEnv:        envx.List("BROWSER_AUTOMATION_CAMOUFOX_EXTRA_ENV"),
-		CamoufoxProxyRefs:       proxyRefs,
+		ArtifactsDir:                envx.StringDefault("BROWSER_AUTOMATION_ARTIFACTS_DIR", defaultArtifactsDir),
+		CamoufoxPythonPath:          envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_PYTHON_PATH", "python3"),
+		CamoufoxStartupTimeout:      envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_STARTUP_TIMEOUT_SECONDS", defaultCamoufoxStartup),
+		CamoufoxShutdownTimeout:     envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_SHUTDOWN_TIMEOUT_SECONDS", defaultCamoufoxShutdown),
+		CamoufoxTaskTimeout:         envx.DurationSeconds("BROWSER_AUTOMATION_CAMOUFOX_TASK_TIMEOUT_SECONDS", defaultCamoufoxTaskTimeout),
+		CamoufoxHeadless:            envx.Bool("BROWSER_AUTOMATION_CAMOUFOX_HEADLESS", true),
+		CamoufoxServerPort:          envx.Int("BROWSER_AUTOMATION_CAMOUFOX_SERVER_PORT", 0),
+		CamoufoxWSPathPrefix:        envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_WS_PATH_PREFIX", defaultCamoufoxWSPathPrefix),
+		CamoufoxExtraEnv:            envx.List("BROWSER_AUTOMATION_CAMOUFOX_EXTRA_ENV"),
+		CloakBrowserPythonPath:      envx.StringDefault("BROWSER_AUTOMATION_CLOAK_BROWSER_PYTHON_PATH", "python3"),
+		CloakBrowserStartupTimeout:  envx.DurationSeconds("BROWSER_AUTOMATION_CLOAK_BROWSER_STARTUP_TIMEOUT_SECONDS", defaultCloakBrowserStartup),
+		CloakBrowserShutdownTimeout: envx.DurationSeconds("BROWSER_AUTOMATION_CLOAK_BROWSER_SHUTDOWN_TIMEOUT_SECONDS", defaultCloakBrowserShutdown),
+		CloakBrowserTaskTimeout:     envx.DurationSeconds("BROWSER_AUTOMATION_CLOAK_BROWSER_TASK_TIMEOUT_SECONDS", defaultCloakBrowserTask),
+		CloakBrowserHeadless:        envx.Bool("BROWSER_AUTOMATION_CLOAK_BROWSER_HEADLESS", true),
+		CloakBrowserHumanize:        envx.Bool("BROWSER_AUTOMATION_CLOAK_BROWSER_HUMANIZE", true),
+		CloakBrowserExtraEnv:        envx.List("BROWSER_AUTOMATION_CLOAK_BROWSER_EXTRA_ENV"),
+		ProxyRefs:                   proxyRefs,
 	}
 	if strings.TrimSpace(cfg.PostgresDSN) == "" {
 		return cfg, fmt.Errorf("BROWSER_AUTOMATION_POSTGRES_DSN is required")

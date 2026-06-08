@@ -1,0 +1,35 @@
+{
+  "name": "browser-automation-webui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "proto": "./scripts/generate-proto.sh",
+    "prebuild": "npm run proto",
+    "prelint": "npm run proto",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . && tsc --noEmit",
+    "dev": "vite --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.100.11",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "eslint": "^10.4.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "ts-proto": "^2.11.8",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.60.0",
+    "vite": "^7.3.0"
+  }
+}

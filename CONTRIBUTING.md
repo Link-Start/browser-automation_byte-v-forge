@@ -2,7 +2,7 @@
 
 ## 边界
 
-本仓只接收通用浏览器自动化能力。
+本仓只接收通用浏览器自动化能力、公开 proto 契约、runtime adapter、HTTP/gRPC adapter 和独立 Web UI。
 
 以下内容不进入本仓：
 
@@ -16,6 +16,7 @@
 ```sh
 sh scripts/generate-proto.sh
 OUT_DIR=/tmp/browser-automation-python-proto sh scripts/generate-python-proto.sh
-GOPRIVATE=github.com/byte-v-forge/* GONOSUMDB=github.com/byte-v-forge/* go mod download
+go mod download
 go vet ./...
+cd webui && npm install && npm run lint
 ```

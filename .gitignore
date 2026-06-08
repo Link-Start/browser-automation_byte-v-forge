@@ -1,2 +1,4 @@
 /gen/python/
 **/__pycache__/
+webui/node_modules/
+webui/dist/

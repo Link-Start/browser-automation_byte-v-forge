@@ -3,7 +3,7 @@ package camoufox
 import (
 	"encoding/json"
 
-	"github.com/byte-v-forge/common-lib/proxyurl"
+	"github.com/byte-v-forge/browser-automation/internal/platform/proxyurl"
 )
 
 func encodeOptions(options map[string]any) (string, error) {

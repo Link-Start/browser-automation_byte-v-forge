@@ -1,0 +1,7 @@
+.git
+node_modules
+webui/node_modules
+webui/dist
+gen/python
+.tmp
+.DS_Store

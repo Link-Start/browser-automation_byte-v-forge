@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/byte-v-forge/browser-automation/internal/core"
-	"github.com/byte-v-forge/common-lib/protojsonx"
+	"github.com/byte-v-forge/browser-automation/internal/platform/protojsonx"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
