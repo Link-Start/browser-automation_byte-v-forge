@@ -9,7 +9,7 @@ export function LiveViewRoute() {
   const { token = '' } = useParams();
   const liveView = useLiveViewToken(token);
   if (!token) {
-    return <Navigate replace to={paths.sessions} />;
+    return <Navigate replace to={paths.newSession} />;
   }
   const pending = !liveView.connected && !liveView.error;
   const message = liveView.connected ? 'LiveView 已连接，可直接操作远端浏览器。' : liveView.reconnecting ? 'LiveView 连接中断，正在自动重连。' : '正在连接 LiveView...';
@@ -34,7 +34,7 @@ export function LiveViewRoute() {
         placeholderTitle="正在连接远端浏览器画面"
         targetUrl="about:blank"
       />
-      <p className="route-back"><Link to={paths.sessions}>返回控制台</Link></p>
+      <p className="route-back"><Link to={paths.newSession}>返回控制台</Link></p>
     </main>
   );
 }

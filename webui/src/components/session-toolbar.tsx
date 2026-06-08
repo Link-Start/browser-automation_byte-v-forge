@@ -13,7 +13,6 @@ type SessionToolbarProps = {
 
 export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false, sessionId }: SessionToolbarProps) {
   const [copied, setCopied] = useState(false);
-  const liveReady = Boolean(liveViewUrl);
 
   async function copySessionId() {
     if (!sessionId) return;
@@ -32,10 +31,26 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
         </div>
       </div>
       <div className="session-toolbar-actions">
-        {sessionId ? <Link className="toolbar-link" to={paths.session(sessionId)} title="打开当前会话路由"><Link2 size={15} />会话入口</Link> : null}
-        {liveReady ? <Link className="toolbar-link toolbar-live" to={liveViewUrl || paths.sessions} title="打开独立 LiveView 页面"><ExternalLink size={15} />独立 LiveView</Link> : <span className="toolbar-link toolbar-muted"><Radio size={15} />等待 LiveView</span>}
-        <button className="icon-button" disabled={!sessionId} onClick={copySessionId} title="复制会话 ID" aria-label="复制会话 ID">{copied ? <Check size={16} /> : <Copy size={16} />}</button>
-        {onStop ? <button className="icon-button icon-button-danger" disabled={pending} onClick={onStop} title="停止会话" aria-label="停止会话"><Square size={16} /></button> : null}
+        {sessionId ? (
+          <Link className="toolbar-link" to={paths.sessionLive(sessionId)} title="打开当前会话 Live 路由">
+            <Link2 size={15} />Live 路由
+          </Link>
+        ) : null}
+        {liveViewUrl ? (
+          <Link className="toolbar-link toolbar-live" to={liveViewUrl} title="打开独立 LiveView 页面">
+            <ExternalLink size={15} />独立 LiveView
+          </Link>
+        ) : (
+          <span className="toolbar-link toolbar-muted"><Radio size={15} />等待 LiveView</span>
+        )}
+        <button className="icon-button" disabled={!sessionId} onClick={copySessionId} title="复制会话 ID" aria-label="复制会话 ID">
+          {copied ? <Check size={16} /> : <Copy size={16} />}
+        </button>
+        {onStop ? (
+          <button className="icon-button icon-button-danger" disabled={pending} onClick={onStop} title="停止会话" aria-label="停止会话">
+            <Square size={16} />
+          </button>
+        ) : null}
       </div>
     </section>
   );

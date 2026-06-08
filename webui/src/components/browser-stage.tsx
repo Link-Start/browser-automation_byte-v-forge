@@ -72,7 +72,11 @@ export function BrowserStage(props: BrowserStageProps) {
           role="application"
           tabIndex={0}
         >
-          {props.frame?.image_base64 ? <img alt="Remote browser live frame" className="live-frame" src={`data:${props.frame.content_type};base64,${props.frame.image_base64}`} /> : <Placeholder title={title} preview={preview} />}
+          {props.frame?.image_base64 ? (
+            <img alt="Remote browser live frame" className="live-frame" src={`data:${props.frame.content_type};base64,${props.frame.image_base64}`} />
+          ) : (
+            <Placeholder title={title} preview={preview} />
+          )}
           <div className="control-hint">{props.connected ? '点击画面聚焦；支持键盘输入、粘贴和滚轮。' : '等待 LiveView 连接后即可操作远端浏览器。'}</div>
         </div>
       </div>
@@ -81,5 +85,15 @@ export function BrowserStage(props: BrowserStageProps) {
 }
 
 function Placeholder({ preview, title }: { preview: string; title: string }) {
-  return <><div className="edge-glow" /><div className="viewport-copy"><p className="section-kicker">Isolated Session</p><h2>{title}</h2><p>{preview}</p></div><div className="node-map" aria-hidden="true"><i /><i /><i /><i /></div></>;
+  return (
+    <>
+      <div className="edge-glow" />
+      <div className="viewport-copy">
+        <p className="section-kicker">Isolated Session</p>
+        <h2>{title}</h2>
+        <p>{preview}</p>
+      </div>
+      <div className="node-map" aria-hidden="true"><i /><i /><i /><i /></div>
+    </>
+  );
 }

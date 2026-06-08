@@ -1,26 +1,22 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Navigate, useParams } from 'react-router';
 import { buildQuickCommands, defaultQuickCommand, formatJSON, type QuickCommandOptions } from '../api/defaults';
 import { executeCommands } from '../api/browser-api';
 import { CommandCard } from '../components/command-card';
-import { PageHeader } from '../components/page-header';
 import { ResultCard } from '../components/result-card';
-import { Status } from '../components/status';
 import type { BrowserCommand, BrowserTask, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
 import { validateBrowserCommands } from './command-validation';
-import { paths } from './paths';
+import { SessionPage } from './session-page';
+import { useSessionRoute } from './session-route-layout';
 import { newRequestId } from './session-route-utils';
-import { SessionTabs } from './session-tabs';
 
 export function SessionCommandsRoute() {
-  const { sessionId = '' } = useParams();
+  const { sessionId } = useSessionRoute();
   const [quickCommand, setQuickCommand] = useState(defaultQuickCommand);
   const [commandsText, setCommandsText] = useState(formatJSON(buildQuickCommands(defaultQuickCommand)));
   const [lastTask, setLastTask] = useState<BrowserTask>();
   const commandValidation = validateBrowserCommands(commandsText);
   const execute = useMutation({ mutationFn: handleExecute, onSuccess: (response) => setLastTask(response.task) });
-  if (!sessionId) return <Navigate replace to={paths.sessions} />;
 
   function updateQuickCommand(patch: Partial<QuickCommandOptions>) {
     const next = { ...quickCommand, ...patch };
@@ -36,16 +32,14 @@ export function SessionCommandsRoute() {
   }
 
   return (
-    <main>
-      <PageHeader
-        activeSessionId={sessionId}
-        description="只负责为当前 session 生成并执行 Proto JSON 命令，结果在本页独立展示。"
-        error={execute.error?.message}
-        pending={execute.isPending}
-        title="执行命令"
-      />
-      <SessionTabs sessionId={sessionId} />
-      <Status error={execute.error?.message} message="这里只处理命令执行；实时画面请切到 Live 路由。" />
+    <SessionPage
+      description="只负责为当前 session 生成并执行 Proto JSON 命令，结果在本页独立展示。"
+      error={execute.error?.message}
+      pending={execute.isPending}
+      sessionId={sessionId}
+      statusMessage="这里只处理命令执行；实时画面请切到 Live 路由。"
+      title="执行命令"
+    >
       <div className="layout">
         <CommandCard
           captureScreenshot={quickCommand.captureScreenshot}
@@ -69,7 +63,7 @@ export function SessionCommandsRoute() {
         />
         <ResultCard task={lastTask} />
       </div>
-    </main>
+    </SessionPage>
   );
 }
 

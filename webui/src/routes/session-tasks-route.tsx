@@ -1,32 +1,26 @@
 import { useQuery } from '@tanstack/react-query';
-import { Navigate, useParams } from 'react-router';
 import { listTasks } from '../api/browser-api';
-import { PageHeader } from '../components/page-header';
-import { Status } from '../components/status';
 import { SummaryCard } from '../components/summary-card';
 import { TaskList } from '../components/task-list';
-import { paths } from './paths';
-import { SessionTabs } from './session-tabs';
+import { SessionPage } from './session-page';
+import { useSessionRoute } from './session-route-layout';
 import { summarizeTasks } from './session-route-utils';
 
 export function SessionTasksRoute() {
-  const { sessionId = '' } = useParams();
+  const { sessionId } = useSessionRoute();
   const tasks = useQuery({ queryKey: ['tasks', sessionId], queryFn: () => listTasks(sessionId), refetchInterval: 8000 });
-  if (!sessionId) return <Navigate replace to={paths.sessions} />;
   const taskItems = tasks.data?.tasks || [];
   return (
-    <main>
-      <PageHeader
-        activeSessionId={sessionId}
-        description="当前 session 的任务状态统计和历史列表，不再占用实时浏览器页面空间。"
-        error={tasks.error?.message}
-        pending={tasks.isFetching}
-        title="任务记录"
-      />
-      <SessionTabs sessionId={sessionId} />
-      <Status error={tasks.error?.message} message="任务列表独立展示，避免和浏览器画面、命令表单互相挤压。" />
+    <SessionPage
+      description="当前 session 的任务状态统计和历史列表，不再占用实时浏览器页面空间。"
+      error={tasks.error?.message}
+      pending={tasks.isFetching}
+      sessionId={sessionId}
+      statusMessage="任务列表独立展示，避免和浏览器画面、命令表单互相挤压。"
+      title="任务记录"
+    >
       <SummaryCard {...summarizeTasks(taskItems)} />
       <TaskList sessionId={sessionId} tasks={taskItems} />
-    </main>
+    </SessionPage>
   );
 }

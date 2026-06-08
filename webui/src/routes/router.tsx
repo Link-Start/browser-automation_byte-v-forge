@@ -5,6 +5,7 @@ import { NewSessionRoute } from './new-session-route';
 import { OpenSessionRoute } from './open-session-route';
 import { SessionCommandsRoute } from './session-commands-route';
 import { SessionLiveRoute } from './session-live-route';
+import { SessionRouteLayout } from './session-route-layout';
 import { SessionTasksRoute } from './session-tasks-route';
 import { paths } from './paths';
 
@@ -20,10 +21,16 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate replace to={paths.newSession} /> },
           { path: 'new', Component: NewSessionRoute },
           { path: 'open', Component: OpenSessionRoute },
-          { path: ':sessionId', element: <SessionLiveRedirect /> },
-          { path: ':sessionId/live', Component: SessionLiveRoute },
-          { path: ':sessionId/commands', Component: SessionCommandsRoute },
-          { path: ':sessionId/tasks', Component: SessionTasksRoute }
+          {
+            path: ':sessionId',
+            Component: SessionRouteLayout,
+            children: [
+              { index: true, element: <SessionLiveRedirect /> },
+              { path: 'live', Component: SessionLiveRoute },
+              { path: 'commands', Component: SessionCommandsRoute },
+              { path: 'tasks', Component: SessionTasksRoute }
+            ]
+          }
         ]
       },
       { path: 'live/:token', Component: LiveViewRoute },
