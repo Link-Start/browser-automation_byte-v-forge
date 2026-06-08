@@ -85,9 +85,14 @@ function buildExecuteRequest(sessionId: string, quickCommand: QuickCommandOption
       scenario_key: '',
       security_policy: undefined,
       session_id: sessionId,
-      target_url: quickCommand.targetUrl.trim(),
+      target_url: taskTargetURL(quickCommand, commands),
       task_key: 'webui.quick.commands',
       timeout: '90s'
     }
   };
+}
+
+function taskTargetURL(quickCommand: QuickCommandOptions, commands: BrowserCommand[]) {
+  const navigateURL = commands.find((command) => command.navigate?.url)?.navigate?.url?.trim();
+  return navigateURL || quickCommand.targetUrl.trim();
 }

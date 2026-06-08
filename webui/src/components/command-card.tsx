@@ -36,7 +36,7 @@ export function CommandCard(props: CommandCardProps) {
       <div className="form-grid command-builder">
         <label className="wide">
           目标 URL
-          <input value={props.targetUrl} onChange={(event) => props.onTargetUrlChange(event.target.value)} placeholder="https://example.com" />
+          <input autoComplete="url" inputMode="url" value={props.targetUrl} onChange={(event) => props.onTargetUrlChange(event.target.value)} placeholder="https://example.com" />
         </label>
         <label>
           等待策略
