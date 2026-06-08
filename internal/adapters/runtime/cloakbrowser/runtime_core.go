@@ -32,6 +32,16 @@ func (r *Runtime) DefaultBrowserKind() browserautomationv1.BrowserKind {
 	return browserautomationv1.BrowserKind_BROWSER_KIND_CHROMIUM
 }
 
+func (r *Runtime) ActiveSessionCount() int {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return len(r.sessions)
+}
+
+func (r *Runtime) MaxSessionCount() int {
+	return r.cfg.MaxSessions
+}
+
 func (r *Runtime) StartSession(ctx context.Context, session *core.Session) error {
 	if session == nil {
 		return core.NewError(core.CodeValidationFailed, "session is required", false)
@@ -43,6 +53,10 @@ func (r *Runtime) StartSession(ctx context.Context, session *core.Session) error
 	if existing := r.sessions[session.GetSessionId()]; existing != nil {
 		r.mu.Unlock()
 		return nil
+	}
+	if len(r.sessions) >= r.cfg.MaxSessions {
+		r.mu.Unlock()
+		return core.NewError(core.CodeCapacityUnavailable, "browser session capacity is exhausted", true)
 	}
 	r.mu.Unlock()
 	if err := os.MkdirAll(r.cfg.ArtifactsDir, 0o700); err != nil {
@@ -57,6 +71,10 @@ func (r *Runtime) StartSession(ctx context.Context, session *core.Session) error
 	if existing := r.sessions[session.GetSessionId()]; existing != nil {
 		_ = worker.stop(r.cfg.ShutdownTimeout)
 		return nil
+	}
+	if len(r.sessions) >= r.cfg.MaxSessions {
+		_ = worker.stop(r.cfg.ShutdownTimeout)
+		return core.NewError(core.CodeCapacityUnavailable, "browser session capacity is exhausted", true)
 	}
 	r.sessions[session.GetSessionId()] = &sessionRuntime{sessionID: session.GetSessionId(), worker: worker}
 	return nil

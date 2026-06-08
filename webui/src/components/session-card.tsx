@@ -57,7 +57,7 @@ export function SessionCard(props: SessionCardProps) {
           <Square size={16} />停止会话
         </button>
       </div>
-      <p className="muted">会话 TTL：30 分钟。业务流程应在用完后主动停止，避免长期占用浏览器资源。</p>
+      <p className="muted">会话 TTL：30 分钟。服务端会按 Pod 内存限制保护最大浏览器并发，用完请主动停止。</p>
     </section>
   );
 }

@@ -35,6 +35,7 @@ const (
 	defaultWebDir               = "webui/dist"
 	defaultArtifactsDir         = "/tmp/browser-automation-artifacts"
 	defaultPostgresMaxConns     = 8
+	defaultMaxSessionsEnvValue  = 0
 	defaultConnectTimeout       = 10 * time.Second
 	defaultStatementTimeout     = 10 * time.Second
 	defaultShutdownGrace        = 10 * time.Second
@@ -61,7 +62,8 @@ type config struct {
 	MigrationsDir            string
 	ShutdownGrace            time.Duration
 
-	Runtime string
+	Runtime               string
+	MaxConcurrentSessions int
 
 	CamoufoxPythonPath      string
 	ArtifactsDir            string
@@ -141,7 +143,7 @@ func run() error {
 
 	serveErr := make(chan error, 2)
 	go func() {
-		slog.Info("browser automation grpc listening", "addr", cfg.ListenAddr, "runtime", cfg.Runtime)
+		slog.Info("browser automation grpc listening", "addr", cfg.ListenAddr, "runtime", cfg.Runtime, "max_concurrent_sessions", cfg.MaxConcurrentSessions)
 		serveErr <- server.Serve(listener)
 	}()
 	if strings.TrimSpace(cfg.HTTPListenAddr) != "" {
@@ -179,6 +181,7 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 		MigrationsDir:            envx.StringDefault("BROWSER_AUTOMATION_MIGRATIONS_DIR", defaultMigrationsDir),
 		ShutdownGrace:            envx.DurationSeconds("BROWSER_AUTOMATION_SHUTDOWN_GRACE_SECONDS", defaultShutdownGrace),
 		Runtime:                  strings.ToLower(envx.StringDefault("BROWSER_AUTOMATION_RUNTIME", defaultRuntime)),
+		MaxConcurrentSessions:    envx.Int("BROWSER_AUTOMATION_MAX_CONCURRENT_SESSIONS", defaultMaxSessionsEnvValue),
 
 		ArtifactsDir:                envx.StringDefault("BROWSER_AUTOMATION_ARTIFACTS_DIR", defaultArtifactsDir),
 		CamoufoxPythonPath:          envx.StringDefault("BROWSER_AUTOMATION_CAMOUFOX_PYTHON_PATH", "python3"),
@@ -204,6 +207,10 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 	if cfg.PostgresMaxConns < 1 {
 		return cfg, fmt.Errorf("BROWSER_AUTOMATION_POSTGRES_MAX_CONNS must be positive")
 	}
+	if cfg.MaxConcurrentSessions < 0 {
+		return cfg, fmt.Errorf("BROWSER_AUTOMATION_MAX_CONCURRENT_SESSIONS cannot be negative")
+	}
+	cfg.MaxConcurrentSessions = deriveMaxConcurrentSessions(cfg.MaxConcurrentSessions)
 	if _, ok := runtimeRegistry.Get(cfg.Runtime); !ok {
 		return cfg, fmt.Errorf("unsupported BROWSER_AUTOMATION_RUNTIME %q", cfg.Runtime)
 	}

@@ -14,6 +14,7 @@ import { CommandCard } from '../components/command-card';
 import { PageHeader } from '../components/page-header';
 import { ResultCard } from '../components/result-card';
 import { SessionCard } from '../components/session-card';
+import { SessionToolbar } from '../components/session-toolbar';
 import { Status } from '../components/status';
 import { SummaryCard } from '../components/summary-card';
 import { TaskList } from '../components/task-list';
@@ -99,6 +100,7 @@ export function BrowserConsoleRoute() {
     <main>
       <PageHeader activeSessionId={sessionId} error={error} pending={pending} />
       <Status error={error} />
+      <SessionToolbar connected={liveView.connected} liveViewUrl={liveView.view?.url} sessionId={sessionId} />
       <BrowserStage activeSessionId={sessionId} connected={liveView.connected} error={liveView.error} frame={liveView.frame} onInput={liveView.sendInput} pending={pending} targetUrl={quickCommand.targetUrl} task={lastTask} />
       <SummaryCard {...summary} />
       <div className="layout">

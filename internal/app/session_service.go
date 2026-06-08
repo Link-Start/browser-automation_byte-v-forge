@@ -33,6 +33,9 @@ func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID s
 	if ttl == 0 {
 		ttl = defaultSessionTTL
 	}
+	if err := s.ensureSessionCapacity(); err != nil {
+		return nil, err
+	}
 	now := s.clock.Now()
 	if requestID == "" {
 		requestID = s.ids.NewID("req_")
@@ -128,4 +131,19 @@ func (s *AutomationService) expireSessionIfNeeded(ctx context.Context, session *
 		return nil, err
 	}
 	return session, nil
+}
+
+func (s *AutomationService) ensureSessionCapacity() error {
+	capacity, ok := s.runtime.(core.RuntimeCapacity)
+	if !ok {
+		return nil
+	}
+	maxSessions := capacity.MaxSessionCount()
+	if maxSessions < 1 {
+		return nil
+	}
+	if capacity.ActiveSessionCount() < maxSessions {
+		return nil
+	}
+	return core.NewError(core.CodeCapacityUnavailable, "browser session capacity is exhausted", true)
 }

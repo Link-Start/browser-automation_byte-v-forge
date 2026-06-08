@@ -27,6 +27,7 @@ type Config struct {
 	WSPathPrefix    string
 	ExtraEnv        []string
 	ProxyRefs       map[string]string
+	MaxSessions     int
 }
 
 func (c Config) normalize() (Config, error) {
@@ -56,6 +57,9 @@ func (c Config) normalize() (Config, error) {
 	}
 	if c.TaskTimeout < 0 {
 		return c, errors.New("task timeout cannot be negative")
+	}
+	if c.MaxSessions < 1 {
+		c.MaxSessions = 1
 	}
 	if c.ServerPort < 0 {
 		return c, errors.New("server port cannot be negative")

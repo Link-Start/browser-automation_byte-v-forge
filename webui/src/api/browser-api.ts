@@ -11,16 +11,16 @@ import type {
 const basePath = '/api/browser-automation';
 
 export async function startSession(request: StartBrowserSessionRequest): Promise<StartBrowserSessionResponse> {
-  return postProto(`${basePath}/sessions`, request);
+  return ensureSuccess(await postProto<StartBrowserSessionResponse>(`${basePath}/sessions`, request));
 }
 
 export async function createLiveView(sessionId: string): Promise<CreateBrowserLiveViewResponse> {
-  return postProto(`${basePath}/sessions/${encodeURIComponent(sessionId)}/live`, {
+  return ensureSuccess(await postProto<CreateBrowserLiveViewResponse>(`${basePath}/sessions/${encodeURIComponent(sessionId)}/live`, {
     session_id: sessionId,
     control_enabled: true,
     max_width: 1280,
     max_height: 900
-  });
+  }));
 }
 
 export function liveViewWebSocketPath(token: string) {
@@ -28,14 +28,14 @@ export function liveViewWebSocketPath(token: string) {
 }
 
 export async function stopSession(sessionId: string, reason: string): Promise<StopBrowserSessionResponse> {
-  return postProto(`${basePath}/sessions/${encodeURIComponent(sessionId)}/stop`, {
+  return ensureSuccess(await postProto<StopBrowserSessionResponse>(`${basePath}/sessions/${encodeURIComponent(sessionId)}/stop`, {
     session_id: sessionId,
     reason
-  });
+  }));
 }
 
 export async function executeCommands(request: ExecuteBrowserCommandsRequest): Promise<ExecuteBrowserCommandsResponse> {
-  return postProto(`${basePath}/tasks/execute`, request);
+  return ensureSuccess(await postProto<ExecuteBrowserCommandsResponse>(`${basePath}/tasks/execute`, request));
 }
 
 export async function listTasks(sessionId: string): Promise<ListBrowserTasksResponse> {
@@ -43,7 +43,7 @@ export async function listTasks(sessionId: string): Promise<ListBrowserTasksResp
   if (sessionId.trim()) {
     query.set('session_id', sessionId.trim());
   }
-  return fetchProto(`${basePath}/tasks?${query.toString()}`);
+  return ensureSuccess(await fetchProto<ListBrowserTasksResponse>(`${basePath}/tasks?${query.toString()}`));
 }
 
 async function postProto<T>(path: string, body: unknown): Promise<T> {
@@ -65,4 +65,11 @@ async function readProto<T>(response: Response): Promise<T> {
     throw new Error(text || response.statusText);
   }
   return (text ? JSON.parse(text) : {}) as T;
+}
+
+function ensureSuccess<T extends { error?: { message?: string } }>(response: T): T {
+  if (response.error?.message) {
+    throw new Error(response.error.message);
+  }
+  return response;
 }

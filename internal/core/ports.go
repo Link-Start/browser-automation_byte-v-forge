@@ -34,6 +34,11 @@ type Runtime interface {
 	ExecuteTask(ctx context.Context, task *Task) (TaskExecutionResult, error)
 }
 
+type RuntimeCapacity interface {
+	ActiveSessionCount() int
+	MaxSessionCount() int
+}
+
 type RuntimeLiveView interface {
 	SupportsLiveViewProvider(provider browserautomationv1.BrowserLiveViewProvider) bool
 	CaptureLiveFrame(ctx context.Context, sessionID string, liveView *browserautomationv1.BrowserLiveView, sequence int64) (*browserautomationv1.BrowserLiveFrame, error)

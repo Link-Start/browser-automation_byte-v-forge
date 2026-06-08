@@ -25,6 +25,7 @@ type Config struct {
 	Humanize        bool
 	ExtraEnv        []string
 	ProxyRefs       map[string]string
+	MaxSessions     int
 }
 
 func (c Config) normalize() (Config, error) {
@@ -51,6 +52,9 @@ func (c Config) normalize() (Config, error) {
 	}
 	if c.TaskTimeout < 0 {
 		return c, errors.New("task timeout cannot be negative")
+	}
+	if c.MaxSessions < 1 {
+		c.MaxSessions = 1
 	}
 	if len(c.ProxyRefs) > 0 {
 		refs := make(map[string]string, len(c.ProxyRefs))
