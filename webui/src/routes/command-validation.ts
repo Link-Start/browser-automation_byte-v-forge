@@ -5,6 +5,47 @@ export type CommandValidation = {
   error: string;
 };
 
+const commandOperationFields = [
+  'blur',
+  'clear',
+  'click',
+  'count_elements',
+  'drag',
+  'evaluate',
+  'extract_element',
+  'extract_text',
+  'fill',
+  'focus',
+  'get_attribute',
+  'get_cookies',
+  'get_network_requests',
+  'get_page_state',
+  'get_storage_state',
+  'go_back',
+  'go_forward',
+  'hover',
+  'mouse_click',
+  'mouse_down',
+  'mouse_move',
+  'mouse_up',
+  'navigate',
+  'press',
+  'reload',
+  'screenshot',
+  'scroll',
+  'select_option',
+  'set_checked',
+  'submit_form',
+  'type_text',
+  'upload_file',
+  'wait_for_load_state',
+  'wait_for_network_request',
+  'wait_for_selector',
+  'wait_for_text',
+  'wait_for_timeout',
+  'wait_for_url'
+] as const;
+
 export function validateBrowserCommands(value: string): CommandValidation {
   let parsed: unknown;
   try {
@@ -29,8 +70,18 @@ function invalid(error: string): CommandValidation {
 }
 
 function validateCommand(value: unknown, index: number) {
-  if (!isCommandObject(value) || typeof value.command_key !== 'string' || !value.command_key.trim()) {
+  if (!isCommandObject(value)) {
+    return `第 ${index + 1} 条命令必须是对象。`;
+  }
+  if (typeof value.command_key !== 'string' || !value.command_key.trim()) {
     return `第 ${index + 1} 条命令缺少 command_key。`;
+  }
+  const operationFields = commandOperationFields.filter((field) => value[field] !== undefined);
+  if (operationFields.length === 0) {
+    return `第 ${index + 1} 条命令缺少操作类型。`;
+  }
+  if (operationFields.length > 1) {
+    return `第 ${index + 1} 条命令只能包含一个操作类型。`;
   }
   if (value.navigate !== undefined) {
     return validateNavigation(value.navigate, index);
@@ -48,7 +99,7 @@ function validateNavigation(value: unknown, index: number) {
   return '';
 }
 
-function isCommandObject(value: unknown): value is { command_key?: unknown; navigate?: unknown } {
+function isCommandObject(value: unknown): value is Record<string, unknown> & { command_key?: unknown; navigate?: unknown } {
   return isRecord(value);
 }
 
