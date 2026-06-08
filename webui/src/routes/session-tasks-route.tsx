@@ -26,7 +26,7 @@ export function SessionTasksRoute() {
       <SessionTabs sessionId={sessionId} />
       <Status error={tasks.error?.message} message="任务列表独立展示，避免和浏览器画面、命令表单互相挤压。" />
       <SummaryCard {...summarizeTasks(taskItems)} />
-      <TaskList tasks={taskItems} />
+      <TaskList sessionId={sessionId} tasks={taskItems} />
     </main>
   );
 }
