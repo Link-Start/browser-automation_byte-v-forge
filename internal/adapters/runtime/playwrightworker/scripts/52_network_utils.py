@@ -59,4 +59,4 @@ def now_rfc3339() -> str:
 
 
 def write_json(value: Dict[str, Any]) -> None:
-    print(json.dumps(value, separators=(",", ":")), flush=True)
+    print(json.dumps(value, separators=(",", ":")), file=PROTOCOL_STDOUT, flush=True)

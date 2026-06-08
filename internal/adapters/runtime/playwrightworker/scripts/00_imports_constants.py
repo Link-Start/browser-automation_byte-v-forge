@@ -12,6 +12,9 @@ from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 
 
+PROTOCOL_STDOUT = sys.stdout
+sys.stdout = sys.stderr
+
 ERROR_VALIDATION_FAILED = "validation_failed"
 ERROR_BROWSER_UNAVAILABLE = "browser_unavailable"
 ERROR_NAVIGATION_FAILED = "navigation_failed"
