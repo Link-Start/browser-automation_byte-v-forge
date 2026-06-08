@@ -16,6 +16,7 @@ export function SessionLiveRoute() {
   const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => navigate(paths.sessions) });
   if (!sessionId) return <Navigate replace to={paths.sessions} />;
   const pending = !liveView.connected && !liveView.error;
+  const message = liveView.connected ? 'LiveView 已连接。' : liveView.reconnecting ? 'LiveView 连接中断，正在自动重连。' : '正在连接远端浏览器画面。';
   return (
     <main>
       <PageHeader
@@ -26,7 +27,7 @@ export function SessionLiveRoute() {
         title="实时浏览器"
       />
       <SessionTabs sessionId={sessionId} />
-      <Status error={liveView.error || stop.error?.message} message={liveView.connected ? 'LiveView 已连接。' : '正在连接远端浏览器画面。'} />
+      <Status error={liveView.error || stop.error?.message} message={message} />
       <SessionToolbar connected={liveView.connected} liveViewUrl={liveView.view?.url} onStop={() => stop.mutate()} pending={stop.isPending} sessionId={sessionId} />
       <BrowserStage activeSessionId={sessionId} connected={liveView.connected} error={liveView.error} frame={liveView.frame} onInput={liveView.sendInput} pending={pending} targetUrl="about:blank" />
     </main>

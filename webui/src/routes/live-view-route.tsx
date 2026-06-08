@@ -11,23 +11,25 @@ export function LiveViewRoute() {
   if (!token) {
     return <Navigate replace to={paths.sessions} />;
   }
+  const pending = !liveView.connected && !liveView.error;
+  const message = liveView.connected ? 'LiveView 已连接，可直接操作远端浏览器。' : liveView.reconnecting ? 'LiveView 连接中断，正在自动重连。' : '正在连接 LiveView...';
   return (
     <main>
       <PageHeader
         activeSessionId="LiveView Token"
         description="通过 /live/:token 独立打开远端浏览器画面，便于嵌入或分享临时控制页。"
         error={liveView.error}
-        pending={!liveView.connected && !liveView.error}
+        pending={pending}
         title="独立 LiveView"
       />
-      <Status error={liveView.error} message={liveView.connected ? 'LiveView 已连接，可直接操作远端浏览器。' : '正在连接 LiveView...'} />
+      <Status error={liveView.error} message={message} />
       <BrowserStage
         activeSessionId="LiveView Token"
         connected={liveView.connected}
         error={liveView.error}
         frame={liveView.frame}
         onInput={liveView.sendInput}
-        pending={!liveView.connected && !liveView.error}
+        pending={pending}
         placeholderPreview="该页面由 /live/:token 路由直接进入，WebSocket 连接仍走可替换 LiveView 协议。"
         placeholderTitle="正在连接远端浏览器画面"
         targetUrl="about:blank"
