@@ -92,6 +92,8 @@ textarea { line-height: 1.5; min-height: 260px; resize: vertical; white-space: p
 .primary { background: linear-gradient(135deg, #f97316, #facc15); color: #301106; }
 .secondary { background: rgba(148, 163, 184, .14); border: 1px solid rgba(251, 146, 60, .2); color: #ffedd5; }
 .muted { color: #94a3b8; font-size: 13px; }
+.form-feedback { color: #bbf7d0; font-size: 13px; margin: 12px 0 0; }
+.form-feedback-error { color: #fecaca; }
 .toggle-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .toggle-row label { align-items: center; background: rgba(2, 6, 23, .44); border: 1px solid rgba(251, 146, 60, .16); border-radius: 999px; display: flex; gap: 8px; padding: 9px 12px; }
 .toggle-row input { accent-color: #f97316; height: 15px; width: 15px; }

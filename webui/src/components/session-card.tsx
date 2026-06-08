@@ -1,4 +1,4 @@
-import { Play, Square } from 'lucide-react';
+import { Play } from 'lucide-react';
 import type { BrowserKind } from '../proto/browser/automation/v1/browser_automation';
 import { browserKindLabel, browserKindOptions } from '../api/defaults';
 
@@ -9,12 +9,11 @@ type SessionCardProps = {
   onLocaleChange: (value: string) => void;
   onProxyRefChange: (value: string) => void;
   onStart: () => void;
-  onStop: () => void;
   onTimezoneChange: (value: string) => void;
   pending: boolean;
   proxyRef: string;
-  sessionId: string;
   timezone: string;
+  validationError: string;
 };
 
 export function SessionCard(props: SessionCardProps) {
@@ -50,13 +49,13 @@ export function SessionCard(props: SessionCardProps) {
         </label>
       </div>
       <div className="actions">
-        <button className="primary" disabled={props.pending} onClick={props.onStart}>
+        <button className="primary" disabled={props.pending || Boolean(props.validationError)} onClick={props.onStart}>
           <Play size={16} />启动会话
         </button>
-        <button className="secondary" disabled={props.pending || !props.sessionId} onClick={props.onStop}>
-          <Square size={16} />停止会话
-        </button>
       </div>
+      <p className={props.validationError ? 'form-feedback form-feedback-error' : 'form-feedback'}>
+        {props.validationError || '配置已通过校验，启动后自动进入实时浏览器。'}
+      </p>
       <p className="muted">会话 TTL：30 分钟。服务端会按 Pod 内存限制保护最大浏览器并发，用完请主动停止。</p>
     </section>
   );
