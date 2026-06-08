@@ -1,4 +1,4 @@
-import { Check, Copy, ExternalLink, Link2, Radio } from 'lucide-react';
+import { Check, Copy, ExternalLink, Link2, Radio, Square } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { paths } from '../routes/paths';
@@ -6,10 +6,12 @@ import { paths } from '../routes/paths';
 type SessionToolbarProps = {
   connected: boolean;
   liveViewUrl?: string;
+  onStop?: () => void;
+  pending?: boolean;
   sessionId: string;
 };
 
-export function SessionToolbar({ connected, liveViewUrl, sessionId }: SessionToolbarProps) {
+export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false, sessionId }: SessionToolbarProps) {
   const [copied, setCopied] = useState(false);
   const liveReady = Boolean(liveViewUrl);
 
@@ -26,25 +28,14 @@ export function SessionToolbar({ connected, liveViewUrl, sessionId }: SessionToo
         <span className={connected ? 'live-dot live-dot-on' : 'live-dot'} />
         <div>
           <strong>{sessionId ? '会话已路由化' : '等待启动会话'}</strong>
-          <p>{sessionId ? '刷新 / 复制链接后仍会打开同一个 session 控制台。' : '启动后会自动跳转到 /sessions/:sessionId。'}</p>
+          <p>{sessionId ? '刷新 / 复制链接后仍会打开同一个 session 控制台。' : '启动后会自动跳转到 /sessions/:sessionId/live。'}</p>
         </div>
       </div>
       <div className="session-toolbar-actions">
-        {sessionId ? (
-          <Link className="toolbar-link" to={paths.session(sessionId)} title="打开当前会话路由">
-            <Link2 size={15} />会话路由
-          </Link>
-        ) : null}
-        {liveReady ? (
-          <Link className="toolbar-link toolbar-live" to={liveViewUrl || paths.sessions} title="打开独立 LiveView 页面">
-            <ExternalLink size={15} />独立 LiveView
-          </Link>
-        ) : (
-          <span className="toolbar-link toolbar-muted"><Radio size={15} />等待 LiveView</span>
-        )}
-        <button className="icon-button" disabled={!sessionId} onClick={copySessionId} title="复制会话 ID" aria-label="复制会话 ID">
-          {copied ? <Check size={16} /> : <Copy size={16} />}
-        </button>
+        {sessionId ? <Link className="toolbar-link" to={paths.session(sessionId)} title="打开当前会话路由"><Link2 size={15} />会话入口</Link> : null}
+        {liveReady ? <Link className="toolbar-link toolbar-live" to={liveViewUrl || paths.sessions} title="打开独立 LiveView 页面"><ExternalLink size={15} />独立 LiveView</Link> : <span className="toolbar-link toolbar-muted"><Radio size={15} />等待 LiveView</span>}
+        <button className="icon-button" disabled={!sessionId} onClick={copySessionId} title="复制会话 ID" aria-label="复制会话 ID">{copied ? <Check size={16} /> : <Copy size={16} />}</button>
+        {onStop ? <button className="icon-button icon-button-danger" disabled={pending} onClick={onStop} title="停止会话" aria-label="停止会话"><Square size={16} /></button> : null}
       </div>
     </section>
   );

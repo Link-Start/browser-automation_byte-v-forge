@@ -3,5 +3,9 @@ export const paths = {
   live: (token: string) => `/live/${encodeURIComponent(token)}`,
   liveSocket: (token: string) => `/ws/browser-automation/live/${encodeURIComponent(token)}`,
   sessions: '/sessions',
-  session: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}`
+  newSession: '/sessions/new',
+  session: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}`,
+  sessionCommands: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/commands`,
+  sessionLive: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/live`,
+  sessionTasks: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/tasks`
 };
