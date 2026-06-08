@@ -10,6 +10,11 @@ type LiveViewState = {
   view?: BrowserLiveView;
 };
 
+type LiveServerMessage = {
+  error?: { message?: string };
+  frame?: BrowserLiveFrame;
+};
+
 export function useLiveView(sessionId: string): LiveViewState {
   const [view, setView] = useState<BrowserLiveView>();
   const [socketPath, setSocketPath] = useState('');
@@ -77,7 +82,7 @@ function useBrowserLiveSocket(websocketPath: string): LiveViewState {
     socket.onerror = () => !closed && setError('live view websocket failed');
     socket.onmessage = (event) => {
       if (closed) return;
-      const message = JSON.parse(String(event.data));
+      const message = parseLiveServerMessage(event.data);
       if (message.error?.message) {
         setError(message.error.message);
         return;
@@ -100,6 +105,14 @@ function useBrowserLiveSocket(websocketPath: string): LiveViewState {
   }
 
   return { connected, error, frame, sendInput };
+}
+
+function parseLiveServerMessage(data: unknown): LiveServerMessage {
+  try {
+    return JSON.parse(String(data)) as LiveServerMessage;
+  } catch {
+    return { error: { message: 'live view returned invalid message' } };
+  }
 }
 
 function resolveWebSocketURL(path: string) {
