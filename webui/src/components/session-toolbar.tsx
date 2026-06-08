@@ -14,12 +14,17 @@ type SessionToolbarProps = {
 type CopyState = 'failed' | 'idle' | 'success';
 
 export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false, sessionId }: SessionToolbarProps) {
-  const resetTimerRef = useRef<ReturnType<typeof globalThis.setTimeout> | undefined>(undefined);
+  const copyResetTimerRef = useRef<ReturnType<typeof globalThis.setTimeout> | undefined>(undefined);
+  const stopResetTimerRef = useRef<ReturnType<typeof globalThis.setTimeout> | undefined>(undefined);
   const [copyState, setCopyState] = useState<CopyState>('idle');
+  const [stopConfirming, setStopConfirming] = useState(false);
 
   useEffect(() => () => {
-    if (resetTimerRef.current) {
-      globalThis.clearTimeout(resetTimerRef.current);
+    if (copyResetTimerRef.current) {
+      globalThis.clearTimeout(copyResetTimerRef.current);
+    }
+    if (stopResetTimerRef.current) {
+      globalThis.clearTimeout(stopResetTimerRef.current);
     }
   }, []);
 
@@ -32,15 +37,36 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
     } catch {
       setCopyState('failed');
     }
-    resetTimerRef.current = globalThis.setTimeout(() => setCopyState('idle'), 1800);
+    copyResetTimerRef.current = globalThis.setTimeout(() => setCopyState('idle'), 1800);
+  }
+
+  function requestStopSession() {
+    if (!onStop || pending) return;
+    if (stopConfirming) {
+      clearStopResetTimer();
+      setStopConfirming(false);
+      onStop();
+      return;
+    }
+    clearCopyResetTimer();
+    setCopyState('idle');
+    setStopConfirming(true);
+    stopResetTimerRef.current = globalThis.setTimeout(() => setStopConfirming(false), 3500);
   }
 
   function clearCopyResetTimer() {
-    if (!resetTimerRef.current) return;
-    globalThis.clearTimeout(resetTimerRef.current);
-    resetTimerRef.current = undefined;
+    if (!copyResetTimerRef.current) return;
+    globalThis.clearTimeout(copyResetTimerRef.current);
+    copyResetTimerRef.current = undefined;
   }
 
+  function clearStopResetTimer() {
+    if (!stopResetTimerRef.current) return;
+    globalThis.clearTimeout(stopResetTimerRef.current);
+    stopResetTimerRef.current = undefined;
+  }
+
+  const feedback = toolbarFeedback(copyState, stopConfirming);
   return (
     <section className="session-toolbar" aria-label="会话快捷操作">
       <div className="session-toolbar-main">
@@ -67,13 +93,13 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
           {copyIcon(copyState)}
         </button>
         {onStop ? (
-          <button className="icon-button icon-button-danger" disabled={pending} onClick={onStop} title="停止会话" type="button" aria-label="停止会话">
-            <Square size={16} />
+          <button className={stopConfirming ? 'icon-button icon-button-danger icon-button-confirm' : 'icon-button icon-button-danger'} disabled={pending} onClick={requestStopSession} title={stopButtonLabel(stopConfirming)} type="button" aria-label={stopButtonLabel(stopConfirming)}>
+            {stopConfirming ? <AlertTriangle size={16} /> : <Square size={16} />}
           </button>
         ) : null}
       </div>
-      <span className={copyState === 'failed' ? 'toolbar-feedback toolbar-feedback-error' : 'toolbar-feedback'} role="status" aria-live="polite">
-        {copyFeedback(copyState)}
+      <span className={toolbarFeedbackClass(copyState, stopConfirming)} role="status" aria-live="polite">
+        {feedback}
       </span>
     </section>
   );
@@ -96,6 +122,19 @@ function copyFeedback(state: CopyState) {
   if (state === 'success') return '会话 ID 已复制';
   if (state === 'failed') return '复制失败，请手动复制';
   return '';
+}
+
+function stopButtonLabel(confirming: boolean) {
+  return confirming ? '再次点击停止会话' : '停止会话';
+}
+
+function toolbarFeedback(copyState: CopyState, stopConfirming: boolean) {
+  if (stopConfirming) return '再次点击停止会话，或等待取消。';
+  return copyFeedback(copyState);
+}
+
+function toolbarFeedbackClass(copyState: CopyState, stopConfirming: boolean) {
+  return copyState === 'failed' || stopConfirming ? 'toolbar-feedback toolbar-feedback-error' : 'toolbar-feedback';
 }
 
 function copyIcon(state: CopyState) {
