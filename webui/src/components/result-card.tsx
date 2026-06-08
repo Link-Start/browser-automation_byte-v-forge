@@ -2,7 +2,7 @@ import { Rows3 } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
-import { safeJSONStringify, safeMessage, safeTextPreview } from '../api/safe-json';
+import { safeJSONStringify, safeMessage, safeTextPreview, safeURL } from '../api/safe-json';
 
 type ResultCardProps = {
   task?: BrowserTask;
@@ -11,6 +11,7 @@ type ResultCardProps = {
 
 export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
   const firstResult = task?.results?.[0];
+  const pageLabel = task ? resultPageLabel(task) : '-';
   return (
     <section className="card result-card">
       <div className="card-title">
@@ -23,7 +24,7 @@ export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
       {task ? (
         <div className="result-body">
           <div className="result-line"><span>任务 ID</span><strong title={task.task_id}>{task.task_id}</strong></div>
-          <div className="result-line"><span>页面</span><strong>{firstResult?.title || firstResult?.current_url || task.input?.target_url || '-'}</strong></div>
+          <div className="result-line"><span>页面</span><strong title={pageLabel}>{pageLabel}</strong></div>
           {task.last_error?.message ? <p className="error-box">{safeMessage(task.last_error.message)}</p> : null}
           {firstResult?.text ? <pre className="text-preview">{safeTextPreview(firstResult.text)}</pre> : null}
           <details className="json-editor">
@@ -36,4 +37,13 @@ export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
       ) : <p className="muted empty">执行任务后会在这里展示摘要、脱敏正文预览和脱敏 JSON。</p>}
     </section>
   );
+}
+
+function resultPageLabel(task: BrowserTask) {
+  const firstResult = task.results?.[0];
+  if (firstResult?.title) {
+    return safeMessage(firstResult.title);
+  }
+  const url = firstResult?.current_url || task.input?.target_url || '';
+  return url ? safeURL(url) : '-';
 }

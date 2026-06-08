@@ -2,7 +2,7 @@ import { Code2, MonitorDot } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
-import { safeMessage } from '../api/safe-json';
+import { safeMessage, safeURL } from '../api/safe-json';
 import { paths } from '../routes/paths';
 
 type TaskListProps = {
@@ -36,7 +36,7 @@ export function TaskList({ sessionId, tasks }: TaskListProps) {
             </span>
             <span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
             <span>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</span>
-            <span title={taskURL(task)}>
+            <span title={taskDisplayURL(task)}>
               {taskTitle(task)}
               <small>{taskMeta(task)}</small>
               {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
@@ -62,11 +62,16 @@ function EmptyTasks({ sessionId }: { sessionId: string }) {
 }
 
 function taskTitle(task: BrowserTask) {
-  return task.results?.[0]?.title || taskURL(task) || '-';
+  const title = task.results?.[0]?.title;
+  if (title) {
+    return safeMessage(title);
+  }
+  return taskDisplayURL(task) || '-';
 }
 
-function taskURL(task: BrowserTask) {
-  return task.input?.target_url || task.results?.[0]?.current_url || '';
+function taskDisplayURL(task: BrowserTask) {
+  const url = task.input?.target_url || task.results?.[0]?.current_url || '';
+  return url ? safeURL(url) : '';
 }
 
 function taskMeta(task: BrowserTask) {

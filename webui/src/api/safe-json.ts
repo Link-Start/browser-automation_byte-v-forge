@@ -18,6 +18,10 @@ export function safeMessage(value: string): string {
   return safeText(value, messagePreviewLimit, '…');
 }
 
+export function safeURL(value: string): string {
+  return String(redactURL(value));
+}
+
 function redactJSON(value: unknown): unknown {
   if (Array.isArray(value)) {
     return value.map(redactJSON);

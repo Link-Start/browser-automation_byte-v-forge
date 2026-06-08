@@ -1,6 +1,6 @@
 import type { ClipboardEvent, KeyboardEvent, MouseEvent, WheelEvent } from 'react';
 import { Cloud, LockKeyhole } from 'lucide-react';
-import { safeMessage } from '../api/safe-json';
+import { safeMessage, safeURL } from '../api/safe-json';
 import type { BrowserLiveFrame, BrowserLiveInputEvent } from '../proto/browser/automation/v1/browser_automation';
 import { clickInput, keyboardInput, pasteInput, wheelInput } from './live-input-events';
 
@@ -18,6 +18,7 @@ type BrowserStageProps = {
 
 export function BrowserStage(props: BrowserStageProps) {
   const currentUrl = props.frame?.current_url || props.targetUrl;
+  const displayUrl = safeURL(currentUrl || 'about:blank');
   const title = props.frame?.title || props.placeholderTitle || (props.activeSessionId ? '等待浏览器画面' : '启动一个云端浏览器会话');
   const preview = props.placeholderPreview || 'CDP Live View 会在启动会话后把远端 Chromium 画面推到这里。';
 
@@ -61,7 +62,7 @@ export function BrowserStage(props: BrowserStageProps) {
         </div>
         <div className="address-row">
           <LockKeyhole size={15} />
-          <span title={currentUrl}>{currentUrl || 'about:blank'}</span>
+          <span title={displayUrl}>{displayUrl}</span>
         </div>
         <div
           aria-label="远端浏览器交互画面"
