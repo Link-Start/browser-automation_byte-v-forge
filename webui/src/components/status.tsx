@@ -7,5 +7,5 @@ export function Status({ error, message }: StatusProps) {
   if (!error && !message) {
     return null;
   }
-  return <p className={error ? 'status status-error' : 'status'}>{error || message}</p>;
+  return <p className={error ? 'notice notice-error' : 'notice'}>{error || message}</p>;
 }

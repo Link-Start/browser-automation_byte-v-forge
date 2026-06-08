@@ -1,29 +1,48 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { BrowserKind, type BrowserCommand, type BrowserTask } from './proto/browser/automation/v1/browser_automation';
+import {
+  BrowserKind,
+  BrowserTaskStatus,
+  type BrowserCommand,
+  type BrowserTask
+} from './proto/browser/automation/v1/browser_automation';
 import { executeCommands, listTasks, startSession, stopSession } from './api/browser-api';
-import { defaultCommands, formatJSON } from './api/defaults';
+import { buildQuickCommands, defaultQuickCommand, formatJSON, type QuickCommandOptions } from './api/defaults';
 import { CommandCard } from './components/command-card';
+import { PageHeader } from './components/page-header';
 import { ResultCard } from './components/result-card';
 import { SessionCard } from './components/session-card';
 import { Status } from './components/status';
+import { SummaryCard } from './components/summary-card';
 import { TaskList } from './components/task-list';
 
 export function App() {
   const [browserKind, setBrowserKind] = useState<BrowserKind>(BrowserKind.BROWSER_KIND_CHROMIUM);
-  const [commandsText, setCommandsText] = useState(formatJSON(defaultCommands));
+  const [quickCommand, setQuickCommand] = useState(defaultQuickCommand);
+  const [commandsText, setCommandsText] = useState(formatJSON(buildQuickCommands(defaultQuickCommand)));
   const [lastTask, setLastTask] = useState<BrowserTask>();
   const [locale, setLocale] = useState('en-US');
   const [proxyRef, setProxyRef] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [timezone, setTimezone] = useState('America/New_York');
-  const tasks = useQuery({ queryKey: ['tasks', sessionId], queryFn: () => listTasks(sessionId), enabled: true });
+  const tasks = useQuery({ queryKey: ['tasks', sessionId], queryFn: () => listTasks(sessionId), refetchInterval: 8000 });
   const start = useMutation({ mutationFn: handleStart, onSuccess: (response) => setSessionId(response.session?.session_id || '') });
   const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => setSessionId('') });
   const execute = useMutation({ mutationFn: handleExecute, onSuccess: (response) => setLastTask(response.task) });
   const error = start.error?.message || stop.error?.message || execute.error?.message || tasks.error?.message;
   const pending = start.isPending || stop.isPending || execute.isPending;
   const taskItems = useMemo(() => tasks.data?.tasks || [], [tasks.data?.tasks]);
+  const summary = useMemo(() => summarizeTasks(taskItems), [taskItems]);
+
+  function applyQuickTemplate() {
+    setCommandsText(formatJSON(buildQuickCommands(quickCommand)));
+  }
+
+  function updateQuickCommand(patch: Partial<QuickCommandOptions>) {
+    const next = { ...quickCommand, ...patch };
+    setQuickCommand(next);
+    setCommandsText(formatJSON(buildQuickCommands(next)));
+  }
 
   async function handleStart() {
     return startSession({
@@ -31,14 +50,14 @@ export function App() {
         browser_kind: browserKind,
         locale,
         timezone,
-        proxy_ref: proxyRef,
+        proxy_ref: proxyRef.trim(),
         user_agent: '',
         viewport: undefined,
         storage_state_secret_ref: undefined,
         extra_http_headers: {},
         init_scripts: []
       },
-      request_id: '',
+      request_id: newRequestId('session'),
       ttl: '1800s',
       security_policy: undefined,
       labels: { source: 'standalone-webui' }
@@ -46,18 +65,21 @@ export function App() {
   }
 
   async function handleExecute() {
-    const commands = JSON.parse(commandsText) as BrowserCommand[];
+    if (!sessionId) {
+      throw new Error('请先启动浏览器会话');
+    }
+    const commands = parseCommands(commandsText);
     const response = await executeCommands({
-      request_id: '',
+      request_id: newRequestId('task'),
       input: {
         session_id: sessionId,
-        task_key: 'webui.commands',
+        task_key: 'webui.quick.commands',
         scenario_key: '',
-        target_url: '',
-        timeout: undefined,
+        target_url: quickCommand.targetUrl.trim(),
+        timeout: '90s',
         commands,
         security_policy: undefined,
-        labels: {}
+        labels: { source: 'standalone-webui' }
       }
     });
     await tasks.refetch();
@@ -66,17 +88,12 @@ export function App() {
 
   return (
     <main>
-      <header>
-        <div>
-          <p className="eyebrow">Standalone service</p>
-          <h1>Browser Automation</h1>
-        </div>
-        <Status error={error} message={pending ? 'Request running…' : undefined} />
-      </header>
+      <PageHeader activeSessionId={sessionId} error={error} pending={pending} />
+      <Status error={error} />
+      <SummaryCard {...summary} />
       <div className="layout">
         <SessionCard
           browserKind={browserKind}
-          headlessNote="Runtime is selected by service config"
           locale={locale}
           onBrowserKindChange={setBrowserKind}
           onLocaleChange={setLocale}
@@ -89,10 +106,53 @@ export function App() {
           sessionId={sessionId}
           timezone={timezone}
         />
-        <CommandCard commandsText={commandsText} onChange={setCommandsText} onExecute={() => execute.mutate()} pending={pending} sessionId={sessionId} />
+        <CommandCard
+          captureScreenshot={quickCommand.captureScreenshot}
+          commandsText={commandsText}
+          includeHtml={quickCommand.includeHtml}
+          includeText={quickCommand.includeText}
+          onApplyTemplate={applyQuickTemplate}
+          onCaptureScreenshotChange={(value) => updateQuickCommand({ captureScreenshot: value })}
+          onChange={setCommandsText}
+          onExecute={() => execute.mutate()}
+          onIncludeHtmlChange={(value) => updateQuickCommand({ includeHtml: value })}
+          onIncludeTextChange={(value) => updateQuickCommand({ includeText: value })}
+          onTargetUrlChange={(value) => updateQuickCommand({ targetUrl: value })}
+          onWaitUntilChange={(value) => updateQuickCommand({ waitUntil: value })}
+          pending={pending}
+          sessionId={sessionId}
+          targetUrl={quickCommand.targetUrl}
+          waitUntil={quickCommand.waitUntil}
+        />
         <ResultCard task={lastTask} />
         <TaskList tasks={taskItems} />
       </div>
     </main>
   );
+}
+
+function parseCommands(value: string): BrowserCommand[] {
+  try {
+    const parsed = JSON.parse(value) as BrowserCommand[];
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error('commands 必须是非空数组');
+    }
+    return parsed;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`命令 JSON 解析失败：${message}`, { cause: error });
+  }
+}
+
+function newRequestId(scope: string) {
+  return `${scope}-${globalThis.crypto?.randomUUID?.() || Date.now().toString(36)}`;
+}
+
+function summarizeTasks(tasks: BrowserTask[]) {
+  return {
+    failed: tasks.filter((task) => task.status === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED || task.status === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT).length,
+    running: tasks.filter((task) => task.status === BrowserTaskStatus.BROWSER_TASK_STATUS_RUNNING || task.status === BrowserTaskStatus.BROWSER_TASK_STATUS_QUEUED).length,
+    succeeded: tasks.filter((task) => task.status === BrowserTaskStatus.BROWSER_TASK_STATUS_SUCCEEDED).length,
+    total: tasks.length
+  };
 }
