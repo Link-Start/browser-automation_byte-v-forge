@@ -18,7 +18,13 @@ export function SessionLiveRoute() {
   const pending = !liveView.connected && !liveView.error;
   return (
     <main>
-      <PageHeader activeSessionId={sessionId} error={liveView.error || stop.error?.message} pending={pending || stop.isPending} />
+      <PageHeader
+        activeSessionId={sessionId}
+        description="专注展示 CDP LiveView 画面和输入回放，不混入命令表单与任务列表。"
+        error={liveView.error || stop.error?.message}
+        pending={pending || stop.isPending}
+        title="实时浏览器"
+      />
       <SessionTabs sessionId={sessionId} />
       <Status error={liveView.error || stop.error?.message} message={liveView.connected ? 'LiveView 已连接。' : '正在连接远端浏览器画面。'} />
       <SessionToolbar connected={liveView.connected} liveViewUrl={liveView.view?.url} onStop={() => stop.mutate()} pending={stop.isPending} sessionId={sessionId} />

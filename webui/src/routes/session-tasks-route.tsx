@@ -16,7 +16,13 @@ export function SessionTasksRoute() {
   const taskItems = tasks.data?.tasks || [];
   return (
     <main>
-      <PageHeader activeSessionId={sessionId} error={tasks.error?.message} pending={tasks.isFetching} />
+      <PageHeader
+        activeSessionId={sessionId}
+        description="当前 session 的任务状态统计和历史列表，不再占用实时浏览器页面空间。"
+        error={tasks.error?.message}
+        pending={tasks.isFetching}
+        title="任务记录"
+      />
       <SessionTabs sessionId={sessionId} />
       <Status error={tasks.error?.message} message="任务列表独立展示，避免和浏览器画面、命令表单互相挤压。" />
       <SummaryCard {...summarizeTasks(taskItems)} />

@@ -1,33 +1,61 @@
-import type { ReactNode } from 'react';
-import { Link } from 'react-router';
-import { Code2, MonitorDot, Play, Rows3 } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router';
+import { ArrowRight, Play, Radio } from 'lucide-react';
 import { PageHeader } from '../components/page-header';
-import { Status } from '../components/status';
 import { paths } from './paths';
 
 export function SessionsHomeRoute() {
+  const navigate = useNavigate();
+  const [sessionId, setSessionId] = useState('');
+
+  function openExistingSession(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const normalizedSessionId = sessionId.trim();
+    if (normalizedSessionId) {
+      navigate(paths.sessionLive(normalizedSessionId));
+    }
+  }
+
   return (
     <main>
-      <PageHeader activeSessionId="" pending={false} />
-      <Status message="选择一个入口开始：新建会话后，实时浏览器、命令执行、任务记录会进入各自独立路由。" />
-      <section className="route-cards" aria-label="Browser automation routes">
-        <RouteCard icon={<Play size={22} />} title="新建会话" text="配置浏览器内核、代理、Locale 和时区；启动后跳转到实时浏览器页。" to={paths.newSession} />
-        <RouteCard icon={<MonitorDot size={22} />} title="实时浏览器" text="专注展示 CDP LiveView 画面和输入回放，不再混入命令表单。" />
-        <RouteCard icon={<Code2 size={22} />} title="执行命令" text="为当前 session 生成并执行 Proto JSON 命令，结果独立展示。" />
-        <RouteCard icon={<Rows3 size={22} />} title="任务记录" text="按 session 查看任务列表、状态统计和最近执行结果。" />
+      <PageHeader
+        description="入口页只负责开始或接管会话；Live、命令和任务记录进入 session 子路由，不再堆在首页。"
+        pending={false}
+        title="会话入口"
+      />
+      <section className="entry-grid" aria-label="Session entry actions">
+        <article className="card entry-panel">
+          <span className="entry-icon"><Play size={18} /></span>
+          <div>
+            <p className="section-kicker">Start</p>
+            <h2>新建云端浏览器会话</h2>
+            <p>只进入会话配置页，启动成功后自动跳转到 /sessions/:sessionId/live。</p>
+          </div>
+          <Link className="primary link-button" to={paths.newSession}>
+            新建会话<ArrowRight size={16} />
+          </Link>
+        </article>
+        <form className="card entry-panel" onSubmit={openExistingSession}>
+          <span className="entry-icon"><Radio size={18} /></span>
+          <div>
+            <p className="section-kicker">Resume</p>
+            <h2>接管已有 session</h2>
+            <p>输入 session ID 后直接进入实时浏览器页，再通过页内 tabs 切换命令和任务记录。</p>
+          </div>
+          <label>
+            Session ID
+            <input
+              onChange={(event) => setSessionId(event.target.value)}
+              placeholder="browser-session-id"
+              value={sessionId}
+            />
+          </label>
+          <button className="secondary" disabled={!sessionId.trim()} type="submit">
+            打开 Live 路由<ArrowRight size={16} />
+          </button>
+        </form>
       </section>
     </main>
   );
-}
-
-type RouteCardProps = {
-  icon: ReactNode;
-  text: string;
-  title: string;
-  to?: string;
-};
-
-function RouteCard({ icon, text, title, to }: RouteCardProps) {
-  const body = <><span>{icon}</span><strong>{title}</strong><p>{text}</p></>;
-  return to ? <Link className="route-card route-card-primary" to={to}>{body}</Link> : <div className="route-card">{body}</div>;
 }

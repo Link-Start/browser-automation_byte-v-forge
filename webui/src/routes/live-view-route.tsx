@@ -13,7 +13,13 @@ export function LiveViewRoute() {
   }
   return (
     <main>
-      <PageHeader activeSessionId="LiveView Token" error={liveView.error} pending={!liveView.connected && !liveView.error} />
+      <PageHeader
+        activeSessionId="LiveView Token"
+        description="通过 /live/:token 独立打开远端浏览器画面，便于嵌入或分享临时控制页。"
+        error={liveView.error}
+        pending={!liveView.connected && !liveView.error}
+        title="独立 LiveView"
+      />
       <Status error={liveView.error} message={liveView.connected ? 'LiveView 已连接，可直接操作远端浏览器。' : '正在连接 LiveView...'} />
       <BrowserStage
         activeSessionId="LiveView Token"

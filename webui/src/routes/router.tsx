@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
     path: '/',
     Component: AppShell,
     children: [
-      { index: true, element: <Navigate replace to={paths.sessions} /> },
+      { index: true, element: <Navigate replace to={paths.newSession} /> },
       { path: 'sessions', Component: SessionsHomeRoute },
       { path: 'sessions/new', Component: NewSessionRoute },
       { path: 'sessions/:sessionId', element: <SessionLiveRedirect /> },

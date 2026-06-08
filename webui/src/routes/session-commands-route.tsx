@@ -32,7 +32,13 @@ export function SessionCommandsRoute() {
 
   return (
     <main>
-      <PageHeader activeSessionId={sessionId} error={execute.error?.message} pending={execute.isPending} />
+      <PageHeader
+        activeSessionId={sessionId}
+        description="只负责为当前 session 生成并执行 Proto JSON 命令，结果在本页独立展示。"
+        error={execute.error?.message}
+        pending={execute.isPending}
+        title="执行命令"
+      />
       <SessionTabs sessionId={sessionId} />
       <Status error={execute.error?.message} message="这里只处理命令执行；实时画面请切到 Live 路由。" />
       <div className="layout">

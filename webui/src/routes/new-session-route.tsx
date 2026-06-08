@@ -29,7 +29,13 @@ export function NewSessionRoute() {
 
   return (
     <main>
-      <PageHeader activeSessionId="新会话" error={start.error?.message} pending={start.isPending} />
+      <PageHeader
+        activeSessionId="新会话"
+        description="只处理会话配置和启动，成功后进入实时浏览器子路由。"
+        error={start.error?.message}
+        pending={start.isPending}
+        title="新建会话"
+      />
       <Status error={start.error?.message} message="服务端会根据 Pod 内存限制控制最大浏览器并发。" />
       <div className="single-column">
         <SessionCard browserKind={browserKind} locale={locale} onBrowserKindChange={setBrowserKind} onLocaleChange={setLocale} onProxyRefChange={setProxyRef} onStart={() => start.mutate()} onStop={() => undefined} onTimezoneChange={setTimezone} pending={start.isPending} proxyRef={proxyRef} sessionId="" timezone={timezone} />
