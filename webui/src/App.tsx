@@ -8,6 +8,7 @@ import {
 } from './proto/browser/automation/v1/browser_automation';
 import { executeCommands, listTasks, startSession, stopSession } from './api/browser-api';
 import { buildQuickCommands, defaultQuickCommand, formatJSON, type QuickCommandOptions } from './api/defaults';
+import { BrowserStage } from './components/browser-stage';
 import { CommandCard } from './components/command-card';
 import { PageHeader } from './components/page-header';
 import { ResultCard } from './components/result-card';
@@ -90,6 +91,7 @@ export function App() {
     <main>
       <PageHeader activeSessionId={sessionId} error={error} pending={pending} />
       <Status error={error} />
+      <BrowserStage activeSessionId={sessionId} pending={pending} targetUrl={quickCommand.targetUrl} task={lastTask} />
       <SummaryCard {...summary} />
       <div className="layout">
         <SessionCard
