@@ -16,6 +16,8 @@ type BrowserStageProps = {
   frame?: BrowserLiveFrame;
   onInput: (input: BrowserLiveInputEvent) => void;
   pending: boolean;
+  placeholderPreview?: string;
+  placeholderTitle?: string;
   targetUrl: string;
   task?: BrowserTask;
 };
@@ -23,8 +25,8 @@ type BrowserStageProps = {
 export function BrowserStage(props: BrowserStageProps) {
   const firstResult = props.task?.results?.[0];
   const currentUrl = props.frame?.current_url || firstResult?.current_url || props.task?.input?.target_url || props.targetUrl;
-  const title = props.frame?.title || firstResult?.title || (props.activeSessionId ? '等待浏览器画面' : '启动一个云端浏览器会话');
-  const preview = firstResult?.text || 'CDP Live View 会在启动会话后把远端 Chromium 画面推到这里。';
+  const title = props.frame?.title || firstResult?.title || props.placeholderTitle || (props.activeSessionId ? '等待浏览器画面' : '启动一个云端浏览器会话');
+  const preview = firstResult?.text || props.placeholderPreview || 'CDP Live View 会在启动会话后把远端 Chromium 画面推到这里。';
   return (
     <section className="browser-stage" aria-label="云端浏览器预览">
       <div className="browser-shell">

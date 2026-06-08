@@ -14,7 +14,6 @@ export async function startSession(request: StartBrowserSessionRequest): Promise
   return postProto(`${basePath}/sessions`, request);
 }
 
-
 export async function createLiveView(sessionId: string): Promise<CreateBrowserLiveViewResponse> {
   return postProto(`${basePath}/sessions/${encodeURIComponent(sessionId)}/live`, {
     session_id: sessionId,
@@ -22,6 +21,10 @@ export async function createLiveView(sessionId: string): Promise<CreateBrowserLi
     max_width: 1280,
     max_height: 900
   });
+}
+
+export function liveViewWebSocketPath(token: string) {
+  return `/ws/browser-automation/live/${encodeURIComponent(token)}`;
 }
 
 export async function stopSession(sessionId: string, reason: string): Promise<StopBrowserSessionResponse> {

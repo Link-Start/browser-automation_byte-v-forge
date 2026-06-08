@@ -1,41 +1,47 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import {
   BrowserKind,
   BrowserTaskStatus,
   type BrowserCommand,
   type BrowserTask
-} from './proto/browser/automation/v1/browser_automation';
-import { executeCommands, listTasks, startSession, stopSession } from './api/browser-api';
-import { buildQuickCommands, defaultQuickCommand, formatJSON, type QuickCommandOptions } from './api/defaults';
-import { BrowserStage } from './components/browser-stage';
-import { CommandCard } from './components/command-card';
-import { PageHeader } from './components/page-header';
-import { ResultCard } from './components/result-card';
-import { SessionCard } from './components/session-card';
-import { Status } from './components/status';
-import { SummaryCard } from './components/summary-card';
-import { TaskList } from './components/task-list';
-import { useLiveView } from './hooks/use-live-view';
+} from '../proto/browser/automation/v1/browser_automation';
+import { executeCommands, listTasks, startSession, stopSession } from '../api/browser-api';
+import { buildQuickCommands, defaultQuickCommand, formatJSON, type QuickCommandOptions } from '../api/defaults';
+import { BrowserStage } from '../components/browser-stage';
+import { CommandCard } from '../components/command-card';
+import { PageHeader } from '../components/page-header';
+import { ResultCard } from '../components/result-card';
+import { SessionCard } from '../components/session-card';
+import { Status } from '../components/status';
+import { SummaryCard } from '../components/summary-card';
+import { TaskList } from '../components/task-list';
+import { useLiveView } from '../hooks/use-live-view';
+import { paths } from './paths';
 
-export function App() {
+export function BrowserConsoleRoute() {
+  const navigate = useNavigate();
+  const { sessionId: routeSessionId = '' } = useParams();
+  const sessionId = routeSessionId.trim();
   const [browserKind, setBrowserKind] = useState<BrowserKind>(BrowserKind.BROWSER_KIND_CHROMIUM);
   const [quickCommand, setQuickCommand] = useState(defaultQuickCommand);
   const [commandsText, setCommandsText] = useState(formatJSON(buildQuickCommands(defaultQuickCommand)));
   const [lastTask, setLastTask] = useState<BrowserTask>();
   const [locale, setLocale] = useState('en-US');
   const [proxyRef, setProxyRef] = useState('');
-  const [sessionId, setSessionId] = useState('');
   const [timezone, setTimezone] = useState('America/New_York');
   const tasks = useQuery({ queryKey: ['tasks', sessionId], queryFn: () => listTasks(sessionId), refetchInterval: 8000 });
   const liveView = useLiveView(sessionId);
-  const start = useMutation({ mutationFn: handleStart, onSuccess: (response) => setSessionId(response.session?.session_id || '') });
-  const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => setSessionId('') });
+  const start = useMutation({ mutationFn: handleStart, onSuccess: (response) => response.session?.session_id && navigate(paths.session(response.session.session_id)) });
+  const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => navigate(paths.sessions) });
   const execute = useMutation({ mutationFn: handleExecute, onSuccess: (response) => setLastTask(response.task) });
   const error = start.error?.message || stop.error?.message || execute.error?.message || tasks.error?.message || liveView.error;
   const pending = start.isPending || stop.isPending || execute.isPending;
   const taskItems = useMemo(() => tasks.data?.tasks || [], [tasks.data?.tasks]);
   const summary = useMemo(() => summarizeTasks(taskItems), [taskItems]);
+
+  useEffect(() => setLastTask(undefined), [sessionId]);
 
   function applyQuickTemplate() {
     setCommandsText(formatJSON(buildQuickCommands(quickCommand)));
