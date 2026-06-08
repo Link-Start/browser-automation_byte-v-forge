@@ -97,6 +97,8 @@ textarea { line-height: 1.5; min-height: 260px; resize: vertical; white-space: p
 .toggle-row input { accent-color: #f97316; height: 15px; width: 15px; }
 .json-editor { margin-top: 16px; }
 .json-editor summary { align-items: center; color: #fed7aa; cursor: pointer; display: inline-flex; font-size: 13px; font-weight: 900; gap: 8px; margin-bottom: 10px; }
+.json-feedback { color: #bbf7d0; font-size: 13px; margin: 10px 2px 0; }
+.json-feedback-error { color: #fecaca; }
 pre { background: rgba(2, 6, 23, .78); border: 1px solid rgba(251, 146, 60, .12); border-radius: 16px; color: #ffedd5; max-height: 360px; overflow: auto; padding: 14px; }
 .result-body { display: grid; gap: 12px; }
 .result-line { background: rgba(2, 6, 23, .42); border: 1px solid rgba(251, 146, 60, .1); border-radius: 14px; display: grid; gap: 6px; padding: 12px; }

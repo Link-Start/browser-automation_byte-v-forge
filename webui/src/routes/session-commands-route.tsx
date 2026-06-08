@@ -8,6 +8,7 @@ import { PageHeader } from '../components/page-header';
 import { ResultCard } from '../components/result-card';
 import { Status } from '../components/status';
 import type { BrowserCommand, BrowserTask, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
+import { validateBrowserCommands } from './command-validation';
 import { paths } from './paths';
 import { newRequestId } from './session-route-utils';
 import { SessionTabs } from './session-tabs';
@@ -17,6 +18,7 @@ export function SessionCommandsRoute() {
   const [quickCommand, setQuickCommand] = useState(defaultQuickCommand);
   const [commandsText, setCommandsText] = useState(formatJSON(buildQuickCommands(defaultQuickCommand)));
   const [lastTask, setLastTask] = useState<BrowserTask>();
+  const commandValidation = validateBrowserCommands(commandsText);
   const execute = useMutation({ mutationFn: handleExecute, onSuccess: (response) => setLastTask(response.task) });
   if (!sessionId) return <Navigate replace to={paths.sessions} />;
 
@@ -27,7 +29,10 @@ export function SessionCommandsRoute() {
   }
 
   async function handleExecute() {
-    return executeCommands(buildExecuteRequest(sessionId, quickCommand, commandsText));
+    if (commandValidation.error) {
+      throw new Error(commandValidation.error);
+    }
+    return executeCommands(buildExecuteRequest(sessionId, quickCommand, commandValidation.commands));
   }
 
   return (
@@ -44,6 +49,7 @@ export function SessionCommandsRoute() {
       <div className="layout">
         <CommandCard
           captureScreenshot={quickCommand.captureScreenshot}
+          commandCount={commandValidation.commands.length}
           commandsText={commandsText}
           includeHtml={quickCommand.includeHtml}
           includeText={quickCommand.includeText}
@@ -58,6 +64,7 @@ export function SessionCommandsRoute() {
           pending={execute.isPending}
           sessionId={sessionId}
           targetUrl={quickCommand.targetUrl}
+          validationError={commandValidation.error}
           waitUntil={quickCommand.waitUntil}
         />
         <ResultCard task={lastTask} />
@@ -66,11 +73,11 @@ export function SessionCommandsRoute() {
   );
 }
 
-function buildExecuteRequest(sessionId: string, quickCommand: QuickCommandOptions, commandsText: string): ExecuteBrowserCommandsRequest {
+function buildExecuteRequest(sessionId: string, quickCommand: QuickCommandOptions, commands: BrowserCommand[]): ExecuteBrowserCommandsRequest {
   return {
     request_id: newRequestId('task'),
     input: {
-      commands: parseCommands(commandsText),
+      commands,
       labels: { source: 'standalone-webui' },
       scenario_key: '',
       security_policy: undefined,
@@ -80,15 +87,4 @@ function buildExecuteRequest(sessionId: string, quickCommand: QuickCommandOption
       timeout: '90s'
     }
   };
-}
-
-function parseCommands(value: string): BrowserCommand[] {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(value) as unknown;
-  } catch {
-    throw new Error('命令 JSON 格式不正确，请检查括号、逗号和引号。');
-  }
-  if (!Array.isArray(parsed) || parsed.length === 0) throw new Error('commands 必须是非空数组');
-  return parsed as BrowserCommand[];
 }

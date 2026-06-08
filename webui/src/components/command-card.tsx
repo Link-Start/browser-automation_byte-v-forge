@@ -4,6 +4,7 @@ import { waitUntilLabel, waitUntilOptions } from '../api/defaults';
 
 type CommandCardProps = {
   captureScreenshot: boolean;
+  commandCount: number;
   commandsText: string;
   includeHtml: boolean;
   includeText: boolean;
@@ -18,6 +19,7 @@ type CommandCardProps = {
   pending: boolean;
   sessionId: string;
   targetUrl: string;
+  validationError: string;
   waitUntil: BrowserNavigationWaitUntil;
 };
 
@@ -54,13 +56,16 @@ export function CommandCard(props: CommandCardProps) {
         <button className="secondary" onClick={props.onApplyTemplate}>
           <Wand2 size={16} />生成命令
         </button>
-        <button className="primary" disabled={props.pending || !props.sessionId} onClick={props.onExecute}>
+        <button className="primary" disabled={props.pending || !props.sessionId || Boolean(props.validationError)} onClick={props.onExecute}>
           <PlayCircle size={16} />执行
         </button>
       </div>
       <details className="json-editor" open>
         <summary><Code2 size={15} />高级 JSON</summary>
         <textarea spellCheck={false} value={props.commandsText} onChange={(event) => props.onChange(event.target.value)} aria-label="Browser commands JSON" />
+        <p className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'}>
+          {props.validationError || `${props.commandCount} 条命令已通过校验。`}
+        </p>
       </details>
     </section>
   );
