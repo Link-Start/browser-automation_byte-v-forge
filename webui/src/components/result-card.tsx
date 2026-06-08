@@ -2,7 +2,7 @@ import { Rows3 } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
-import { safeJSONStringify, safeTextPreview } from '../api/safe-json';
+import { safeJSONStringify, safeMessage, safeTextPreview } from '../api/safe-json';
 
 type ResultCardProps = {
   task?: BrowserTask;
@@ -24,7 +24,7 @@ export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
         <div className="result-body">
           <div className="result-line"><span>任务 ID</span><strong title={task.task_id}>{task.task_id}</strong></div>
           <div className="result-line"><span>页面</span><strong>{firstResult?.title || firstResult?.current_url || task.input?.target_url || '-'}</strong></div>
-          {task.last_error?.message ? <p className="error-box">{task.last_error.message}</p> : null}
+          {task.last_error?.message ? <p className="error-box">{safeMessage(task.last_error.message)}</p> : null}
           {firstResult?.text ? <pre className="text-preview">{safeTextPreview(firstResult.text)}</pre> : null}
           <details className="json-editor">
             <summary>脱敏 Proto JSON</summary>

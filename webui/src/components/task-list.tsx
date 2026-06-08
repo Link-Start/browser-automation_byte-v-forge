@@ -2,6 +2,7 @@ import { Code2, MonitorDot } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
+import { safeMessage } from '../api/safe-json';
 import { paths } from '../routes/paths';
 
 type TaskListProps = {
@@ -38,7 +39,7 @@ export function TaskList({ sessionId, tasks }: TaskListProps) {
             <span title={taskURL(task)}>
               {taskTitle(task)}
               <small>{taskMeta(task)}</small>
-              {task.last_error?.message ? <em>{task.last_error.message}</em> : null}
+              {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
             </span>
             <span className="task-actions">
               <Link className="mini-link" to={paths.sessionLive(sessionId)} title="打开实时浏览器"><MonitorDot size={14} />Live</Link>

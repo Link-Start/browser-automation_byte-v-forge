@@ -1,4 +1,5 @@
 import { Activity, Bot, Loader2 } from 'lucide-react';
+import { safeMessage } from '../api/safe-json';
 
 type PageHeaderProps = {
   activeSessionId?: string;
@@ -22,7 +23,7 @@ export function PageHeader({ activeSessionId, description, error, pending, title
       <div className="hero-state">
         <div className={error ? 'state-pill state-error' : 'state-pill'}>
           {pending ? <Loader2 className="spin" size={16} /> : <Activity size={16} />}
-          <span>{error || (pending ? '请求处理中' : '服务可用')}</span>
+          <span>{error ? safeMessage(error) : pending ? '请求处理中' : '服务可用'}</span>
         </div>
         {activeSessionId ? <p className="session-chip">当前会话：{activeSessionId}</p> : null}
       </div>

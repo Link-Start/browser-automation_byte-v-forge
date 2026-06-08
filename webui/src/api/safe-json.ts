@@ -1,4 +1,5 @@
 const redactedValue = '[已隐藏]';
+const messagePreviewLimit = 700;
 const textPreviewLimit = 4_000;
 const sensitiveInlinePattern = /\b(authorization|cookie|credential|password|secret|token|api[_-]?key)\b\s*([:=])\s*["']?[^"'\s,;]+["']?/gi;
 const sensitiveKeyPattern = /(authorization|cookie|credential|password|proxy_ref|secret|storage_state|token|api[_-]?key)/i;
@@ -10,11 +11,11 @@ export function safeJSONStringify(value: unknown): string {
 }
 
 export function safeTextPreview(value: string): string {
-  const redacted = redactInlineSecrets(redactURLsInText(value));
-  if (redacted.length <= textPreviewLimit) {
-    return redacted;
-  }
-  return `${redacted.slice(0, textPreviewLimit)}\n…已截断，避免长正文影响页面性能。`;
+  return safeText(value, textPreviewLimit, '\n…已截断，避免长正文影响页面性能。');
+}
+
+export function safeMessage(value: string): string {
+  return safeText(value, messagePreviewLimit, '…');
 }
 
 function redactJSON(value: unknown): unknown {
@@ -34,6 +35,14 @@ function redactJSON(value: unknown): unknown {
 
 function isSensitiveKey(key: string) {
   return sensitiveKeyPattern.test(key);
+}
+
+function safeText(value: string, limit: number, suffix: string) {
+  const redacted = redactInlineSecrets(redactURLsInText(value));
+  if (redacted.length <= limit) {
+    return redacted;
+  }
+  return `${redacted.slice(0, limit)}${suffix}`;
 }
 
 function redactInlineSecrets(value: string) {

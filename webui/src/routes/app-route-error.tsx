@@ -1,5 +1,6 @@
 import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
 import { Link, useRouteError } from 'react-router';
+import { safeMessage } from '../api/safe-json';
 import { paths } from './paths';
 
 export function AppRouteError() {
@@ -27,10 +28,10 @@ export function AppRouteError() {
 
 function routeErrorMessage(error: unknown) {
   if (error instanceof Error && error.message) {
-    return error.message;
+    return safeMessage(error.message);
   }
   if (isRouteError(error)) {
-    return error.statusText || `请求失败：${error.status}`;
+    return error.statusText ? safeMessage(error.statusText) : `请求失败：${error.status}`;
   }
   return '未知错误，请刷新页面后重试。';
 }

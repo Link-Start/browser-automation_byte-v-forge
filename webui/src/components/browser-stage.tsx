@@ -1,5 +1,6 @@
 import type { ClipboardEvent, KeyboardEvent, MouseEvent, WheelEvent } from 'react';
 import { Cloud, LockKeyhole } from 'lucide-react';
+import { safeMessage } from '../api/safe-json';
 import type { BrowserLiveFrame, BrowserLiveInputEvent } from '../proto/browser/automation/v1/browser_automation';
 import { clickInput, keyboardInput, pasteInput, wheelInput } from './live-input-events';
 
@@ -56,7 +57,7 @@ export function BrowserStage(props: BrowserStageProps) {
         <div className="browser-topbar">
           <div className="window-dots"><span /><span /><span /></div>
           <div className="browser-tab"><Cloud size={14} />Remote Browser</div>
-          <div className="stage-status tone-muted">{props.error || (props.connected ? 'live' : props.pending ? 'starting' : 'ready')}</div>
+          <div className="stage-status tone-muted">{props.error ? safeMessage(props.error) : props.connected ? 'live' : props.pending ? 'starting' : 'ready'}</div>
         </div>
         <div className="address-row">
           <LockKeyhole size={15} />
