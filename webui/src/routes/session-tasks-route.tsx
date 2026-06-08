@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { listTasks } from '../api/browser-api';
+import { browserQueryKeys } from '../api/query-keys';
 import { SummaryCard } from '../components/summary-card';
 import { TaskList } from '../components/task-list';
 import { SessionPage } from './session-page';
@@ -8,7 +9,7 @@ import { summarizeTasks } from './session-route-utils';
 
 export function SessionTasksRoute() {
   const { sessionId } = useSessionRoute();
-  const tasks = useQuery({ queryKey: ['tasks', sessionId], queryFn: () => listTasks(sessionId), refetchInterval: 8000 });
+  const tasks = useQuery({ queryKey: browserQueryKeys.tasks(sessionId), queryFn: () => listTasks(sessionId), refetchInterval: 8000 });
   const taskItems = tasks.data?.tasks || [];
   return (
     <SessionPage

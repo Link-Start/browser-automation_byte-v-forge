@@ -1,22 +1,31 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { buildQuickCommands, defaultQuickCommand, formatJSON, type QuickCommandOptions } from '../api/defaults';
 import { executeCommands } from '../api/browser-api';
+import { browserQueryKeys } from '../api/query-keys';
 import { CommandCard } from '../components/command-card';
 import { ResultCard } from '../components/result-card';
 import type { BrowserCommand, BrowserTask, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
 import { validateBrowserCommands } from './command-validation';
+import { paths } from './paths';
 import { SessionPage } from './session-page';
 import { useSessionRoute } from './session-route-layout';
 import { newRequestId } from './session-route-utils';
 
 export function SessionCommandsRoute() {
   const { sessionId } = useSessionRoute();
+  const queryClient = useQueryClient();
   const [quickCommand, setQuickCommand] = useState(defaultQuickCommand);
   const [commandsText, setCommandsText] = useState(formatJSON(buildQuickCommands(defaultQuickCommand)));
   const [lastTask, setLastTask] = useState<BrowserTask>();
   const commandValidation = validateBrowserCommands(commandsText);
-  const execute = useMutation({ mutationFn: handleExecute, onSuccess: (response) => setLastTask(response.task) });
+  const execute = useMutation({
+    mutationFn: handleExecute,
+    onSuccess: async (response) => {
+      setLastTask(response.task);
+      await queryClient.invalidateQueries({ queryKey: browserQueryKeys.tasks(sessionId) });
+    }
+  });
 
   function updateQuickCommand(patch: Partial<QuickCommandOptions>) {
     const next = { ...quickCommand, ...patch };
@@ -61,7 +70,7 @@ export function SessionCommandsRoute() {
           validationError={commandValidation.error}
           waitUntil={quickCommand.waitUntil}
         />
-        <ResultCard task={lastTask} />
+        <ResultCard task={lastTask} taskHistoryPath={paths.sessionTasks(sessionId)} />
       </div>
     </SessionPage>
   );

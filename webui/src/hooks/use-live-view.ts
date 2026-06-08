@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { createLiveView, liveViewWebSocketPath } from '../api/browser-api';
+import { browserQueryKeys } from '../api/query-keys';
 import type { BrowserLiveView } from '../proto/browser/automation/v1/browser_automation';
 import { type LiveViewState, useBrowserLiveSocket } from './use-browser-live-socket';
 
@@ -7,7 +8,7 @@ export function useLiveView(sessionId: string): LiveViewState {
   const liveView = useQuery({
     enabled: Boolean(sessionId),
     queryFn: () => createSessionLiveView(sessionId),
-    queryKey: ['browser-live-view', sessionId],
+    queryKey: browserQueryKeys.liveView(sessionId),
     retry: 1,
     staleTime: 60_000
   });

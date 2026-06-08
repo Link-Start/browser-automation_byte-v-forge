@@ -1,12 +1,15 @@
+import { Rows3 } from 'lucide-react';
+import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
 import { safeJSONStringify } from '../api/safe-json';
 
 type ResultCardProps = {
   task?: BrowserTask;
+  taskHistoryPath?: string;
 };
 
-export function ResultCard({ task }: ResultCardProps) {
+export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
   const firstResult = task?.results?.[0];
   return (
     <section className="card result-card">
@@ -28,6 +31,7 @@ export function ResultCard({ task }: ResultCardProps) {
             <p className="json-feedback">Cookie、token、secret、凭据和代理引用会在展示前隐藏。</p>
             <pre>{safeJSONStringify(task)}</pre>
           </details>
+          {taskHistoryPath ? <Link className="mini-link" to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link> : null}
         </div>
       ) : <p className="muted empty">执行任务后会在这里展示摘要、正文预览和脱敏 JSON。</p>}
     </section>
