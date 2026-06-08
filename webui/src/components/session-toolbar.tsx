@@ -43,11 +43,11 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
         ) : (
           <span className="toolbar-link toolbar-muted"><Radio size={15} />等待 LiveView</span>
         )}
-        <button className="icon-button" disabled={!sessionId} onClick={copySessionId} title="复制会话 ID" aria-label="复制会话 ID">
+        <button className="icon-button" disabled={!sessionId} onClick={copySessionId} title="复制会话 ID" type="button" aria-label="复制会话 ID">
           {copied ? <Check size={16} /> : <Copy size={16} />}
         </button>
         {onStop ? (
-          <button className="icon-button icon-button-danger" disabled={pending} onClick={onStop} title="停止会话" aria-label="停止会话">
+          <button className="icon-button icon-button-danger" disabled={pending} onClick={onStop} title="停止会话" type="button" aria-label="停止会话">
             <Square size={16} />
           </button>
         ) : null}

@@ -1,4 +1,4 @@
-import { Code2, MonitorDot } from 'lucide-react';
+import { Code2, MonitorDot, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
 import { statusLabel, statusTone } from '../api/defaults';
@@ -6,11 +6,14 @@ import { safeMessage, safeURL } from '../api/safe-json';
 import { paths } from '../routes/paths';
 
 type TaskListProps = {
+  lastUpdatedAt?: number;
+  onRefresh?: () => void;
+  refreshing?: boolean;
   sessionId: string;
   tasks: BrowserTask[];
 };
 
-export function TaskList({ sessionId, tasks }: TaskListProps) {
+export function TaskList({ lastUpdatedAt, onRefresh, refreshing = false, sessionId, tasks }: TaskListProps) {
   return (
     <section className="card task-card">
       <div className="card-title">
@@ -18,8 +21,16 @@ export function TaskList({ sessionId, tasks }: TaskListProps) {
           <p className="section-kicker">History</p>
           <h2>任务记录</h2>
         </div>
-        <span>{tasks.length} 条</span>
+        <div className="card-title-actions">
+          <span>{tasks.length} 条</span>
+          {onRefresh ? (
+            <button className="icon-button card-icon-button" disabled={refreshing} onClick={onRefresh} title="刷新任务记录" type="button" aria-label="刷新任务记录">
+              <RefreshCcw className={refreshing ? 'spin' : undefined} size={16} />
+            </button>
+          ) : null}
+        </div>
       </div>
+      {lastUpdatedAt ? <p className="muted task-updated">上次刷新：{formatTaskTime(new Date(lastUpdatedAt).toISOString())}</p> : null}
       <div className="table">
         <div className="table-row task-row table-head">
           <span>任务</span>

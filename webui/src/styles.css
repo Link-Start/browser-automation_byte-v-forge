@@ -88,6 +88,8 @@ main { margin: 0 auto; outline: none; padding: 34px 0 46px; position: relative; 
 .card-title { align-items: flex-start; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 18px; }
 .card-title h2 { font-size: 20px; margin: 4px 0 0; }
 .card-title span { color: #94a3b8; font-size: 13px; text-align: right; }
+.card-title-actions { align-items: center; display: flex; gap: 10px; justify-content: flex-end; }
+.card-icon-button { height: 36px; width: 36px; }
 .section-kicker { color: #fb923c; font-size: 12px; font-weight: 950; letter-spacing: .12em; margin: 0; text-transform: uppercase; }
 .form-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .wide { grid-column: 1 / -1; }
@@ -106,6 +108,7 @@ textarea { line-height: 1.5; min-height: 260px; resize: vertical; white-space: p
 .toggle-row input { accent-color: #f97316; height: 15px; width: 15px; }
 .json-editor { margin-top: 16px; }
 .json-editor summary { align-items: center; color: #fed7aa; cursor: pointer; display: inline-flex; font-size: 13px; font-weight: 900; gap: 8px; margin-bottom: 10px; }
+.summary-hint { color: #94a3b8; font-size: 12px; font-weight: 800; }
 .json-feedback { color: #bbf7d0; font-size: 13px; margin: 10px 2px 0; }
 .json-feedback-error { color: #fecaca; }
 pre { background: rgba(2, 6, 23, .78); border: 1px solid rgba(251, 146, 60, .12); border-radius: 16px; color: #ffedd5; max-height: 360px; overflow: auto; padding: 14px; }
@@ -124,6 +127,7 @@ pre { background: rgba(2, 6, 23, .78); border: 1px solid rgba(251, 146, 60, .12)
 .task-row small { color: #94a3b8; font-size: 12px; margin-top: 4px; }
 .task-row em { color: #fecaca; font-size: 12px; font-style: normal; margin-top: 4px; }
 .task-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.task-updated { margin: -8px 0 14px; }
 .mini-link { align-items: center; background: rgba(148, 163, 184, .12); border: 1px solid rgba(251, 146, 60, .14); border-radius: 999px; color: #fed7aa; display: inline-flex; font-size: 12px; font-weight: 900; gap: 6px; padding: 7px 9px; text-decoration: none; }
 .mini-link:hover, .empty a:hover { color: #fff7ed; }
 .status-chip, .stage-status { border-radius: 999px; display: inline-flex; font-size: 12px; font-weight: 850; justify-content: center; padding: 5px 9px; width: fit-content; }

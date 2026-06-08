@@ -53,19 +53,19 @@ export function CommandCard(props: CommandCardProps) {
         <label><input checked={props.captureScreenshot} type="checkbox" onChange={(event) => props.onCaptureScreenshotChange(event.target.checked)} />全页截图</label>
       </div>
       <div className="actions">
-        <button className="secondary" onClick={props.onApplyTemplate}>
+        <button className="secondary" onClick={props.onApplyTemplate} type="button">
           <Wand2 size={16} />生成命令
         </button>
-        <button className="primary" disabled={props.pending || !props.sessionId || Boolean(props.validationError)} onClick={props.onExecute}>
+        <button className="primary" disabled={props.pending || !props.sessionId || Boolean(props.validationError)} onClick={props.onExecute} type="button">
           <PlayCircle size={16} />执行
         </button>
       </div>
-      <details className="json-editor" open>
-        <summary><Code2 size={15} />高级 JSON</summary>
+      <p className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'}>
+        {props.validationError || `${props.commandCount} 条命令已通过校验。`}
+      </p>
+      <details className="json-editor">
+        <summary><Code2 size={15} />高级 Proto JSON<span className="summary-hint">按需编辑</span></summary>
         <textarea spellCheck={false} value={props.commandsText} onChange={(event) => props.onChange(event.target.value)} aria-label="Browser commands JSON" />
-        <p className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'}>
-          {props.validationError || `${props.commandCount} 条命令已通过校验。`}
-        </p>
       </details>
     </section>
   );

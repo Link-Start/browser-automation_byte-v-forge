@@ -21,7 +21,15 @@ export function SessionTasksRoute() {
       title="任务记录"
     >
       <SummaryCard {...summarizeTasks(taskItems)} />
-      <TaskList sessionId={sessionId} tasks={taskItems} />
+      <TaskList
+        lastUpdatedAt={tasks.dataUpdatedAt}
+        onRefresh={() => {
+          void tasks.refetch();
+        }}
+        refreshing={tasks.isFetching}
+        sessionId={sessionId}
+        tasks={taskItems}
+      />
     </SessionPage>
   );
 }

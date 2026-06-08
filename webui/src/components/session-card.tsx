@@ -49,7 +49,7 @@ export function SessionCard(props: SessionCardProps) {
         </label>
       </div>
       <div className="actions">
-        <button className="primary" disabled={props.pending || Boolean(props.validationError)} onClick={props.onStart}>
+        <button className="primary" disabled={props.pending || Boolean(props.validationError)} onClick={props.onStart} type="button">
           <Play size={16} />启动会话
         </button>
       </div>
