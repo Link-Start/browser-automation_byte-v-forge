@@ -26,7 +26,7 @@
 .cloud-profile-row { border-bottom: 1px solid #e5e7eb; padding: 12px 14px; }
 .fingerprint-controls { flex: 1 1 420px; }
 .manual-fingerprint { min-width: min(100%, 420px); }
-.locale-input { width: 136px; }
+.locale-select { width: 220px; }
 .cloud-browser-shell .form-feedback { color: #6b7280; margin: 10px 14px 0; }
 .cloud-browser-shell .form-feedback-error { color: #b91c1c; }
 .cloud-browser-blank { background: linear-gradient(#fff, #fafafa); min-height: 462px; position: relative; }

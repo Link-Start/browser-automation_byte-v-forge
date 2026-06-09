@@ -9,7 +9,7 @@ import { PageFrame } from '../components/page-frame';
 import { SessionRail } from '../components/session-rail';
 import type { BrowserCommand, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
 import { paths } from './paths';
-import { initialLocale, initialTimezone, timezoneOptions } from './fingerprint-options';
+import { initialLocale, initialTimezone, localeOptions, timezoneOptions } from './fingerprint-options';
 import { buildStartSessionRequest, defaultSessionConfig, validateSessionConfig, type SessionConfig } from './session-config';
 import { newRequestId } from './session-route-utils';
 import '../workbench.css';
@@ -21,6 +21,7 @@ type LaunchResult = {
   warning?: string;
 };
 
+const localeOptionItems = localeOptions();
 const timezoneOptionItems = timezoneOptions();
 
 export function HomeRoute() {
@@ -71,6 +72,7 @@ export function HomeRoute() {
           launchError={launch.error?.message || sessions.error?.message || launchWarning}
           launching={launch.isPending}
           locale={locale}
+          localeOptions={localeOptionItems}
           onFingerprintModeChange={(value) => setFingerprintMode(value as FingerprintMode)}
           onLaunch={() => launch.mutate()}
           onLocaleChange={setLocale}
