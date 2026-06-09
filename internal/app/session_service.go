@@ -10,7 +10,7 @@ import (
 
 const defaultSessionTTL = 30 * time.Minute
 
-func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID string, profile *core.Profile, ttl time.Duration, labels map[string]string) (*core.Session, error) {
+func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID string, profile *core.Profile, ttl time.Duration, labels map[string]string, proxySelection *browserautomationv1.BrowserProxySelection) (*core.Session, error) {
 	if requestID != "" {
 		existing, err := s.store.GetSessionByRequestID(ctx, requestID)
 		if err == nil {
@@ -53,10 +53,19 @@ func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID s
 	if err := s.store.CreateSession(ctx, session); err != nil {
 		return nil, err
 	}
+	if err := s.prepareSessionProxy(ctx, session, proxySelection); err != nil {
+		session.Status = browserautomationv1.BrowserSessionStatus_BROWSER_SESSION_STATUS_FAILED
+		session.LastError = core.AutomationError(asCoreError(err, core.CodeProxyFailed))
+		session.UpdatedAt = timestamp(s.clock.Now())
+		_ = s.releaseSessionProxy(ctx, session)
+		_ = s.store.UpdateSession(ctx, session)
+		return session, err
+	}
 	if err := s.runtime.StartSession(ctx, session); err != nil {
 		session.Status = browserautomationv1.BrowserSessionStatus_BROWSER_SESSION_STATUS_FAILED
 		session.LastError = core.AutomationError(asCoreError(err, core.CodeBrowserUnavailable))
 		session.UpdatedAt = timestamp(s.clock.Now())
+		_ = s.releaseSessionProxy(ctx, session)
 		_ = s.store.UpdateSession(ctx, session)
 		return session, err
 	}
@@ -68,6 +77,20 @@ func (s *AutomationService) StartBrowserSession(ctx context.Context, requestID s
 		return nil, err
 	}
 	return session, nil
+}
+
+func (s *AutomationService) prepareSessionProxy(ctx context.Context, session *core.Session, selection *browserautomationv1.BrowserProxySelection) error {
+	if s.proxy == nil {
+		return nil
+	}
+	return s.proxy.PrepareSessionProxy(ctx, session, selection)
+}
+
+func (s *AutomationService) releaseSessionProxy(ctx context.Context, session *core.Session) error {
+	if s.proxy == nil {
+		return nil
+	}
+	return s.proxy.ReleaseSessionProxy(ctx, session)
 }
 
 func (s *AutomationService) GetBrowserSession(ctx context.Context, sessionID string) (*core.Session, error) {
@@ -110,9 +133,11 @@ func (s *AutomationService) StopBrowserSession(ctx context.Context, sessionID, r
 		session.Status = browserautomationv1.BrowserSessionStatus_BROWSER_SESSION_STATUS_FAILED
 		session.LastError = core.AutomationError(asCoreError(err, core.CodeBrowserUnavailable))
 		session.UpdatedAt = timestamp(s.clock.Now())
+		_ = s.releaseSessionProxy(ctx, session)
 		_ = s.store.UpdateSession(ctx, session)
 		return session, err
 	}
+	_ = s.releaseSessionProxy(ctx, session)
 	stoppedAt := s.clock.Now()
 	session.Status = browserautomationv1.BrowserSessionStatus_BROWSER_SESSION_STATUS_STOPPED
 	session.StoppedAt = timestamp(stoppedAt)
@@ -142,6 +167,7 @@ func (s *AutomationService) expireSessionIfNeeded(ctx context.Context, session *
 	session.UpdatedAt = timestamp(now)
 	session.StoppedAt = timestamp(now)
 	_ = s.runtime.StopSession(ctx, session, "browser session expired")
+	_ = s.releaseSessionProxy(ctx, session)
 	if err := s.store.UpdateSession(ctx, session); err != nil {
 		return nil, err
 	}

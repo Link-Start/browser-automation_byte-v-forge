@@ -7,7 +7,11 @@ import { browserQueryKeys } from '../api/query-keys';
 import { CloudBrowserLauncher } from '../components/cloud-browser-launcher';
 import { PageFrame } from '../components/page-frame';
 import { SessionRail } from '../components/session-rail';
-import type { BrowserCommand, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
+import {
+  BrowserProxyProviderKind,
+  type BrowserCommand,
+  type ExecuteBrowserCommandsRequest
+} from '../proto/browser/automation/v1/browser_automation';
 import { paths } from './paths';
 import { initialLocale, initialTimezone, localeOptions, timezoneOptions } from './fingerprint-options';
 import { buildStartSessionRequest, defaultSessionConfig, validateSessionConfig, type SessionConfig } from './session-config';
@@ -31,11 +35,21 @@ export function HomeRoute() {
   const [launchWarning, setLaunchWarning] = useState('');
   const [fingerprintMode, setFingerprintMode] = useState<FingerprintMode>('ip');
   const [locale, setLocale] = useState(initialLocale);
+  const [manualProxyUrl, setManualProxyUrl] = useState('');
+  const [proxyMode, setProxyMode] = useState(BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_NONE);
+  const [proxyRuntimeAccountId, setProxyRuntimeAccountId] = useState('');
   const [timezone, setTimezone] = useState(initialTimezone);
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
   const recentSession = sessionItems[0];
-  const sessionConfig = buildFingerprintConfig(fingerprintMode, locale, timezone);
+  const sessionConfig = buildCloudBrowserConfig(
+    fingerprintMode,
+    locale,
+    timezone,
+    proxyMode,
+    manualProxyUrl,
+    proxyRuntimeAccountId
+  );
   const validationError = validateLaunchTarget(targetUrl) || validateSessionConfig(sessionConfig);
   const launch = useMutation({ mutationFn: launchCloudBrowser, onSuccess: handleLaunchSuccess });
 
@@ -73,14 +87,20 @@ export function HomeRoute() {
           launching={launch.isPending}
           locale={locale}
           localeOptions={localeOptionItems}
+          manualProxyUrl={manualProxyUrl}
           onFingerprintModeChange={(value) => setFingerprintMode(value as FingerprintMode)}
           onLaunch={() => launch.mutate()}
           onLocaleChange={setLocale}
+          onManualProxyUrlChange={setManualProxyUrl}
+          onProxyModeChange={setProxyMode}
+          onProxyRuntimeAccountIdChange={setProxyRuntimeAccountId}
           onTargetUrlChange={(value) => {
             setLaunchWarning('');
             setTargetUrl(value);
           }}
           onTimezoneChange={setTimezone}
+          proxyMode={proxyMode}
+          proxyRuntimeAccountId={proxyRuntimeAccountId}
           recentSession={recentSession}
           targetUrl={targetUrl}
           timezone={timezone}
@@ -102,11 +122,22 @@ export function HomeRoute() {
   );
 }
 
-function buildFingerprintConfig(mode: FingerprintMode, locale: string, timezone: string): SessionConfig {
-  if (mode === 'manual') {
-    return { ...defaultSessionConfig, locale, timezone };
-  }
-  return { ...defaultSessionConfig, locale: '', timezone: '' };
+function buildCloudBrowserConfig(
+  mode: FingerprintMode,
+  locale: string,
+  timezone: string,
+  proxyMode: BrowserProxyProviderKind,
+  manualProxyUrl: string,
+  proxyRuntimeAccountId: string
+): SessionConfig {
+  return {
+    ...defaultSessionConfig,
+    locale: mode === 'manual' ? locale : '',
+    manualProxyUrl,
+    proxyProviderKind: proxyMode,
+    proxyRuntimeAccountId,
+    timezone: mode === 'manual' ? timezone : ''
+  };
 }
 
 function buildLaunchRequest(sessionId: string, targetUrl: string): ExecuteBrowserCommandsRequest {

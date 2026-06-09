@@ -1,13 +1,10 @@
 package camoufox
 
 import (
-	"fmt"
-	"strings"
-
 	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/v1"
 )
 
-func serverOptions(cfg Config, session *browserautomationv1.BrowserSession) (map[string]any, error) {
+func serverOptions(cfg Config, session *browserautomationv1.BrowserSession, proxyURL string) (map[string]any, error) {
 	profile := session.GetProfile()
 	options := map[string]any{
 		"headless": cfg.Headless,
@@ -20,14 +17,10 @@ func serverOptions(cfg Config, session *browserautomationv1.BrowserSession) (map
 	if viewport := profile.GetViewport(); viewport != nil && viewport.GetWidth() > 0 && viewport.GetHeight() > 0 {
 		options["window"] = []int32{viewport.GetWidth(), viewport.GetHeight()}
 	}
-	if proxyRef := strings.TrimSpace(profile.GetProxyRef()); proxyRef != "" {
-		proxyURL := strings.TrimSpace(cfg.ProxyRefs[proxyRef])
-		if proxyURL == "" {
-			return nil, fmt.Errorf("proxy_ref %q is not configured", proxyRef)
-		}
+	if proxyURL != "" {
 		proxy, err := parseProxyOption(proxyURL)
 		if err != nil {
-			return nil, fmt.Errorf("proxy_ref %q is invalid: %w", proxyRef, err)
+			return nil, err
 		}
 		options["proxy"] = proxy
 	}

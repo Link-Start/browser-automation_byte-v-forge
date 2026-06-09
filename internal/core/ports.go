@@ -35,6 +35,12 @@ type Runtime interface {
 	ExecuteTask(ctx context.Context, task *Task) (TaskExecutionResult, error)
 }
 
+type ProxyController interface {
+	PrepareSessionProxy(ctx context.Context, session *Session, selection *browserautomationv1.BrowserProxySelection) error
+	ResolveSessionProxy(ctx context.Context, session *Session) (string, error)
+	ReleaseSessionProxy(ctx context.Context, session *Session) error
+}
+
 type RuntimeCapacity interface {
 	ActiveSessionCount() int
 	MaxSessionCount() int

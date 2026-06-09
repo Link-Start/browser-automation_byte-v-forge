@@ -42,11 +42,11 @@ export function NewSessionRoute() {
           locale={config.locale}
           onBrowserKindChange={(browserKind) => updateConfig({ browserKind })}
           onLocaleChange={(locale) => updateConfig({ locale })}
-          onProxyRefChange={(proxyRef) => updateConfig({ proxyRef })}
+          onProxyRefChange={(manualProxyRef) => updateConfig({ manualProxyRef })}
           onStart={() => start.mutate()}
           onTimezoneChange={(timezone) => updateConfig({ timezone })}
           pending={start.isPending}
-          proxyRef={config.proxyRef}
+          proxyRef={config.manualProxyRef}
           timezone={config.timezone}
           validationError={validationError}
         />

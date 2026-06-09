@@ -13,8 +13,8 @@ import (
 	"github.com/byte-v-forge/browser-automation/internal/core"
 )
 
-func (r *Runtime) startWorker(ctx context.Context, session *core.Session) (*workerProcess, error) {
-	optionsMap, err := workerOptions(r.cfg, session)
+func (r *Runtime) startWorker(ctx context.Context, session *core.Session, proxyURL string) (*workerProcess, error) {
+	optionsMap, err := workerOptions(r.cfg, session, proxyURL)
 	if err != nil {
 		return nil, core.NewError(core.CodeProxyFailed, err.Error(), false)
 	}

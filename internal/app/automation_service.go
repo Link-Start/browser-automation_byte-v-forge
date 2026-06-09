@@ -8,9 +8,10 @@ type AutomationService struct {
 	clock        core.Clock
 	ids          core.IDGenerator
 	liveTokenKey []byte
+	proxy        core.ProxyController
 }
 
-func NewAutomationService(store core.Store, runtime core.Runtime, clock core.Clock, ids core.IDGenerator) *AutomationService {
+func NewAutomationService(store core.Store, runtime core.Runtime, proxy core.ProxyController, clock core.Clock, ids core.IDGenerator) *AutomationService {
 	if runtime == nil {
 		runtime = NoopRuntime{}
 	}
@@ -20,5 +21,5 @@ func NewAutomationService(store core.Store, runtime core.Runtime, clock core.Clo
 	if ids == nil {
 		ids = RandomIDGenerator{}
 	}
-	return &AutomationService{store: store, runtime: runtime, clock: clock, ids: ids, liveTokenKey: newLiveTokenKey()}
+	return &AutomationService{store: store, runtime: runtime, proxy: proxy, clock: clock, ids: ids, liveTokenKey: newLiveTokenKey()}
 }

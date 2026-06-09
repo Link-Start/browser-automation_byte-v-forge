@@ -205,6 +205,21 @@ message BrowserProfile {
   reserved "labels";
 }
 
+enum BrowserProxyProviderKind {
+  BROWSER_PROXY_PROVIDER_KIND_UNSPECIFIED = 0;
+  BROWSER_PROXY_PROVIDER_KIND_NONE = 1;
+  BROWSER_PROXY_PROVIDER_KIND_MANUAL = 2;
+  BROWSER_PROXY_PROVIDER_KIND_PROXY_RUNTIME = 3;
+}
+
+message BrowserProxySelection {
+  BrowserProxyProviderKind provider_kind = 1;
+  string manual_proxy_ref = 2;
+  string manual_proxy_url = 3;
+  string proxy_runtime_account_id = 4;
+  string proxy_runtime_purpose = 5;
+}
+
 message BrowserArtifact {
   string artifact_id = 1;
   BrowserArtifactKind kind = 2;
@@ -687,6 +702,7 @@ message StartBrowserSessionRequest {
   BrowserProfile profile = 2;
   google.protobuf.Duration ttl = 3;
   BrowserSecurityPolicy security_policy = 4;
+  BrowserProxySelection proxy = 5;
   map<string, string> labels = 20;
 }
 

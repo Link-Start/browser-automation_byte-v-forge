@@ -82,7 +82,7 @@ func (s *Server) startSession(w http.ResponseWriter, r *http.Request) {
 	if !readProto(w, r, request) {
 		return
 	}
-	session, err := s.service.StartBrowserSession(r.Context(), request.GetRequestId(), request.GetProfile(), protoDuration(request.GetTtl()), request.GetLabels())
+	session, err := s.service.StartBrowserSession(r.Context(), request.GetRequestId(), request.GetProfile(), protoDuration(request.GetTtl()), request.GetLabels(), request.GetProxy())
 	writeProto(w, &browserautomationv1.StartBrowserSessionResponse{Session: session, Error: core.AutomationError(err)})
 }
 

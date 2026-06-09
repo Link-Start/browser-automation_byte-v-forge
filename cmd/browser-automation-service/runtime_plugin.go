@@ -34,7 +34,7 @@ func camoufoxConfig(cfg config) camoufox.Config {
 		ServerPort:      cfg.CamoufoxServerPort,
 		WSPathPrefix:    cfg.CamoufoxWSPathPrefix,
 		ExtraEnv:        cfg.CamoufoxExtraEnv,
-		ProxyRefs:       cfg.ProxyRefs,
+		Proxy:           cfg.ProxyController,
 		MaxSessions:     cfg.MaxConcurrentSessions,
 	}
 }
@@ -49,7 +49,7 @@ func cloakBrowserConfig(cfg config) cloakbrowser.Config {
 		Headless:        cfg.CloakBrowserHeadless,
 		Humanize:        cfg.CloakBrowserHumanize,
 		ExtraEnv:        cfg.CloakBrowserExtraEnv,
-		ProxyRefs:       cfg.ProxyRefs,
+		Proxy:           cfg.ProxyController,
 		MaxSessions:     cfg.MaxConcurrentSessions,
 	}
 }

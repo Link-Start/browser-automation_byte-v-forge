@@ -1,10 +1,10 @@
 const redactedValue = '[已隐藏]';
 const messagePreviewLimit = 700;
 const textPreviewLimit = 4_000;
-const sensitiveInlinePattern = /\b(authorization|cookie|credential|password|secret|token|api[_-]?key)\b\s*([:=])\s*["']?[^"'\s,;]+["']?/gi;
-const sensitiveKeyPattern = /(authorization|cookie|credential|password|proxy_ref|secret|storage_state|token|api[_-]?key)/i;
+const sensitiveInlinePattern = /\b(authorization|cookie|credential|password|proxy|secret|token|api[_-]?key)\b\s*([:=])\s*["']?[^"'\s,;]+["']?/gi;
+const sensitiveKeyPattern = /(authorization|cookie|credential|password|proxy[_-]?(ref|url)?|secret|storage_state|token|api[_-]?key)/i;
 const bearerPattern = /\bBearer\s+[A-Za-z0-9._~+/=-]+/gi;
-const urlPattern = /https?:\/\/[^\s<>"']+/g;
+const urlPattern = /\b(?:https?|socks5h?):\/\/[^\s<>"']+/g;
 
 export function safeJSONStringify(value: unknown): string {
   return JSON.stringify(redactJSON(value), null, 2);
@@ -79,5 +79,5 @@ function redactURL(value: unknown): unknown {
 }
 
 function looksLikeURL(value: string) {
-  return value.startsWith('http://') || value.startsWith('https://');
+  return /^(https?|socks5h?):\/\//i.test(value);
 }

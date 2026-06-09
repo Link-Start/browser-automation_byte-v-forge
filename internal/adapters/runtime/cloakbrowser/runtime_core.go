@@ -2,6 +2,7 @@ package cloakbrowser
 
 import (
 	"context"
+	"errors"
 	"os"
 	"sync"
 
@@ -62,25 +63,32 @@ func (r *Runtime) StartSession(ctx context.Context, session *core.Session) error
 	if err := os.MkdirAll(r.cfg.ArtifactsDir, 0o700); err != nil {
 		return core.NewError(core.CodeInternal, err.Error(), true)
 	}
-	worker, err := r.startWorker(ctx, session)
+	proxyURL, err := r.resolveSessionProxy(ctx, session)
 	if err != nil {
+		return core.NewError(core.CodeProxyFailed, err.Error(), false)
+	}
+	worker, err := r.startWorker(ctx, session, proxyURL)
+	if err != nil {
+		_ = r.releaseSessionProxy(ctx, session)
 		return err
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if existing := r.sessions[session.GetSessionId()]; existing != nil {
 		_ = worker.stop(r.cfg.ShutdownTimeout)
+		_ = r.releaseSessionProxy(ctx, session)
 		return nil
 	}
 	if len(r.sessions) >= r.cfg.MaxSessions {
 		_ = worker.stop(r.cfg.ShutdownTimeout)
+		_ = r.releaseSessionProxy(ctx, session)
 		return core.NewError(core.CodeCapacityUnavailable, "browser session capacity is exhausted", true)
 	}
 	r.sessions[session.GetSessionId()] = &sessionRuntime{sessionID: session.GetSessionId(), worker: worker}
 	return nil
 }
 
-func (r *Runtime) StopSession(_ context.Context, session *core.Session, _ string) error {
+func (r *Runtime) StopSession(ctx context.Context, session *core.Session, _ string) error {
 	if session == nil {
 		return nil
 	}
@@ -89,9 +97,44 @@ func (r *Runtime) StopSession(_ context.Context, session *core.Session, _ string
 	delete(r.sessions, session.GetSessionId())
 	r.mu.Unlock()
 	if runtime == nil {
+		return r.releaseSessionProxy(ctx, session)
+	}
+	stopErr := runtime.stop(r.cfg.ShutdownTimeout)
+	releaseErr := r.releaseSessionProxy(ctx, session)
+	if stopErr != nil {
+		return stopErr
+	}
+	return releaseErr
+}
+
+func (r *Runtime) Shutdown(ctx context.Context) error {
+	r.mu.Lock()
+	sessions := make([]*sessionRuntime, 0, len(r.sessions))
+	for _, runtime := range r.sessions {
+		sessions = append(sessions, runtime)
+	}
+	r.sessions = make(map[string]*sessionRuntime)
+	r.mu.Unlock()
+	var result error
+	for _, runtime := range sessions {
+		result = errors.Join(result, runtime.stop(r.cfg.ShutdownTimeout))
+		result = errors.Join(result, r.releaseSessionProxy(ctx, &browserautomationv1.BrowserSession{SessionId: runtime.sessionID}))
+	}
+	return result
+}
+
+func (r *Runtime) resolveSessionProxy(ctx context.Context, session *core.Session) (string, error) {
+	if r.cfg.Proxy == nil {
+		return "", nil
+	}
+	return r.cfg.Proxy.ResolveSessionProxy(ctx, session)
+}
+
+func (r *Runtime) releaseSessionProxy(ctx context.Context, session *core.Session) error {
+	if r.cfg.Proxy == nil {
 		return nil
 	}
-	return runtime.stop(r.cfg.ShutdownTimeout)
+	return r.cfg.Proxy.ReleaseSessionProxy(ctx, session)
 }
 
 func (r *Runtime) EnqueueTask(context.Context, *core.Task) error {

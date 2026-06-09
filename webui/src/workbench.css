@@ -27,6 +27,9 @@
 .fingerprint-controls { flex: 1 1 420px; }
 .manual-fingerprint { min-width: min(100%, 420px); }
 .locale-select { width: 220px; }
+.proxy-controls { justify-content: flex-end; }
+.proxy-input { width: min(360px, 70vw); }
+.proxy-runtime-input { width: min(220px, 60vw); }
 .cloud-browser-shell .form-feedback { color: #6b7280; margin: 10px 14px 0; }
 .cloud-browser-shell .form-feedback-error { color: #b91c1c; }
 .cloud-browser-blank { background: linear-gradient(#fff, #fafafa); min-height: 462px; position: relative; }

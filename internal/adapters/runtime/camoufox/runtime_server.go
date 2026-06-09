@@ -13,8 +13,8 @@ import (
 
 var endpointPattern = regexp.MustCompile(`ws://[^\s]+`)
 
-func (r *Runtime) startServer(ctx context.Context, session *core.Session) (string, *serverProcess, error) {
-	optionsMap, err := serverOptions(r.cfg, session)
+func (r *Runtime) startServer(ctx context.Context, session *core.Session, proxyURL string) (string, *serverProcess, error) {
+	optionsMap, err := serverOptions(r.cfg, session, proxyURL)
 	if err != nil {
 		return "", nil, core.NewError(core.CodeProxyFailed, err.Error(), false)
 	}

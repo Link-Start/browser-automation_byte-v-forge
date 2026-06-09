@@ -18,9 +18,11 @@ import (
 	browserautomationv1 "github.com/byte-v-forge/browser-automation/gen/go/browser/automation/v1"
 	grpcadapter "github.com/byte-v-forge/browser-automation/internal/adapters/grpc"
 	httpadapter "github.com/byte-v-forge/browser-automation/internal/adapters/http"
+	"github.com/byte-v-forge/browser-automation/internal/adapters/proxyplugin"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/repository/postgres"
 	"github.com/byte-v-forge/browser-automation/internal/adapters/runtime/runtimeplugin"
 	"github.com/byte-v-forge/browser-automation/internal/app"
+	"github.com/byte-v-forge/browser-automation/internal/core"
 	"github.com/byte-v-forge/browser-automation/internal/platform/envx"
 	"github.com/byte-v-forge/browser-automation/internal/platform/grpchealth"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -83,6 +85,11 @@ type config struct {
 	CloakBrowserHumanize        bool
 	CloakBrowserExtraEnv        []string
 	ProxyRefs                   map[string]string
+	ProxyRuntimeBaseURL         string
+	ProxyRuntimeTimeout         time.Duration
+	ProxyRuntimePurpose         string
+	ProxyRuntimeAccountID       string
+	ProxyController             core.ProxyController
 }
 
 func main() {
@@ -117,12 +124,26 @@ func run() error {
 		}
 	}
 
+	proxyController, err := proxyplugin.NewController(proxyplugin.Config{
+		ManualRefs:            cfg.ProxyRefs,
+		ProxyRuntimeBaseURL:   cfg.ProxyRuntimeBaseURL,
+		ProxyRuntimeTimeout:   cfg.ProxyRuntimeTimeout,
+		ProxyRuntimePurpose:   cfg.ProxyRuntimePurpose,
+		ProxyRuntimeAccountID: cfg.ProxyRuntimeAccountID,
+	})
+	if err != nil {
+		return err
+	}
+	cfg.ProxyController = proxyController
+
 	runtime, err := newRuntime(runtimeRegistry, cfg)
 	if err != nil {
 		return err
 	}
+	defer shutdownRuntime(runtime, cfg.ShutdownGrace)
+
 	store := postgres.NewRepository(pool, cfg.PostgresStatementTimeout)
-	service := app.NewAutomationService(store, runtime, app.SystemClock{}, app.RandomIDGenerator{})
+	service := app.NewAutomationService(store, runtime, proxyController, app.SystemClock{}, app.RandomIDGenerator{})
 
 	listener, err := net.Listen("tcp", cfg.ListenAddr)
 	if err != nil {
@@ -200,6 +221,10 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 		CloakBrowserHumanize:        envx.Bool("BROWSER_AUTOMATION_CLOAK_BROWSER_HUMANIZE", true),
 		CloakBrowserExtraEnv:        envx.List("BROWSER_AUTOMATION_CLOAK_BROWSER_EXTRA_ENV"),
 		ProxyRefs:                   proxyRefs,
+		ProxyRuntimeBaseURL:         envx.String("BROWSER_AUTOMATION_PROXY_RUNTIME_BASE_URL"),
+		ProxyRuntimeTimeout:         envx.DurationSeconds("BROWSER_AUTOMATION_PROXY_RUNTIME_TIMEOUT_SECONDS", defaultConnectTimeout),
+		ProxyRuntimePurpose:         envx.StringDefault("BROWSER_AUTOMATION_PROXY_RUNTIME_PURPOSE", "browser-automation"),
+		ProxyRuntimeAccountID:       envx.String("BROWSER_AUTOMATION_PROXY_RUNTIME_ACCOUNT_ID"),
 	}
 	if strings.TrimSpace(cfg.PostgresDSN) == "" {
 		return cfg, fmt.Errorf("BROWSER_AUTOMATION_POSTGRES_DSN is required")

@@ -4,8 +4,9 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
+
+	"github.com/byte-v-forge/browser-automation/internal/core"
 )
 
 const (
@@ -26,7 +27,7 @@ type Config struct {
 	ServerPort      int
 	WSPathPrefix    string
 	ExtraEnv        []string
-	ProxyRefs       map[string]string
+	Proxy           core.ProxyController
 	MaxSessions     int
 }
 
@@ -63,21 +64,6 @@ func (c Config) normalize() (Config, error) {
 	}
 	if c.ServerPort < 0 {
 		return c, errors.New("server port cannot be negative")
-	}
-	if len(c.ProxyRefs) > 0 {
-		refs := make(map[string]string, len(c.ProxyRefs))
-		for key, value := range c.ProxyRefs {
-			key = strings.TrimSpace(key)
-			value = strings.TrimSpace(value)
-			if key == "" {
-				return c, errors.New("proxy refs cannot contain an empty key")
-			}
-			if value == "" {
-				return c, errors.New("proxy refs cannot contain an empty value")
-			}
-			refs[key] = value
-		}
-		c.ProxyRefs = refs
 	}
 	return c, nil
 }
