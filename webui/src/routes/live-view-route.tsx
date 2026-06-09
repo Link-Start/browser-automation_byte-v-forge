@@ -1,3 +1,5 @@
+import { Button } from '@radix-ui/themes';
+import { Home } from 'lucide-react';
 import { Link, Navigate, useParams } from 'react-router';
 import { BrowserStage } from '../components/browser-stage';
 import { PageFrame } from '../components/page-frame';
@@ -17,9 +19,8 @@ export function LiveViewRoute() {
   return (
     <PageFrame>
       <PageHeader
-        error={liveView.error}
-        pending={pending}
-        title="独立 LiveView"
+        pending={false}
+        title="LiveView"
       />
       <Status error={liveView.error} message={message} />
       <BrowserStage
@@ -29,7 +30,9 @@ export function LiveViewRoute() {
         onInput={liveView.sendInput}
         pending={pending}
       />
-      <p className="route-back"><Link to={paths.home}>返回入口</Link></p>
+      <Button asChild className="live-back" size="2" variant="soft">
+        <Link to={paths.home}><Home size={14} />入口</Link>
+      </Button>
     </PageFrame>
   );
 }

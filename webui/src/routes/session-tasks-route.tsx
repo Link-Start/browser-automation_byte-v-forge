@@ -16,7 +16,7 @@ export function SessionTasksRoute() {
       error={tasks.error?.message}
       pending={tasks.isFetching}
       sessionId={sessionId}
-      title="历史记录"
+      title="记录"
     >
       <SummaryCard {...summarizeTasks(taskItems)} />
       <TaskList

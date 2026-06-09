@@ -10,9 +10,9 @@ type SessionTabsProps = {
 export function SessionTabs({ sessionId }: SessionTabsProps) {
   return (
     <nav className="session-tabs" aria-label="会话页面">
-      <Tab to={paths.sessionLive(sessionId)} label="实时浏览器" icon={<MonitorDot size={15} />} />
-      <Tab to={paths.sessionCommands(sessionId)} label="高级操作" icon={<Code2 size={15} />} />
-      <Tab to={paths.sessionTasks(sessionId)} label="历史记录" icon={<Rows3 size={15} />} />
+      <Tab to={paths.sessionLive(sessionId)} label="浏览器" icon={<MonitorDot size={15} />} />
+      <Tab to={paths.sessionCommands(sessionId)} label="工具" icon={<Code2 size={15} />} />
+      <Tab to={paths.sessionTasks(sessionId)} label="记录" icon={<Rows3 size={15} />} />
     </nav>
   );
 }

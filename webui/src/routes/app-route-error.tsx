@@ -11,7 +11,6 @@ export function AppRouteError() {
     <PageFrame className="error-page" role="alert">
       <section className="card error-panel">
         <span className="error-icon"><AlertTriangle size={22} /></span>
-        <p className="section-kicker">Route Error</p>
         <h1>页面不可用</h1>
         <p className="error-box">{routeErrorMessage(error)}</p>
         <div className="actions">

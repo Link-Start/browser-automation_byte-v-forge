@@ -71,20 +71,30 @@ export function buildQuickCommands(options: QuickCommandOptions): BrowserCommand
 }
 
 export function browserKindLabel(value: BrowserKind): string {
-  return value.replace('BROWSER_KIND_', '').toLowerCase();
+  if (value === BrowserKind.BROWSER_KIND_CHROMIUM) return 'Chromium';
+  if (value === BrowserKind.BROWSER_KIND_FIREFOX) return 'Firefox';
+  return 'Browser';
 }
 
 export function waitUntilLabel(value: BrowserNavigationWaitUntil): string {
-  return value.replace('BROWSER_NAVIGATION_WAIT_UNTIL_', '').replaceAll('_', ' ').toLowerCase();
+  if (value === BrowserNavigationWaitUntil.BROWSER_NAVIGATION_WAIT_UNTIL_DOM_CONTENT_LOADED) return 'DOM 就绪';
+  if (value === BrowserNavigationWaitUntil.BROWSER_NAVIGATION_WAIT_UNTIL_NETWORK_IDLE) return '网络空闲';
+  return '加载完成';
 }
 
 export function statusLabel(value?: BrowserTaskStatus): string {
-  return (value || 'BROWSER_TASK_STATUS_UNSPECIFIED').replace('BROWSER_TASK_STATUS_', '').replaceAll('_', ' ').toLowerCase();
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_SUCCEEDED) return '成功';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED) return '失败';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_RUNNING) return '执行中';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_QUEUED) return '排队';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_CANCELED) return '取消';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT) return '超时';
+  return '未知';
 }
 
 export function statusTone(value?: BrowserTaskStatus): string {
   if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_SUCCEEDED) return 'tone-success';
-  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT) return 'tone-danger';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_CANCELED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT) return 'tone-danger';
   if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_RUNNING || value === BrowserTaskStatus.BROWSER_TASK_STATUS_QUEUED) return 'tone-warn';
   return 'tone-muted';
 }
@@ -93,7 +103,7 @@ export type ThemeColor = 'amber' | 'gray' | 'green' | 'orange' | 'red';
 
 export function statusThemeColor(value?: BrowserTaskStatus): ThemeColor {
   if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_SUCCEEDED) return 'green';
-  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT) return 'red';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_CANCELED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT) return 'red';
   if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_RUNNING || value === BrowserTaskStatus.BROWSER_TASK_STATUS_QUEUED) return 'amber';
   return 'gray';
 }
@@ -103,7 +113,13 @@ export function formatJSON(value: unknown): string {
 }
 
 export function sessionStatusLabel(value?: BrowserSessionStatus): string {
-  return (value || 'BROWSER_SESSION_STATUS_UNSPECIFIED').replace('BROWSER_SESSION_STATUS_', '').replaceAll('_', ' ').toLowerCase();
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_RUNNING) return '运行';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STARTING) return '启动';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STOPPING) return '关闭';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_FAILED) return '失败';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_EXPIRED) return '过期';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STOPPED) return '已关';
+  return '未知';
 }
 
 export function sessionStatusTone(value?: BrowserSessionStatus): string {

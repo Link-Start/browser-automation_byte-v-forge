@@ -1,6 +1,6 @@
 import { Button, Card, Flex, SegmentedControl, Select, Text, TextField } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
-import { ArrowRight, LockKeyhole, PlugZap, Sparkles } from 'lucide-react';
+import { ArrowRight, Globe2, PlugZap, Sparkles } from 'lucide-react';
 import { BrowserProxyProviderKind } from '../proto/browser/automation/v1/browser_automation';
 
 type SelectOption = { label: string; value: string };
@@ -41,6 +41,10 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
     <section className="cloud-browser-card" aria-label="新建云浏览器窗口">
       <Card className="cloud-browser-shell">
         <form className="cloud-browser-form" onSubmit={submit}>
+          <Flex align="center" className="cloud-window-strip" justify="between">
+            <span className="window-dots" aria-hidden="true"><i /><i /><i /></span>
+            <Text as="span" color="gray" size="2" weight="medium">新窗口</Text>
+          </Flex>
           <div className="cloud-launch-strip">
             <label className="sr-only" htmlFor="cloud-browser-target">URL</label>
             <TextField.Root
@@ -55,16 +59,16 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
               size="3"
               value={props.targetUrl}
             >
-              <TextField.Slot><LockKeyhole size={15} /></TextField.Slot>
+              <TextField.Slot><Globe2 size={15} /></TextField.Slot>
             </TextField.Root>
-            <Button aria-label="打开" disabled={props.disabled || Boolean(props.validationError)} size="3" type="submit">
+            <Button aria-label="打开窗口" disabled={props.disabled || Boolean(props.validationError)} size="3" type="submit">
               {props.launching ? <Sparkles className="spin" size={17} /> : <ArrowRight size={17} />}
             </Button>
           </div>
           <Flex align="center" className="cloud-settings-row" gap="2" wrap="wrap">
             <SegmentedControl.Root size="1" value={props.fingerprintMode} onValueChange={props.onFingerprintModeChange}>
-              <SegmentedControl.Item value="ip">IP</SegmentedControl.Item>
-              <SegmentedControl.Item value="manual">指纹</SegmentedControl.Item>
+              <SegmentedControl.Item value="ip">随 IP</SegmentedControl.Item>
+              <SegmentedControl.Item value="manual">自定义</SegmentedControl.Item>
             </SegmentedControl.Root>
             {props.fingerprintMode === 'manual' ? <ManualFingerprintControls {...props} /> : null}
             <ProxyControls {...props} />
@@ -92,7 +96,7 @@ function ProxyControls(props: ProxyControlProps) {
   return (
     <Flex align="center" className="proxy-controls" gap="2" wrap="wrap">
       <Select.Root value={props.proxyMode} onValueChange={(value) => props.onProxyModeChange(value as BrowserProxyProviderKind)}>
-        <Select.Trigger aria-label="代理" />
+        <Select.Trigger aria-label="代理" className="proxy-select" />
         <Select.Content>
           <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_NONE}>直连</Select.Item>
           <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_MANUAL}>手动代理</Select.Item>

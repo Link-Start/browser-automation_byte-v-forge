@@ -1,3 +1,4 @@
+import { Button, Card, Flex, IconButton, Table, Text, Tooltip } from '@radix-ui/themes';
 import { ClipboardList, Code2, MonitorDot, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
@@ -16,76 +17,86 @@ type TaskListProps = {
 
 export function TaskList({ lastUpdatedAt, onRefresh, refreshing = false, sessionId, tasks }: TaskListProps) {
   return (
-    <section className="card task-card">
-      <div className="card-title">
+    <Card className="card task-card">
+      <Flex align="center" className="card-title" justify="between">
         <div>
-          <p className="section-kicker">History</p>
-          <h2>历史记录</h2>
+          <Text as="p" size="5" weight="bold">记录</Text>
+          {lastUpdatedAt ? <Text as="p" color="gray" size="2">{formatTaskTime(new Date(lastUpdatedAt).toISOString())}</Text> : null}
         </div>
-        <div className="card-title-actions">
-          <span>{tasks.length} 条</span>
+        <Flex align="center" gap="2">
+          <Text as="span" color="gray" size="2">{tasks.length}</Text>
           {onRefresh ? (
-            <button className="icon-button card-icon-button" disabled={refreshing} onClick={onRefresh} title="刷新任务记录" type="button" aria-label="刷新任务记录">
-              <RefreshCcw className={refreshing ? 'spin' : undefined} size={16} />
-            </button>
+            <Tooltip content="刷新">
+              <IconButton disabled={refreshing} onClick={onRefresh} type="button" aria-label="刷新" variant="ghost">
+                <RefreshCcw className={refreshing ? 'spin' : undefined} size={16} />
+              </IconButton>
+            </Tooltip>
           ) : null}
-        </div>
-      </div>
-      {lastUpdatedAt ? <p className="muted task-updated">上次刷新：{formatTaskTime(new Date(lastUpdatedAt).toISOString())}</p> : null}
+        </Flex>
+      </Flex>
       {tasks.length === 0 ? <EmptyTasks sessionId={sessionId} /> : <TaskTable sessionId={sessionId} tasks={tasks} />}
-    </section>
+    </Card>
   );
 }
 
 function TaskTable({ sessionId, tasks }: { sessionId: string; tasks: BrowserTask[] }) {
   return (
-    <div className="table">
-      <div className="table-row task-row table-head">
-        <span>任务</span>
-        <span>状态</span>
-        <span>最近更新</span>
-        <span>页面</span>
-        <span>操作</span>
-      </div>
-      {tasks.map((task) => (
-        <div className="table-row task-row" key={task.task_id}>
-          <span title={task.task_id}>
-            <strong>{task.input?.task_key || task.task_id}</strong>
-            <small>{shortID(task.task_id)}</small>
-          </span>
-          <span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span>
-          <span>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</span>
-          <span title={taskDisplayURL(task)}>
-            {taskTitle(task)}
-            <small>{taskMeta(task)}</small>
-            {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
-          </span>
-          <span className="task-actions">
-            <Link className="mini-link" to={paths.sessionLive(sessionId)} title="打开实时浏览器"><MonitorDot size={14} />Live</Link>
-            <Link className="mini-link" to={paths.sessionCommands(sessionId)} title="继续执行命令"><Code2 size={14} />命令</Link>
-          </span>
-        </div>
-      ))}
-    </div>
+    <Table.Root className="task-table" variant="surface">
+      <Table.Header>
+        <Table.Row>
+          <Table.ColumnHeaderCell>任务</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>状态</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>更新时间</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>页面</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell>操作</Table.ColumnHeaderCell>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {tasks.map((task) => (
+          <Table.Row key={task.task_id}>
+            <Table.Cell>
+              <span className="task-id" title={task.task_id}>
+                <strong>{task.input?.task_key || task.task_id}</strong>
+                <small>{shortID(task.task_id)}</small>
+              </span>
+            </Table.Cell>
+            <Table.Cell><span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span></Table.Cell>
+            <Table.Cell>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</Table.Cell>
+            <Table.Cell>
+              <span className="task-page" title={taskDisplayURL(task)}>
+                <strong>{taskTitle(task)}</strong>
+                <small>{taskMeta(task)}</small>
+                {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
+              </span>
+            </Table.Cell>
+            <Table.Cell><TaskActions sessionId={sessionId} /></Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
+  );
+}
+
+function TaskActions({ sessionId }: { sessionId: string }) {
+  return (
+    <Flex className="task-actions" gap="1">
+      <Tooltip content="浏览器">
+        <IconButton asChild aria-label="浏览器" size="2" variant="soft"><Link to={paths.sessionLive(sessionId)}><MonitorDot size={14} /></Link></IconButton>
+      </Tooltip>
+      <Tooltip content="工具">
+        <IconButton asChild aria-label="工具" size="2" variant="soft"><Link to={paths.sessionCommands(sessionId)}><Code2 size={14} /></Link></IconButton>
+      </Tooltip>
+    </Flex>
   );
 }
 
 function EmptyTasks({ sessionId }: { sessionId: string }) {
-  return (
-    <EmptyState
-      action={<Link className="mini-link" to={paths.sessionCommands(sessionId)}><Code2 size={14} />执行快捷命令</Link>}
-      description="暂无记录"
-      icon={<ClipboardList size={22} />}
-      title="还没有任务记录"
-    />
-  );
+  return <EmptyState action={<Button asChild size="2" variant="soft"><Link to={paths.sessionCommands(sessionId)}><Code2 size={14} />工具</Link></Button>} description="无记录" icon={<ClipboardList size={22} />} title="记录为空" />;
 }
 
 function taskTitle(task: BrowserTask) {
   const title = task.results?.[0]?.title;
-  if (title) {
-    return safeMessage(title);
-  }
+  if (title) return safeMessage(title);
   return taskDisplayURL(task) || '-';
 }
 
@@ -97,7 +108,7 @@ function taskDisplayURL(task: BrowserTask) {
 function taskMeta(task: BrowserTask) {
   const resultCount = task.results?.length || 0;
   const artifactCount = task.artifacts?.length || 0;
-  return `${resultCount} 个结果 · ${artifactCount} 个产物`;
+  return `${resultCount} 结果 · ${artifactCount} 产物`;
 }
 
 function shortID(value: string) {

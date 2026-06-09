@@ -1,5 +1,5 @@
-import { Badge, Card, Flex, IconButton, ScrollArea, Text } from '@radix-ui/themes';
-import { RefreshCcw } from 'lucide-react';
+import { Badge, Card, Flex, IconButton, ScrollArea, Text, Tooltip } from '@radix-ui/themes';
+import { Plus, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router';
 import { browserKindLabel, sessionStatusLabel, sessionStatusTone } from '../api/defaults';
 import { BrowserSessionStatus, type BrowserSession } from '../proto/browser/automation/v1/browser_automation';
@@ -18,11 +18,18 @@ export function SessionRail({ activeSessionId, onRefresh, refreshing, sessions }
     <aside className="session-rail" aria-label="浏览器窗口">
       <div className="session-rail-header">
         <Text as="p" size="3" weight="bold">窗口</Text>
-        <Flex align="center" gap="2">
+        <Flex align="center" gap="1">
           <Badge color="gray" variant="soft">{activeCount}/{sessions.length}</Badge>
-          <IconButton disabled={refreshing} onClick={onRefresh} title="刷新" type="button" aria-label="刷新" variant="ghost">
-            <RefreshCcw className={refreshing ? 'spin' : undefined} size={15} />
-          </IconButton>
+          <Tooltip content="新窗口">
+            <IconButton asChild aria-label="新窗口" variant="ghost">
+              <Link to={paths.home}><Plus size={15} /></Link>
+            </IconButton>
+          </Tooltip>
+          <Tooltip content="刷新">
+            <IconButton disabled={refreshing} onClick={onRefresh} type="button" aria-label="刷新" variant="ghost">
+              <RefreshCcw className={refreshing ? 'spin' : undefined} size={15} />
+            </IconButton>
+          </Tooltip>
         </Flex>
       </div>
       <ScrollArea className="session-rail-list" scrollbars="vertical">
@@ -53,7 +60,7 @@ function SessionRailItem({ active, session }: { active: boolean; session: Browse
 }
 
 function EmptyRail() {
-  return <Card className="session-rail-empty"><Text as="p" color="gray">空</Text></Card>;
+  return <Card className="session-rail-empty"><Text as="p" color="gray">无窗口</Text></Card>;
 }
 
 function isActiveSession(session: BrowserSession) {

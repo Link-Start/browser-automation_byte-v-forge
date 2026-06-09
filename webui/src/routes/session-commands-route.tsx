@@ -45,7 +45,7 @@ export function SessionCommandsRoute() {
       error={execute.error?.message}
       pending={execute.isPending}
       sessionId={sessionId}
-      title="高级操作"
+      title="工具"
     >
       <div className="layout">
         <CommandCard

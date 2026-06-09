@@ -1,13 +1,6 @@
 import { Navigate, createBrowserRouter } from 'react-router';
 import { AppRouteError } from './app-route-error';
 import { AppShell } from './app-shell';
-import { HomeRoute } from './home-route';
-import { LiveViewRoute } from './live-view-route';
-import { NewSessionRoute } from './new-session-route';
-import { SessionCommandsRoute } from './session-commands-route';
-import { SessionLiveRoute } from './session-live-route';
-import { SessionRouteLayout } from './session-route-layout';
-import { SessionTasksRoute } from './session-tasks-route';
 import { paths } from './paths';
 
 export const router = createBrowserRouter([
@@ -16,29 +9,52 @@ export const router = createBrowserRouter([
     Component: AppShell,
     errorElement: <AppRouteError />,
     children: [
-      { index: true, Component: HomeRoute },
+      { index: true, lazy: homeRoute },
       {
         path: 'sessions',
         children: [
-          { index: true, Component: HomeRoute },
-          { path: 'new', Component: NewSessionRoute },
+          { index: true, lazy: homeRoute },
           {
             path: ':sessionId',
-            Component: SessionRouteLayout,
+            lazy: sessionRouteLayout,
             children: [
               { index: true, element: <SessionLiveRedirect /> },
-              { path: 'live', Component: SessionLiveRoute },
-              { path: 'commands', Component: SessionCommandsRoute },
-              { path: 'tasks', Component: SessionTasksRoute }
+              { path: 'live', lazy: sessionLiveRoute },
+              { path: 'commands', lazy: sessionCommandsRoute },
+              { path: 'tasks', lazy: sessionTasksRoute }
             ]
           }
         ]
       },
-      { path: 'live/:token', Component: LiveViewRoute },
+      { path: 'live/:token', lazy: liveViewRoute },
       { path: '*', element: <Navigate replace to={paths.home} /> }
     ]
   }
 ]);
+
+async function homeRoute() {
+  return { Component: (await import('./home-route')).HomeRoute };
+}
+
+async function liveViewRoute() {
+  return { Component: (await import('./live-view-route')).LiveViewRoute };
+}
+
+async function sessionRouteLayout() {
+  return { Component: (await import('./session-route-layout')).SessionRouteLayout };
+}
+
+async function sessionLiveRoute() {
+  return { Component: (await import('./session-live-route')).SessionLiveRoute };
+}
+
+async function sessionCommandsRoute() {
+  return { Component: (await import('./session-commands-route')).SessionCommandsRoute };
+}
+
+async function sessionTasksRoute() {
+  return { Component: (await import('./session-tasks-route')).SessionTasksRoute };
+}
 
 function SessionLiveRedirect() {
   return <Navigate replace to="live" />;

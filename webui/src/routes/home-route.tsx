@@ -107,7 +107,6 @@ export function HomeRoute() {
           validationError={validationError}
         />
         <SessionRail
-          activeSessionId={sessionItems[0]?.session_id}
           onRefresh={() => {
             void sessions.refetch();
           }}
