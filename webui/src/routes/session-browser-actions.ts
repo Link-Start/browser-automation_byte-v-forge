@@ -3,7 +3,7 @@ import {
   type BrowserCommand,
   type ExecuteBrowserCommandsRequest
 } from '../proto/browser/automation/v1/browser_automation';
-import { newRequestId } from './session-route-utils';
+import { newRequestId } from './request-id';
 
 export type SessionBrowserAction = 'back' | 'forward' | 'navigate' | 'reload';
 

@@ -42,7 +42,7 @@ function SessionRailItem({ active, session }: { active: boolean; session: Browse
   const sessionId = session.session_id;
   return (
     <Card className={active ? 'session-rail-item session-rail-item-active' : 'session-rail-item'}>
-      <Link className="session-rail-main" to={paths.sessionLive(sessionId)}>
+      <Link className="session-rail-main" to={paths.session(sessionId)}>
         <Flex align="center" className="session-rail-meta" gap="2">
           <span className={`session-status-dot ${sessionStatusTone(session.status)}`} />
           <Box className="session-rail-title">

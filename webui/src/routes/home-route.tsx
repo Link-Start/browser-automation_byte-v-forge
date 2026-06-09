@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Grid } from '@radix-ui/themes';
+import { Flex, Grid } from '@radix-ui/themes';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { buildQuickCommands, defaultQuickCommand } from '../api/defaults';
 import { executeCommands, listSessions, startSession } from '../api/browser-api';
 import { browserQueryKeys } from '../api/query-keys';
 import { CloudBrowserLauncher } from '../components/cloud-browser-launcher';
+import { CloudBrowserPanel } from '../components/cloud-browser-panel';
 import { PageFrame } from '../components/page-frame';
 import { SessionRail } from '../components/session-rail';
 import {
@@ -17,7 +18,7 @@ import { paths } from './paths';
 import { normalizeBrowserUrl, validateBrowserUrl } from './browser-url';
 import { initialLocale, initialTimezone, localeOptions, timezoneOptions } from './fingerprint-options';
 import { buildStartSessionRequest, defaultSessionConfig, validateSessionConfig, type SessionConfig } from './session-config';
-import { newRequestId } from './session-route-utils';
+import { newRequestId } from './request-id';
 import '../workbench.css';
 
 type FingerprintMode = 'ip' | 'manual';
@@ -32,6 +33,7 @@ const timezoneOptionItems = timezoneOptions();
 
 export function HomeRoute() {
   const navigate = useNavigate();
+  const { sessionId: routeSessionId = '' } = useParams();
   const queryClient = useQueryClient();
   const [targetUrl, setTargetUrl] = useState(defaultQuickCommand.targetUrl);
   const [launchWarning, setLaunchWarning] = useState('');
@@ -43,6 +45,7 @@ export function HomeRoute() {
   const [timezone, setTimezone] = useState(initialTimezone);
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
+  const activeSessionId = routeSessionId.trim();
   const sessionConfig = buildCloudBrowserConfig(
     fingerprintMode,
     locale,
@@ -75,39 +78,49 @@ export function HomeRoute() {
   async function handleLaunchSuccess(result: LaunchResult) {
     setLaunchWarning(result.warning || '');
     await queryClient.invalidateQueries({ queryKey: browserQueryKeys.sessions });
-    navigate(paths.sessionLive(result.sessionId));
+    navigate(paths.session(result.sessionId));
   }
 
   return (
     <PageFrame className="cloud-workbench-page">
-      <Grid className="cloud-workbench" gap="3">
-        <CloudBrowserLauncher
-          disabled={launch.isPending}
-          fingerprintMode={fingerprintMode}
-          launchError={launch.error?.message || sessions.error?.message || launchWarning}
-          launching={launch.isPending}
-          locale={locale}
-          localeOptions={localeOptionItems}
-          manualProxyUrl={manualProxyUrl}
-          onFingerprintModeChange={(value) => setFingerprintMode(value as FingerprintMode)}
-          onLaunch={() => launch.mutate()}
-          onLocaleChange={setLocale}
-          onManualProxyUrlChange={setManualProxyUrl}
-          onProxyModeChange={setProxyMode}
-          onProxyRuntimeAccountIdChange={setProxyRuntimeAccountId}
-          onTargetUrlChange={(value) => {
-            setLaunchWarning('');
-            setTargetUrl(value);
-          }}
-          onTimezoneChange={setTimezone}
-          proxyMode={proxyMode}
-          proxyRuntimeAccountId={proxyRuntimeAccountId}
-          targetUrl={targetUrl}
-          timezone={timezone}
-          timezoneOptions={timezoneOptionItems}
-          validationError={validationError}
-        />
+      <Grid className={activeSessionId ? 'cloud-workbench cloud-workbench-active' : 'cloud-workbench'} gap="3">
+        <Flex className="cloud-workbench-main" direction="column" gap="2">
+          <CloudBrowserLauncher
+            disabled={launch.isPending}
+            fingerprintMode={fingerprintMode}
+            launchError={launch.error?.message || sessions.error?.message || launchWarning}
+            launching={launch.isPending}
+            locale={locale}
+            localeOptions={localeOptionItems}
+            manualProxyUrl={manualProxyUrl}
+            onFingerprintModeChange={(value) => setFingerprintMode(value as FingerprintMode)}
+            onLaunch={() => launch.mutate()}
+            onLocaleChange={setLocale}
+            onManualProxyUrlChange={setManualProxyUrl}
+            onProxyModeChange={setProxyMode}
+            onProxyRuntimeAccountIdChange={setProxyRuntimeAccountId}
+            onTargetUrlChange={(value) => {
+              setLaunchWarning('');
+              setTargetUrl(value);
+            }}
+            onTimezoneChange={setTimezone}
+            proxyMode={proxyMode}
+            proxyRuntimeAccountId={proxyRuntimeAccountId}
+            targetUrl={targetUrl}
+            timezone={timezone}
+            timezoneOptions={timezoneOptionItems}
+            validationError={validationError}
+          />
+          {activeSessionId ? (
+            <CloudBrowserPanel
+              onStopped={() => navigate(paths.home)}
+              sessionError={sessions.error?.message}
+              sessionId={activeSessionId}
+            />
+          ) : null}
+        </Flex>
         <SessionRail
+          activeSessionId={activeSessionId}
           onRefresh={() => {
             void sessions.refetch();
           }}

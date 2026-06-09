@@ -14,6 +14,23 @@
 .locale-select { width: min(240px, 100%); }
 .timezone-select { width: min(270px, 100%); }
 .proxy-input { width: min(330px, 100%); }
+.cloud-workbench-main { min-height: 0; min-width: 0; }
+.cloud-workbench-active .launch-card { align-items: stretch; border-radius: 20px; flex: 0 0 auto; }
+.cloud-workbench-active .launch-form { max-width: none; padding: 8px; width: 100%; }
+.cloud-workbench-active .launch-address { border-radius: 16px; box-shadow: none; padding: 6px; }
+.cloud-workbench-active .launch-address .rt-TextFieldRoot { --text-field-height: 42px; font-size: 15px; }
+.cloud-workbench-active .launch-address .rt-IconButton { height: 38px; width: 38px; }
+.cloud-workbench-active .launch-options { padding: 7px; }
+.cloud-session-main { flex: 1 1 auto; min-height: 0; min-width: 0; }
+.cloud-session-toolbar { background: rgba(255,255,255,.95); border-color: #e2e8f0; border-radius: 18px; box-shadow: 0 14px 40px rgba(15,23,42,.08); padding: 6px; }
+.cloud-session-toolbar-grid { grid-template-columns: max-content minmax(0, 1fr) max-content; min-width: 0; width: 100%; }
+.cloud-session-address-form { align-items: center; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) auto; min-width: 0; }
+.cloud-session-address-form .rt-TextFieldRoot { --text-field-height: 38px; }
+.cloud-session-nav, .cloud-session-window-actions { min-width: 0; }
+.cloud-session-status { border-radius: 999px; height: 9px; min-width: 9px; padding: 0; width: 9px; }
+.cloud-session-main .browser-stage { background: #090e1a; border-color: #111827; border-radius: 24px; box-shadow: 0 26px 72px rgba(15,23,42,.18); display: flex; flex: 1 1 auto; margin: 0; min-height: 0; padding: 0; }
+.cloud-session-main .browser-viewport { background: #090e1a; flex: 1 1 auto; height: clamp(520px, calc(100dvh - 214px), 1120px); min-height: 0; width: 100%; }
+.cloud-session-main .live-frame { height: 100%; max-height: none; object-fit: fill; width: 100%; }
 .session-rail { min-width: 0; padding: 12px; }
 .session-rail-header { margin-bottom: 10px; min-width: 0; }
 .session-rail-list { max-height: calc(100dvh - 154px); padding-right: 2px; }
@@ -29,5 +46,5 @@
 .session-status-dot { border-radius: 999px; display: block; flex: 0 0 auto; height: 9px; width: 9px; }
 .session-status-dot.tone-success { background: #16a34a; } .session-status-dot.tone-warn { background: #f59e0b; } .session-status-dot.tone-danger { background: #dc2626; } .session-status-dot.tone-muted { background: #94a3b8; }
 .session-rail-empty { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 16px; padding: 22px; text-align: center; }
-@media (max-width: 980px) { .cloud-workbench { grid-template-columns: 1fr; } .session-rail { order: 2; } .launch-card { min-height: 360px; } .session-rail-list { max-height: 280px; } }
-@media (max-width: 620px) { .cloud-workbench-page { width: min(100vw - 16px, 1540px); } .launch-form { padding: 16px; } .launch-address { border-radius: 18px; grid-template-columns: 1fr auto; } .launch-address .rt-TextFieldRoot { font-size: 16px; } .launch-options, .manual-fingerprint, .proxy-controls { align-items: stretch; flex-direction: column; } .locale-select, .timezone-select, .proxy-input, .proxy-select { width: 100%; } }
+@media (max-width: 980px) { .cloud-workbench { grid-template-columns: 1fr; } .session-rail { order: 2; } .launch-card { min-height: 360px; } .cloud-workbench-active .launch-card { min-height: auto; } .session-rail-list { max-height: 280px; } }
+@media (max-width: 620px) { .cloud-workbench-page { width: min(100vw - 16px, 1540px); } .launch-form { padding: 16px; } .cloud-workbench-active .launch-form { padding: 8px; } .launch-address { border-radius: 18px; grid-template-columns: 1fr auto; } .launch-address .rt-TextFieldRoot { font-size: 16px; } .launch-options, .manual-fingerprint, .proxy-controls { align-items: stretch; flex-direction: column; } .locale-select, .timezone-select, .proxy-input, .proxy-select { width: 100%; } .cloud-session-toolbar-grid { grid-template-columns: 1fr auto; } .cloud-session-address-form { grid-column: 1 / -1; grid-row: 2; } .cloud-session-window-actions { grid-column: 2; grid-row: 1; } .cloud-session-main .browser-viewport { height: clamp(380px, calc(100dvh - 248px), 760px); } }
