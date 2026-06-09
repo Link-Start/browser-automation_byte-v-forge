@@ -1,14 +1,16 @@
-.cloud-session-page { padding: 10px 0 18px; width: min(1480px, calc(100vw - 20px)); }
-.cloud-session-workspace { align-items: stretch; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) 260px; min-height: calc(100vh - 84px); }
+.cloud-session-page { padding: 6px 0 10px; width: min(1920px, calc(100vw - 10px)); }
+.cloud-session-workspace { align-items: stretch; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) 220px; min-height: calc(100vh - 72px); }
 .cloud-session-main { display: flex; flex-direction: column; gap: 10px; grid-column: 1; grid-row: 1; min-height: 0; min-width: 0; }
-.cloud-session-workspace .session-rail { grid-column: 2; grid-row: 1; height: calc(100vh - 84px); min-height: 0; }
-.cloud-session-toolbar { align-items: center; display: grid; gap: 8px; grid-template-columns: auto minmax(280px, 1fr) auto; padding: 7px 8px; }
+.cloud-session-workspace .session-rail { grid-column: 2; grid-row: 1; height: calc(100vh - 72px); min-height: 0; }
+.cloud-session-toolbar { align-items: center; border-radius: 16px; display: grid; gap: 8px; grid-template-columns: auto minmax(320px, 1fr) auto; padding: 6px 8px; }
 .cloud-session-address-form { min-width: 0; }
 .cloud-session-nav, .cloud-session-window-actions { min-width: max-content; }
 .cloud-session-status { border-radius: 999px; height: 9px; min-width: 9px; padding: 0; width: 9px; }
-.cloud-session-main .browser-stage { flex: 1; margin: 0; min-height: 0; }
-.cloud-session-main .browser-viewport { min-height: min(780px, calc(100vh - 150px)); }
-.cloud-session-workspace .session-rail-list { max-height: calc(100vh - 146px); }
+.cloud-session-main .browser-stage { background: #0b1020; border-color: #111827; border-radius: 18px; box-shadow: none; flex: 1; margin: 0; min-height: 0; }
+.cloud-session-main .browser-stage-inset { height: 100%; }
+.cloud-session-main .browser-viewport { background: radial-gradient(circle at top, #172033 0, #0b1020 55%); height: calc(100vh - 126px); min-height: 620px; }
+.cloud-session-main .live-frame { max-height: none; }
+.cloud-session-workspace .session-rail-list { max-height: calc(100vh - 134px); }
 @media (max-width: 1120px) {
   .cloud-session-workspace { grid-template-columns: 1fr; }
   .cloud-session-main, .cloud-session-workspace .session-rail { grid-column: 1; grid-row: auto; }

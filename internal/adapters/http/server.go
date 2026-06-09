@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -235,18 +236,18 @@ func (s *Server) readLiveMessages(ctx context.Context, conn *websocket.Conn, vie
 			return
 		}
 		message := &browserautomationv1.BrowserLiveClientMessage{}
-		if err := protojsonx.UnmarshalOptions.Unmarshal(data, message); err != nil || message.GetInput() == nil {
+		if err := protojsonx.UnmarshalOptions.Unmarshal(data, message); err != nil {
+			slog.Warn("browser live input message invalid", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "error", err)
+			continue
+		}
+		if message.GetInput() == nil {
 			continue
 		}
 		dispatchCtx, cancel := context.WithTimeout(ctx, liveOperationTimeout)
 		err = s.service.DispatchLiveInput(dispatchCtx, view, message.GetInput())
 		cancel()
 		if err != nil {
-			select {
-			case errCh <- err:
-			default:
-			}
-			return
+			slog.Warn("browser live input dispatch failed", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "error", err)
 		}
 	}
 }

@@ -214,10 +214,17 @@ func sendWebRTCFrame(ctx context.Context, service *app.AutomationService, view *
 
 func dispatchWebRTCInput(ctx context.Context, service *app.AutomationService, view *browserautomationv1.BrowserLiveView, data []byte) {
 	message := &browserautomationv1.BrowserLiveClientMessage{}
-	if err := protojsonx.UnmarshalOptions.Unmarshal(data, message); err != nil || message.GetInput() == nil {
+	if err := protojsonx.UnmarshalOptions.Unmarshal(data, message); err != nil {
+		slog.Warn("browser live WebRTC input message invalid", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "error", err)
+		return
+	}
+	if message.GetInput() == nil {
 		return
 	}
 	dispatchCtx, cancel := context.WithTimeout(ctx, liveOperationTimeout)
-	_ = service.DispatchLiveInput(dispatchCtx, view, message.GetInput())
+	err := service.DispatchLiveInput(dispatchCtx, view, message.GetInput())
 	cancel()
+	if err != nil {
+		slog.Warn("browser live WebRTC input dispatch failed", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "error", err)
+	}
 }
