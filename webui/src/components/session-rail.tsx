@@ -1,5 +1,5 @@
 import { Badge, Button, Card, Flex, IconButton, ScrollArea, Text } from '@radix-ui/themes';
-import { Clock3, Code2, MonitorDot, RefreshCcw, Rows3 } from 'lucide-react';
+import { Code2, MonitorDot, RefreshCcw, Rows3 } from 'lucide-react';
 import { Link } from 'react-router';
 import { browserKindLabel, sessionStatusLabel, sessionStatusTone } from '../api/defaults';
 import type { BrowserSession } from '../proto/browser/automation/v1/browser_automation';
@@ -19,22 +19,18 @@ export function SessionRail({ activeSessionId, lastUpdatedAt, onRefresh, refresh
   return (
     <aside className="session-rail" aria-label="浏览器会话">
       <div className="session-rail-header">
-        <div>
-          <p className="section-kicker">Sessions</p>
-          <Text as="p" size="5" weight="bold">会话</Text>
-        </div>
-        <IconButton disabled={refreshing} onClick={onRefresh} title="刷新会话" type="button" aria-label="刷新会话" variant="soft">
-          <RefreshCcw className={refreshing ? 'spin' : undefined} size={16} />
-        </IconButton>
+        <Text as="p" size="3" weight="bold">Sessions</Text>
+        <Flex align="center" gap="2">
+          <Badge color="gray" variant="soft">{activeCount}/{sessions.length}</Badge>
+          <IconButton disabled={refreshing} onClick={onRefresh} title="刷新" type="button" aria-label="刷新" variant="ghost">
+            <RefreshCcw className={refreshing ? 'spin' : undefined} size={15} />
+          </IconButton>
+        </Flex>
       </div>
-      <Flex align="center" className="session-rail-summary" gap="2">
-        <Badge color="green" variant="soft">{activeCount} 活跃</Badge>
-        <Badge color="orange" variant="soft">{sessions.length} 总计</Badge>
-      </Flex>
-      {lastUpdatedAt ? <Text as="p" className="session-rail-updated" color="gray" size="1">更新 {formatSessionTime(new Date(lastUpdatedAt).toISOString())}</Text> : null}
       <ScrollArea className="session-rail-list" scrollbars="vertical">
         {sessions.length === 0 ? <EmptyRail /> : sessions.map((session) => <SessionRailItem active={session.session_id === activeSessionId} key={session.session_id} session={session} />)}
       </ScrollArea>
+      {lastUpdatedAt ? <Text as="p" className="session-rail-updated" color="gray" size="1">{formatSessionTime(new Date(lastUpdatedAt).toISOString())}</Text> : null}
     </aside>
   );
 }
@@ -43,25 +39,19 @@ function SessionRailItem({ active, session }: { active: boolean; session: Browse
   const sessionId = session.session_id;
   return (
     <Card className={active ? 'session-rail-item session-rail-item-active' : 'session-rail-item'}>
-      <article>
       <Link className="session-rail-main" to={paths.sessionLive(sessionId)}>
         <span className={`session-status-dot ${sessionStatusTone(session.status)}`} />
         <span>
-          <strong title={sessionId}>{shortID(sessionId)}</strong>
-          <small>{session.profile ? browserKindLabel(session.profile.browser_kind) : 'browser'} · {session.profile?.locale || '-'}</small>
+          <strong>{session.profile ? browserKindLabel(session.profile.browser_kind) : 'Browser'}</strong>
+          <small title={sessionId}>{shortID(sessionId)} · {session.profile?.locale || '-'}</small>
         </span>
         <Badge color={sessionStatusColor(session.status)} variant="soft">{sessionStatusLabel(session.status)}</Badge>
       </Link>
-      <div className="session-rail-meta">
-        <span><Clock3 size={13} />{formatSessionTime(session.updated_at || session.created_at)}</span>
-        <span>{session.profile?.timezone || '-'}</span>
-      </div>
       <Flex className="session-rail-actions" gap="1" wrap="wrap">
-        <Button asChild size="1" variant="soft"><Link to={paths.sessionLive(sessionId)}><MonitorDot size={14} />Live</Link></Button>
-        <Button asChild size="1" variant="soft"><Link to={paths.sessionCommands(sessionId)}><Code2 size={14} />高级</Link></Button>
-        <Button asChild size="1" variant="soft"><Link to={paths.sessionTasks(sessionId)}><Rows3 size={14} />历史</Link></Button>
+        <Button asChild size="1" variant="ghost"><Link to={paths.sessionLive(sessionId)} title="实时浏览器"><MonitorDot size={14} />Live</Link></Button>
+        <Button asChild size="1" variant="ghost"><Link to={paths.sessionCommands(sessionId)} title="高级操作"><Code2 size={14} />高级</Link></Button>
+        <Button asChild size="1" variant="ghost"><Link to={paths.sessionTasks(sessionId)} title="历史记录"><Rows3 size={14} />历史</Link></Button>
       </Flex>
-      </article>
     </Card>
   );
 }
@@ -75,14 +65,14 @@ function isActiveSession(session: BrowserSession) {
 }
 
 function shortID(value: string) {
-  return value.length > 14 ? `${value.slice(0, 14)}…` : value;
+  return value.length > 12 ? `${value.slice(0, 12)}…` : value;
 }
 
 function formatSessionTime(value: string | undefined) {
   if (!value) return '-';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString(undefined, { day: '2-digit', hour: '2-digit', minute: '2-digit', month: '2-digit' });
+  return date.toLocaleString(undefined, { hour: '2-digit', minute: '2-digit' });
 }
 
 function sessionStatusColor(status: BrowserSessionStatus) {

@@ -70,20 +70,7 @@ export function HomeRoute() {
 
   return (
     <PageFrame className="cloud-workbench-page">
-      <div className="cloud-workbench-header">
-        <p className="section-kicker">Cloud Browser</p>
-        <h1>云浏览器</h1>
-      </div>
       <div className="cloud-workbench">
-        <SessionRail
-          activeSessionId={recentSession?.session_id}
-          lastUpdatedAt={sessions.dataUpdatedAt}
-          onRefresh={() => {
-            void sessions.refetch();
-          }}
-          refreshing={sessions.isFetching}
-          sessions={sessionItems}
-        />
         <CloudBrowserLauncher
           disabled={launch.isPending}
           launchError={launch.error?.message || sessions.error?.message || launchWarning}
@@ -97,9 +84,17 @@ export function HomeRoute() {
           presets={cloudBrowserPresets}
           recentSession={recentSession}
           selectedPresetId={presetId}
-          sessionCount={sessionItems.length}
           targetUrl={targetUrl}
           validationError={validationError}
+        />
+        <SessionRail
+          activeSessionId={recentSession?.session_id}
+          lastUpdatedAt={sessions.dataUpdatedAt}
+          onRefresh={() => {
+            void sessions.refetch();
+          }}
+          refreshing={sessions.isFetching}
+          sessions={sessionItems}
         />
       </div>
     </PageFrame>
@@ -135,15 +130,15 @@ function launchCommands(targetUrl: string): BrowserCommand[] {
 
 function validateLaunchTarget(value: string) {
   const normalized = normalizeLaunchTarget(value);
-  if (!normalized) return '请输入要打开的网址。';
+  if (!normalized) return '请输入网址。';
   try {
     const url = new URL(normalized);
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return '仅支持 http 或 https 地址。';
+      return '仅支持 http/https。';
     }
     return '';
   } catch {
-    return '请输入有效网址，例如 https://example.com。';
+    return '网址无效。';
   }
 }
 

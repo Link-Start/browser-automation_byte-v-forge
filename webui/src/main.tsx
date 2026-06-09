@@ -18,7 +18,7 @@ if (!root) {
 createRoot(root).render(
   <StrictMode>
     <QueryClientProvider client={client}>
-      <Theme accentColor="orange" appearance="dark" grayColor="slate" panelBackground="translucent" radius="large">
+      <Theme accentColor="orange" appearance="light" grayColor="slate" panelBackground="solid" radius="medium">
         <RouterProvider router={router} />
       </Theme>
     </QueryClientProvider>

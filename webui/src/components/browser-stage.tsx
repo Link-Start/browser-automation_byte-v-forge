@@ -63,7 +63,7 @@ export function BrowserStage(props: BrowserStageProps) {
       <div className="browser-shell">
         <div className="browser-topbar">
           <div className="window-dots"><span /><span /><span /></div>
-          <div className="browser-tab"><Cloud size={14} />Remote Browser</div>
+          <div className="browser-tab"><Cloud size={14} />Cloud Browser</div>
           <div className={`stage-status ${status.tone}`}>{status.label}</div>
         </div>
         <div className="address-row">
@@ -96,13 +96,11 @@ export function BrowserStage(props: BrowserStageProps) {
 function Placeholder({ preview, title }: { preview: string; title: string }) {
   return (
     <>
-      <div className="edge-glow" />
       <div className="viewport-copy">
-        <p className="section-kicker">Isolated Session</p>
+        <Cloud size={30} />
         <h2>{title}</h2>
         <p>{preview}</p>
       </div>
-      <div className="node-map" aria-hidden="true"><i /><i /><i /><i /></div>
     </>
   );
 }

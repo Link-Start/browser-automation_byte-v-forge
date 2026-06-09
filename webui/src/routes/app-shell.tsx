@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, Text } from '@radix-ui/themes';
+import { Badge, Button, Flex, Text } from '@radix-ui/themes';
 import { useQuery } from '@tanstack/react-query';
 import { Cloud, Home, Plus, type LucideIcon } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
@@ -8,8 +8,8 @@ import { BrowserSessionStatus, type BrowserSession } from '../proto/browser/auto
 import { paths } from './paths';
 
 const routeLinks: Array<{ icon: LucideIcon; label: string; to: string; end?: boolean }> = [
-  { end: true, icon: Home, label: '云浏览器', to: paths.home },
-  { icon: Plus, label: '简单配置', to: paths.newSession }
+  { end: true, icon: Home, label: '浏览器', to: paths.home },
+  { icon: Plus, label: '配置', to: paths.newSession }
 ];
 
 export function AppShell() {
@@ -21,22 +21,16 @@ export function AppShell() {
       <a className="skip-link" href="#main-content">跳到页面内容</a>
       <header className="app-topbar">
         <Flex align="center" className="app-topbar-inner" gap="4" justify="between">
-          <Flex align="center" className="app-brand" gap="3">
-            <span className="app-brand-mark"><Cloud size={18} /></span>
-            <Box>
-              <Text as="p" className="section-kicker">Cloud Browser</Text>
-              <Text as="p" size="2" weight="bold">远端隔离浏览器</Text>
-            </Box>
+          <Flex align="center" className="app-brand" gap="2">
+            <span className="app-brand-mark"><Cloud size={17} /></span>
+            <Text as="p" size="3" weight="bold">Cloud Browser</Text>
           </Flex>
           <nav className="route-nav" aria-label="Cloud Browser routes">
             {routeLinks.map((link) => <RouteLink key={link.to} {...link} />)}
           </nav>
           <Flex align="center" className="app-topbar-actions" gap="2">
-            <Badge color="green" variant="soft">{activeCount} 活跃</Badge>
-            <Badge color="orange" variant="soft">{sessionItems.length} 会话</Badge>
-            <Button asChild size="2">
-              <NavLink to={paths.newSession}><Plus size={15} />配置</NavLink>
-            </Button>
+            <Badge color="gray" variant="soft">{activeCount}/{sessionItems.length}</Badge>
+            <Button asChild size="2"><NavLink to={paths.newSession}><Plus size={15} />新建</NavLink></Button>
           </Flex>
         </Flex>
       </header>
