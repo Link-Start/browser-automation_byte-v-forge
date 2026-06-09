@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	BrowserAutomationService_StartBrowserSession_FullMethodName    = "/browser.automation.v1.BrowserAutomationService/StartBrowserSession"
 	BrowserAutomationService_GetBrowserSession_FullMethodName      = "/browser.automation.v1.BrowserAutomationService/GetBrowserSession"
+	BrowserAutomationService_ListBrowserSessions_FullMethodName    = "/browser.automation.v1.BrowserAutomationService/ListBrowserSessions"
 	BrowserAutomationService_StopBrowserSession_FullMethodName     = "/browser.automation.v1.BrowserAutomationService/StopBrowserSession"
 	BrowserAutomationService_CreateBrowserLiveView_FullMethodName  = "/browser.automation.v1.BrowserAutomationService/CreateBrowserLiveView"
 	BrowserAutomationService_StartBrowserTask_FullMethodName       = "/browser.automation.v1.BrowserAutomationService/StartBrowserTask"
@@ -35,6 +36,7 @@ const (
 type BrowserAutomationServiceClient interface {
 	StartBrowserSession(ctx context.Context, in *StartBrowserSessionRequest, opts ...grpc.CallOption) (*StartBrowserSessionResponse, error)
 	GetBrowserSession(ctx context.Context, in *GetBrowserSessionRequest, opts ...grpc.CallOption) (*GetBrowserSessionResponse, error)
+	ListBrowserSessions(ctx context.Context, in *ListBrowserSessionsRequest, opts ...grpc.CallOption) (*ListBrowserSessionsResponse, error)
 	StopBrowserSession(ctx context.Context, in *StopBrowserSessionRequest, opts ...grpc.CallOption) (*StopBrowserSessionResponse, error)
 	CreateBrowserLiveView(ctx context.Context, in *CreateBrowserLiveViewRequest, opts ...grpc.CallOption) (*CreateBrowserLiveViewResponse, error)
 	StartBrowserTask(ctx context.Context, in *StartBrowserTaskRequest, opts ...grpc.CallOption) (*StartBrowserTaskResponse, error)
@@ -65,6 +67,16 @@ func (c *browserAutomationServiceClient) GetBrowserSession(ctx context.Context, 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetBrowserSessionResponse)
 	err := c.cc.Invoke(ctx, BrowserAutomationService_GetBrowserSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *browserAutomationServiceClient) ListBrowserSessions(ctx context.Context, in *ListBrowserSessionsRequest, opts ...grpc.CallOption) (*ListBrowserSessionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListBrowserSessionsResponse)
+	err := c.cc.Invoke(ctx, BrowserAutomationService_ListBrowserSessions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,6 +149,7 @@ func (c *browserAutomationServiceClient) ListBrowserTasks(ctx context.Context, i
 type BrowserAutomationServiceServer interface {
 	StartBrowserSession(context.Context, *StartBrowserSessionRequest) (*StartBrowserSessionResponse, error)
 	GetBrowserSession(context.Context, *GetBrowserSessionRequest) (*GetBrowserSessionResponse, error)
+	ListBrowserSessions(context.Context, *ListBrowserSessionsRequest) (*ListBrowserSessionsResponse, error)
 	StopBrowserSession(context.Context, *StopBrowserSessionRequest) (*StopBrowserSessionResponse, error)
 	CreateBrowserLiveView(context.Context, *CreateBrowserLiveViewRequest) (*CreateBrowserLiveViewResponse, error)
 	StartBrowserTask(context.Context, *StartBrowserTaskRequest) (*StartBrowserTaskResponse, error)
@@ -158,6 +171,9 @@ func (UnimplementedBrowserAutomationServiceServer) StartBrowserSession(context.C
 }
 func (UnimplementedBrowserAutomationServiceServer) GetBrowserSession(context.Context, *GetBrowserSessionRequest) (*GetBrowserSessionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetBrowserSession not implemented")
+}
+func (UnimplementedBrowserAutomationServiceServer) ListBrowserSessions(context.Context, *ListBrowserSessionsRequest) (*ListBrowserSessionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListBrowserSessions not implemented")
 }
 func (UnimplementedBrowserAutomationServiceServer) StopBrowserSession(context.Context, *StopBrowserSessionRequest) (*StopBrowserSessionResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method StopBrowserSession not implemented")
@@ -231,6 +247,24 @@ func _BrowserAutomationService_GetBrowserSession_Handler(srv interface{}, ctx co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BrowserAutomationServiceServer).GetBrowserSession(ctx, req.(*GetBrowserSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BrowserAutomationService_ListBrowserSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListBrowserSessionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BrowserAutomationServiceServer).ListBrowserSessions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BrowserAutomationService_ListBrowserSessions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BrowserAutomationServiceServer).ListBrowserSessions(ctx, req.(*ListBrowserSessionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -357,6 +391,10 @@ var BrowserAutomationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBrowserSession",
 			Handler:    _BrowserAutomationService_GetBrowserSession_Handler,
+		},
+		{
+			MethodName: "ListBrowserSessions",
+			Handler:    _BrowserAutomationService_ListBrowserSessions_Handler,
 		},
 		{
 			MethodName: "StopBrowserSession",

@@ -78,6 +78,21 @@ func (s *AutomationService) GetBrowserSession(ctx context.Context, sessionID str
 	return s.expireSessionIfNeeded(ctx, session)
 }
 
+func (s *AutomationService) ListBrowserSessions(ctx context.Context, pageSize int, pageToken string) (core.SessionListResult, error) {
+	result, err := s.store.ListSessions(ctx, pageSize, pageToken)
+	if err != nil {
+		return core.SessionListResult{}, err
+	}
+	for index, session := range result.Sessions {
+		current, expireErr := s.expireSessionIfNeeded(ctx, session)
+		if expireErr != nil {
+			return core.SessionListResult{}, expireErr
+		}
+		result.Sessions[index] = current
+	}
+	return result, nil
+}
+
 func (s *AutomationService) StopBrowserSession(ctx context.Context, sessionID, reason string) (*core.Session, error) {
 	session, err := s.store.GetSession(ctx, sessionID)
 	if err != nil {

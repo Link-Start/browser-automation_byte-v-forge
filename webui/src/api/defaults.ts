@@ -1,6 +1,7 @@
 import {
   BrowserKind,
   BrowserNavigationWaitUntil,
+  BrowserSessionStatus,
   BrowserTaskStatus,
   type BrowserCommand
 } from '../proto/browser/automation/v1/browser_automation';
@@ -90,4 +91,15 @@ export function statusTone(value?: BrowserTaskStatus): string {
 
 export function formatJSON(value: unknown): string {
   return JSON.stringify(value, null, 2);
+}
+
+export function sessionStatusLabel(value?: BrowserSessionStatus): string {
+  return (value || 'BROWSER_SESSION_STATUS_UNSPECIFIED').replace('BROWSER_SESSION_STATUS_', '').replaceAll('_', ' ').toLowerCase();
+}
+
+export function sessionStatusTone(value?: BrowserSessionStatus): string {
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_RUNNING) return 'tone-success';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_FAILED || value === BrowserSessionStatus.BROWSER_SESSION_STATUS_EXPIRED) return 'tone-danger';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STARTING || value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STOPPING) return 'tone-warn';
+  return 'tone-muted';
 }

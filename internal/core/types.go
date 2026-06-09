@@ -109,6 +109,11 @@ type TaskListResult struct {
 	NextPageToken string
 }
 
+type SessionListResult struct {
+	Sessions      []*Session
+	NextPageToken string
+}
+
 func SessionStatusIsFinal(status browserautomationv1.BrowserSessionStatus) bool {
 	switch status {
 	case browserautomationv1.BrowserSessionStatus_BROWSER_SESSION_STATUS_STOPPED,

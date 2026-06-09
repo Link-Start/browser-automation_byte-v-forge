@@ -35,6 +35,17 @@ func (s *AutomationServer) GetBrowserSession(ctx context.Context, request *brows
 	return &browserautomationv1.GetBrowserSessionResponse{Session: session}, nil
 }
 
+func (s *AutomationServer) ListBrowserSessions(ctx context.Context, request *browserautomationv1.ListBrowserSessionsRequest) (*browserautomationv1.ListBrowserSessionsResponse, error) {
+	result, err := s.service.ListBrowserSessions(ctx, int(request.GetPageSize()), request.GetPageToken())
+	if err != nil {
+		return &browserautomationv1.ListBrowserSessionsResponse{Error: core.AutomationError(err)}, nil
+	}
+	return &browserautomationv1.ListBrowserSessionsResponse{
+		Sessions:      result.Sessions,
+		NextPageToken: result.NextPageToken,
+	}, nil
+}
+
 func (s *AutomationServer) StopBrowserSession(ctx context.Context, request *browserautomationv1.StopBrowserSessionRequest) (*browserautomationv1.StopBrowserSessionResponse, error) {
 	session, err := s.service.StopBrowserSession(ctx, request.GetSessionId(), request.GetReason())
 	if err != nil {

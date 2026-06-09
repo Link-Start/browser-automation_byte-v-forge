@@ -16,6 +16,7 @@ option php_namespace = "Browser\\Automation\\V1";
 service BrowserAutomationService {
   rpc StartBrowserSession(StartBrowserSessionRequest) returns (StartBrowserSessionResponse);
   rpc GetBrowserSession(GetBrowserSessionRequest) returns (GetBrowserSessionResponse);
+  rpc ListBrowserSessions(ListBrowserSessionsRequest) returns (ListBrowserSessionsResponse);
   rpc StopBrowserSession(StopBrowserSessionRequest) returns (StopBrowserSessionResponse);
   rpc CreateBrowserLiveView(CreateBrowserLiveViewRequest) returns (CreateBrowserLiveViewResponse);
   rpc StartBrowserTask(StartBrowserTaskRequest) returns (StartBrowserTaskResponse);
@@ -701,6 +702,17 @@ message GetBrowserSessionRequest {
 message GetBrowserSessionResponse {
   BrowserSession session = 1;
   BrowserAutomationError error = 2;
+}
+
+message ListBrowserSessionsRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message ListBrowserSessionsResponse {
+  repeated BrowserSession sessions = 1;
+  string next_page_token = 2;
+  BrowserAutomationError error = 3;
 }
 
 message StopBrowserSessionRequest {

@@ -19,6 +19,7 @@ type Store interface {
 	CreateSession(ctx context.Context, session *Session) error
 	GetSession(ctx context.Context, sessionID string) (*Session, error)
 	GetSessionByRequestID(ctx context.Context, requestID string) (*Session, error)
+	ListSessions(ctx context.Context, pageSize int, pageToken string) (SessionListResult, error)
 	UpdateSession(ctx context.Context, session *Session) error
 	CreateTask(ctx context.Context, task *Task) error
 	GetTask(ctx context.Context, taskID string) (*Task, error)

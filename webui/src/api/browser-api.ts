@@ -2,6 +2,7 @@ import type {
   ExecuteBrowserCommandsRequest,
   CreateBrowserLiveViewResponse,
   ExecuteBrowserCommandsResponse,
+  ListBrowserSessionsResponse,
   ListBrowserTasksResponse,
   StartBrowserSessionRequest,
   StartBrowserSessionResponse,
@@ -15,6 +16,14 @@ export async function startSession(request: StartBrowserSessionRequest): Promise
   return ensureProtoSuccess(await postProto<StartBrowserSessionResponse>(`${basePath}/sessions`, request, {
     timeoutMessage: '启动浏览器会话超时，请稍后重试或降低并发。',
     timeoutMs: 150_000
+  }));
+}
+
+export async function listSessions(): Promise<ListBrowserSessionsResponse> {
+  const query = new URLSearchParams({ page_size: '50' });
+  return ensureProtoSuccess(await fetchProto<ListBrowserSessionsResponse>(`${basePath}/sessions?${query.toString()}`, {
+    timeoutMessage: '加载会话列表超时，请稍后重试。',
+    timeoutMs: 20_000
   }));
 }
 

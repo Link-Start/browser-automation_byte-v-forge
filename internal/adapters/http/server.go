@@ -58,6 +58,8 @@ func (s *Server) serveAPI(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.Method == http.MethodPost && path == "/sessions":
 		s.startSession(w, r)
+	case r.Method == http.MethodGet && path == "/sessions":
+		s.listSessions(w, r)
 	case r.Method == http.MethodGet && strings.HasPrefix(path, "/sessions/"):
 		s.getSession(w, r, strings.TrimPrefix(path, "/sessions/"))
 	case r.Method == http.MethodPost && strings.HasPrefix(path, "/sessions/") && strings.HasSuffix(path, "/live"):
@@ -87,6 +89,12 @@ func (s *Server) startSession(w http.ResponseWriter, r *http.Request) {
 func (s *Server) getSession(w http.ResponseWriter, r *http.Request, sessionID string) {
 	session, err := s.service.GetBrowserSession(r.Context(), strings.TrimSpace(sessionID))
 	writeProto(w, &browserautomationv1.GetBrowserSessionResponse{Session: session, Error: core.AutomationError(err)})
+}
+
+func (s *Server) listSessions(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	result, err := s.service.ListBrowserSessions(r.Context(), parseInt(query.Get("page_size")), query.Get("page_token"))
+	writeProto(w, &browserautomationv1.ListBrowserSessionsResponse{Sessions: result.Sessions, NextPageToken: result.NextPageToken, Error: core.AutomationError(err)})
 }
 
 func (s *Server) stopSession(w http.ResponseWriter, r *http.Request, path string) {

@@ -7,7 +7,6 @@ import { NewSessionRoute } from './new-session-route';
 import { OpenSessionRoute } from './open-session-route';
 import { SessionCommandsRoute } from './session-commands-route';
 import { SessionLiveRoute } from './session-live-route';
-import { SessionsIndexRoute } from './sessions-index-route';
 import { SessionRouteLayout } from './session-route-layout';
 import { SessionTasksRoute } from './session-tasks-route';
 import { paths } from './paths';
@@ -22,7 +21,7 @@ export const router = createBrowserRouter([
       {
         path: 'sessions',
         children: [
-          { index: true, Component: SessionsIndexRoute },
+          { index: true, Component: HomeRoute },
           { path: 'new', Component: NewSessionRoute },
           { path: 'open', Component: OpenSessionRoute },
           {
