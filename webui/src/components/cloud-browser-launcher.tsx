@@ -18,11 +18,9 @@ type CloudBrowserLauncherProps = {
   onLocaleChange: (value: string) => void;
   onManualProxyUrlChange: (value: string) => void;
   onProxyModeChange: (value: BrowserProxyProviderKind) => void;
-  onProxyRuntimeAccountIdChange: (value: string) => void;
   onTargetUrlChange: (value: string) => void;
   onTimezoneChange: (value: string) => void;
   proxyMode: BrowserProxyProviderKind;
-  proxyRuntimeAccountId: string;
   targetUrl: string;
   timezone: string;
   timezoneOptions: SelectOption[];
@@ -75,11 +73,10 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
   );
 }
 
-type ProxyControlProps = Pick<CloudBrowserLauncherProps, 'manualProxyUrl' | 'onManualProxyUrlChange' | 'onProxyModeChange' | 'onProxyRuntimeAccountIdChange' | 'proxyMode' | 'proxyRuntimeAccountId'>;
+type ProxyControlProps = Pick<CloudBrowserLauncherProps, 'manualProxyUrl' | 'onManualProxyUrlChange' | 'onProxyModeChange' | 'proxyMode'>;
 
 function ProxyControls(props: ProxyControlProps) {
   const isManual = props.proxyMode === BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_MANUAL;
-  const isRuntime = props.proxyMode === BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_PROXY_RUNTIME;
   return (
     <Flex align="center" className="proxy-controls" gap="2" wrap="wrap">
       <Select.Root value={props.proxyMode} onValueChange={(value) => props.onProxyModeChange(value as BrowserProxyProviderKind)}>
@@ -87,11 +84,10 @@ function ProxyControls(props: ProxyControlProps) {
         <Select.Content>
           <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_NONE}>直连</Select.Item>
           <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_MANUAL}>手动代理</Select.Item>
-          <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_PROXY_RUNTIME}>代理服务</Select.Item>
+          <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_PROXY_RUNTIME}>自动代理</Select.Item>
         </Select.Content>
       </Select.Root>
       {isManual ? <ProxyInput value={props.manualProxyUrl} onChange={props.onManualProxyUrlChange} placeholder="host:port:user:pass" /> : null}
-      {isRuntime ? <ProxyInput value={props.proxyRuntimeAccountId} onChange={props.onProxyRuntimeAccountIdChange} placeholder="配置 ID" /> : null}
     </Flex>
   );
 }

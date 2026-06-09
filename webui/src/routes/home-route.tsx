@@ -41,7 +41,6 @@ export function HomeRoute() {
   const [locale, setLocale] = useState(initialLocale);
   const [manualProxyUrl, setManualProxyUrl] = useState('');
   const [proxyMode, setProxyMode] = useState(BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_NONE);
-  const [proxyRuntimeAccountId, setProxyRuntimeAccountId] = useState('');
   const [timezone, setTimezone] = useState(initialTimezone);
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
@@ -51,8 +50,7 @@ export function HomeRoute() {
     locale,
     timezone,
     proxyMode,
-    manualProxyUrl,
-    proxyRuntimeAccountId
+    manualProxyUrl
   );
   const validationError = validateBrowserUrl(targetUrl) || validateSessionConfig(sessionConfig);
   const launch = useMutation({ mutationFn: launchCloudBrowser, onSuccess: handleLaunchSuccess });
@@ -98,14 +96,12 @@ export function HomeRoute() {
             onLocaleChange={setLocale}
             onManualProxyUrlChange={setManualProxyUrl}
             onProxyModeChange={setProxyMode}
-            onProxyRuntimeAccountIdChange={setProxyRuntimeAccountId}
             onTargetUrlChange={(value) => {
               setLaunchWarning('');
               setTargetUrl(value);
             }}
             onTimezoneChange={setTimezone}
             proxyMode={proxyMode}
-            proxyRuntimeAccountId={proxyRuntimeAccountId}
             targetUrl={targetUrl}
             timezone={timezone}
             timezoneOptions={timezoneOptionItems}
@@ -137,15 +133,14 @@ function buildCloudBrowserConfig(
   locale: string,
   timezone: string,
   proxyMode: BrowserProxyProviderKind,
-  manualProxyUrl: string,
-  proxyRuntimeAccountId: string
+  manualProxyUrl: string
 ): SessionConfig {
   return {
     ...defaultSessionConfig,
     locale: mode === 'manual' ? locale : '',
     manualProxyUrl,
     proxyProviderKind: proxyMode,
-    proxyRuntimeAccountId,
+    proxyRuntimeAccountId: '',
     timezone: mode === 'manual' ? timezone : ''
   };
 }
