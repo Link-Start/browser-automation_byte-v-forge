@@ -21,6 +21,9 @@ export function validateSessionConfig(config: SessionConfig): string {
   if (config.locale && hasWhitespace(config.locale)) {
     return 'Locale 不能包含空格。';
   }
+  if (config.locale && !isValidLocale(config.locale)) {
+    return 'Locale 格式无效。';
+  }
   if (config.timezone && hasWhitespace(config.timezone)) {
     return 'Timezone 不能包含空格。';
   }
@@ -48,6 +51,15 @@ export function buildStartSessionRequest(config: SessionConfig, requestId: strin
     security_policy: undefined,
     ttl: '1800s'
   };
+}
+
+function isValidLocale(value: string): boolean {
+  try {
+    new Intl.Locale(value.trim());
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function hasWhitespace(value: string) {

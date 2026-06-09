@@ -14,7 +14,6 @@ type CloudBrowserLauncherProps = {
   launchError?: string;
   launching: boolean;
   locale: string;
-  localeOptions: SelectOption[];
   onFingerprintModeChange: (value: string) => void;
   onLaunch: () => void;
   onLocaleChange: (value: string) => void;
@@ -87,13 +86,10 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
   );
 }
 
-function ManualFingerprintControls(props: Pick<CloudBrowserLauncherProps, 'locale' | 'localeOptions' | 'onLocaleChange' | 'onTimezoneChange' | 'timezone' | 'timezoneOptions'>) {
+function ManualFingerprintControls(props: Pick<CloudBrowserLauncherProps, 'locale' | 'onLocaleChange' | 'onTimezoneChange' | 'timezone' | 'timezoneOptions'>) {
   return (
     <Flex align="center" className="manual-fingerprint" gap="2" wrap="wrap">
-      <Select.Root value={props.locale} onValueChange={props.onLocaleChange}>
-        <Select.Trigger aria-label="语言" />
-        <Select.Content>{props.localeOptions.map((item) => <Select.Item key={item.value} value={item.value}>{item.label}</Select.Item>)}</Select.Content>
-      </Select.Root>
+      <TextField.Root aria-label="Locale" className="locale-input" value={props.locale} onChange={(event) => props.onLocaleChange(event.target.value)} placeholder="Locale" />
       <Select.Root value={props.timezone} onValueChange={props.onTimezoneChange}>
         <Select.Trigger aria-label="Timezone" />
         <Select.Content>{props.timezoneOptions.map((item) => <Select.Item key={item.value} value={item.value}>{item.label}</Select.Item>)}</Select.Content>

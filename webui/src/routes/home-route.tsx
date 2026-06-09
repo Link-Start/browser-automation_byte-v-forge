@@ -9,35 +9,19 @@ import { PageFrame } from '../components/page-frame';
 import { SessionRail } from '../components/session-rail';
 import type { BrowserCommand, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
 import { paths } from './paths';
+import { initialLocale, initialTimezone, timezoneOptions } from './fingerprint-options';
 import { buildStartSessionRequest, defaultSessionConfig, validateSessionConfig, type SessionConfig } from './session-config';
 import { newRequestId } from './session-route-utils';
 import '../workbench.css';
 
 type FingerprintMode = 'ip' | 'manual';
 
-type SelectOption = { label: string; value: string };
-
 type LaunchResult = {
   sessionId: string;
   warning?: string;
 };
 
-const localeOptions: SelectOption[] = [
-  { label: 'zh-CN', value: 'zh-CN' },
-  { label: 'en-US', value: 'en-US' },
-  { label: 'ja-JP', value: 'ja-JP' },
-  { label: 'de-DE', value: 'de-DE' }
-];
-
-const timezoneOptions: SelectOption[] = [
-  { label: 'Asia/Shanghai', value: 'Asia/Shanghai' },
-  { label: 'America/New_York', value: 'America/New_York' },
-  { label: 'America/Los_Angeles', value: 'America/Los_Angeles' },
-  { label: 'Europe/London', value: 'Europe/London' },
-  { label: 'Europe/Berlin', value: 'Europe/Berlin' },
-  { label: 'Asia/Tokyo', value: 'Asia/Tokyo' },
-  { label: 'UTC', value: 'UTC' }
-];
+const timezoneOptionItems = timezoneOptions();
 
 export function HomeRoute() {
   const navigate = useNavigate();
@@ -45,8 +29,8 @@ export function HomeRoute() {
   const [targetUrl, setTargetUrl] = useState(defaultQuickCommand.targetUrl);
   const [launchWarning, setLaunchWarning] = useState('');
   const [fingerprintMode, setFingerprintMode] = useState<FingerprintMode>('ip');
-  const [locale, setLocale] = useState('zh-CN');
-  const [timezone, setTimezone] = useState('Asia/Shanghai');
+  const [locale, setLocale] = useState(initialLocale);
+  const [timezone, setTimezone] = useState(initialTimezone);
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
   const recentSession = sessionItems[0];
@@ -87,7 +71,6 @@ export function HomeRoute() {
           launchError={launch.error?.message || sessions.error?.message || launchWarning}
           launching={launch.isPending}
           locale={locale}
-          localeOptions={localeOptions}
           onFingerprintModeChange={(value) => setFingerprintMode(value as FingerprintMode)}
           onLaunch={() => launch.mutate()}
           onLocaleChange={setLocale}
@@ -99,7 +82,7 @@ export function HomeRoute() {
           recentSession={recentSession}
           targetUrl={targetUrl}
           timezone={timezone}
-          timezoneOptions={timezoneOptions}
+          timezoneOptions={timezoneOptionItems}
           validationError={validationError}
           windowCount={sessionItems.length}
         />
