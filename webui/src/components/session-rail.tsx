@@ -14,13 +14,13 @@ type SessionRailProps = {
 };
 
 export function SessionRail({ activeSessionId, onRefresh, refreshing, sessions }: SessionRailProps) {
-  const activeCount = sessions.filter(isActiveSession).length;
+  const visibleSessions = sessions.filter(isVisibleSession);
   return (
     <Card className="session-rail" role="complementary" aria-label="浏览器窗口">
       <Flex align="center" className="session-rail-header" justify="between">
         <Text as="p" size="3" weight="bold">窗口</Text>
         <Flex align="center" gap="1">
-          <Badge color="gray" variant="soft">{activeCount}/{sessions.length}</Badge>
+          <Badge color="gray" variant="soft">{visibleSessions.length}</Badge>
           <RailLink label="新窗口" to={paths.home}><Plus size={15} /></RailLink>
           <Tooltip content="刷新">
             <IconButton disabled={refreshing} onClick={onRefresh} type="button" aria-label="刷新" variant="ghost">
@@ -31,7 +31,7 @@ export function SessionRail({ activeSessionId, onRefresh, refreshing, sessions }
       </Flex>
       <ScrollArea className="session-rail-list" scrollbars="vertical">
         <Flex direction="column" gap="2">
-          {sessions.length === 0 ? <EmptyRail /> : sessions.map((session) => <SessionRailItem active={session.session_id === activeSessionId} key={session.session_id} session={session} />)}
+          {visibleSessions.length === 0 ? <EmptyRail /> : visibleSessions.map((session) => <SessionRailItem active={session.session_id === activeSessionId} key={session.session_id} session={session} />)}
         </Flex>
       </ScrollArea>
     </Card>
@@ -64,8 +64,10 @@ function EmptyRail() {
   return <Card className="session-rail-empty"><Text as="p" color="gray">无窗口</Text></Card>;
 }
 
-function isActiveSession(session: BrowserSession) {
-  return session.status === BrowserSessionStatus.BROWSER_SESSION_STATUS_RUNNING || session.status === BrowserSessionStatus.BROWSER_SESSION_STATUS_STARTING;
+function isVisibleSession(session: BrowserSession) {
+  return session.status === BrowserSessionStatus.BROWSER_SESSION_STATUS_RUNNING ||
+    session.status === BrowserSessionStatus.BROWSER_SESSION_STATUS_STARTING ||
+    session.status === BrowserSessionStatus.BROWSER_SESSION_STATUS_STOPPING;
 }
 
 function shortID(value: string) {
