@@ -42,6 +42,7 @@ const (
 	defaultStatementTimeout     = 10 * time.Second
 	defaultShutdownGrace        = 10 * time.Second
 	defaultWebRTCUDPListenAddr  = ":3478"
+	defaultWebRTCTCPListenAddr  = ""
 	defaultCamoufoxStartup      = 30 * time.Second
 	defaultCamoufoxShutdown     = 5 * time.Second
 	defaultCamoufoxTaskTimeout  = 2 * time.Minute
@@ -64,6 +65,7 @@ type config struct {
 	ApplyMigrations          bool
 	MigrationsDir            string
 	ShutdownGrace            time.Duration
+	WebRTCTCPListenAddr      string
 	WebRTCUDPListenAddr      string
 	WebRTCPublicIPs          []string
 
@@ -147,7 +149,7 @@ func run() error {
 
 	store := postgres.NewRepository(pool, cfg.PostgresStatementTimeout)
 	service := app.NewAutomationService(store, runtime, proxyController, app.SystemClock{}, app.RandomIDGenerator{})
-	liveRTC, err := httpadapter.NewLiveWebRTCServer(httpadapter.LiveWebRTCConfig{PublicIPs: cfg.WebRTCPublicIPs, UDPListenAddr: cfg.WebRTCUDPListenAddr})
+	liveRTC, err := httpadapter.NewLiveWebRTCServer(httpadapter.LiveWebRTCConfig{PublicIPs: cfg.WebRTCPublicIPs, TCPListenAddr: cfg.WebRTCTCPListenAddr, UDPListenAddr: cfg.WebRTCUDPListenAddr})
 	if err != nil {
 		return fmt.Errorf("configure browser live WebRTC: %w", err)
 	}
@@ -209,6 +211,7 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 		ApplyMigrations:          envx.Bool("BROWSER_AUTOMATION_APPLY_MIGRATIONS", false),
 		MigrationsDir:            envx.StringDefault("BROWSER_AUTOMATION_MIGRATIONS_DIR", defaultMigrationsDir),
 		ShutdownGrace:            envx.DurationSeconds("BROWSER_AUTOMATION_SHUTDOWN_GRACE_SECONDS", defaultShutdownGrace),
+		WebRTCTCPListenAddr:      envx.StringDefault("BROWSER_AUTOMATION_WEBRTC_TCP_LISTEN_ADDR", defaultWebRTCTCPListenAddr),
 		WebRTCUDPListenAddr:      envx.StringDefault("BROWSER_AUTOMATION_WEBRTC_UDP_LISTEN_ADDR", defaultWebRTCUDPListenAddr),
 		WebRTCPublicIPs:          envx.List("BROWSER_AUTOMATION_WEBRTC_PUBLIC_IPS"),
 		Runtime:                  strings.ToLower(envx.StringDefault("BROWSER_AUTOMATION_RUNTIME", defaultRuntime)),

@@ -6,5 +6,6 @@ export type LiveViewState = {
   frame?: BrowserLiveFrame;
   reconnecting: boolean;
   sendInput: (input: BrowserLiveInputEvent) => void;
+  transport?: 'webrtc' | 'websocket';
   view?: BrowserLiveView;
 };

@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Flex, Grid, IconButton, Spinner, TextField } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, Plus, RotateCw, Square } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Plus, RotateCw, X } from 'lucide-react';
 import { Link } from 'react-router';
 import { paths } from '../routes/paths';
 
@@ -32,9 +32,6 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
   return (
     <Card className="cloud-session-toolbar" role="toolbar" aria-label="浏览器控制栏">
       <Flex align="center" className="cloud-session-nav" gap="1" wrap="nowrap">
-        <IconButton asChild aria-label="新窗口" title="新窗口" variant="ghost">
-          <Link to={paths.home}><Plus size={16} /></Link>
-        </IconButton>
         <IconButton aria-label="后退" disabled={props.disabled} onClick={props.onBack} title="后退" type="button" variant="ghost"><ArrowLeft size={16} /></IconButton>
         <IconButton aria-label="前进" disabled={props.disabled} onClick={props.onForward} title="前进" type="button" variant="ghost"><ArrowRight size={16} /></IconButton>
         <IconButton aria-label="刷新" disabled={props.disabled} onClick={props.onReload} title="刷新" type="button" variant="ghost"><RotateCw size={16} /></IconButton>
@@ -56,10 +53,13 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
           </Button>
         </form>
       </Grid>
-      <Flex align="center" className="cloud-session-tools" gap="2" justify="end">
+      <Flex align="center" className="cloud-session-window-actions" gap="1" justify="end">
         <Badge aria-label={status.label} className="cloud-session-status" color={status.color} title={status.label} variant="soft" />
-        <IconButton aria-label="停止窗口" color="red" disabled={props.stopping} onClick={props.onStop} title="停止窗口" type="button" variant="ghost">
-          {props.stopping ? <Spinner size="2" /> : <Square size={16} />}
+        <IconButton asChild aria-label="新窗口" title="新窗口" variant="ghost">
+          <Link to={paths.home}><Plus size={16} /></Link>
+        </IconButton>
+        <IconButton aria-label="关闭窗口" color="red" disabled={props.stopping} onClick={props.onStop} title="关闭窗口" type="button" variant="ghost">
+          {props.stopping ? <Spinner size="2" /> : <X size={16} />}
         </IconButton>
       </Flex>
     </Card>

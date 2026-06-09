@@ -3,6 +3,7 @@ package httpadapter
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net"
 	"strings"
 	"time"
@@ -23,16 +24,19 @@ const (
 
 type LiveWebRTCConfig struct {
 	PublicIPs     []string
+	TCPListenAddr string
 	UDPListenAddr string
 }
 
 type LiveWebRTCServer struct {
 	api     *webrtc.API
+	tcpMux  ice.TCPMux
 	udpConn *net.UDPConn
 }
 
 func NewLiveWebRTCServer(cfg LiveWebRTCConfig) (*LiveWebRTCServer, error) {
 	setting := webrtc.SettingEngine{}
+	networkTypes := make([]webrtc.NetworkType, 0, 2)
 	var udpConn *net.UDPConn
 	if strings.TrimSpace(cfg.UDPListenAddr) != "" {
 		addr, err := net.ResolveUDPAddr("udp4", cfg.UDPListenAddr)
@@ -44,18 +48,42 @@ func NewLiveWebRTCServer(cfg LiveWebRTCConfig) (*LiveWebRTCServer, error) {
 			return nil, err
 		}
 		setting.SetICEUDPMux(ice.NewUDPMuxDefault(ice.UDPMuxParams{UDPConn: udpConn}))
+		networkTypes = append(networkTypes, webrtc.NetworkTypeUDP4)
+	}
+	var tcpMux ice.TCPMux
+	if strings.TrimSpace(cfg.TCPListenAddr) != "" {
+		listener, err := net.Listen("tcp4", cfg.TCPListenAddr)
+		if err != nil {
+			if udpConn != nil {
+				_ = udpConn.Close()
+			}
+			return nil, err
+		}
+		tcpMux = webrtc.NewICETCPMux(nil, listener, 8)
+		setting.SetICETCPMux(tcpMux)
+		networkTypes = append(networkTypes, webrtc.NetworkTypeTCP4)
+	}
+	if len(networkTypes) > 0 {
+		setting.SetNetworkTypes(networkTypes)
 	}
 	if len(cfg.PublicIPs) > 0 {
 		setting.SetNAT1To1IPs(cfg.PublicIPs, webrtc.ICECandidateTypeHost)
 	}
-	return &LiveWebRTCServer{api: webrtc.NewAPI(webrtc.WithSettingEngine(setting)), udpConn: udpConn}, nil
+	return &LiveWebRTCServer{api: webrtc.NewAPI(webrtc.WithSettingEngine(setting)), tcpMux: tcpMux, udpConn: udpConn}, nil
 }
 
 func (s *LiveWebRTCServer) Close() error {
-	if s == nil || s.udpConn == nil {
+	if s == nil {
 		return nil
 	}
-	return s.udpConn.Close()
+	var result error
+	if s.tcpMux != nil {
+		result = errors.Join(result, s.tcpMux.Close())
+	}
+	if s.udpConn != nil {
+		result = errors.Join(result, s.udpConn.Close())
+	}
+	return result
 }
 
 func (s *LiveWebRTCServer) CreateAnswer(ctx context.Context, service *app.AutomationService, view *browserautomationv1.BrowserLiveView, offerSDP string) (*browserautomationv1.BrowserLiveWebRTCAnswerResponse, error) {
@@ -74,8 +102,12 @@ func (s *LiveWebRTCServer) CreateAnswer(ctx context.Context, service *app.Automa
 		<-peerCtx.Done()
 		_ = peer.Close()
 	}()
+	peer.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
+		slog.Info("browser live WebRTC ICE state changed", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "state", state.String())
+	})
 	peer.OnConnectionStateChange(func(state webrtc.PeerConnectionState) {
-		if state == webrtc.PeerConnectionStateFailed || state == webrtc.PeerConnectionStateClosed || state == webrtc.PeerConnectionStateDisconnected {
+		slog.Info("browser live WebRTC peer state changed", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "state", state.String())
+		if state == webrtc.PeerConnectionStateFailed || state == webrtc.PeerConnectionStateClosed {
 			cancelPeer()
 			_ = peer.Close()
 		}
@@ -84,7 +116,16 @@ func (s *LiveWebRTCServer) CreateAnswer(ctx context.Context, service *app.Automa
 		if channel.Label() != browserLiveDataChannel {
 			return
 		}
-		channel.OnOpen(func() { go pumpWebRTCFrames(peerCtx, service, view, channel) })
+		channel.OnOpen(func() {
+			slog.Info("browser live WebRTC data channel opened", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId())
+			go pumpWebRTCFrames(peerCtx, service, view, channel)
+		})
+		channel.OnClose(func() {
+			slog.Info("browser live WebRTC data channel closed", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId())
+		})
+		channel.OnError(func(err error) {
+			slog.Warn("browser live WebRTC data channel failed", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "error", err)
+		})
 		channel.OnMessage(func(message webrtc.DataChannelMessage) { dispatchWebRTCInput(peerCtx, service, view, message.Data) })
 	})
 	if err := peer.SetRemoteDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeOffer, SDP: offerSDP}); err != nil {
@@ -110,6 +151,7 @@ func (s *LiveWebRTCServer) CreateAnswer(ctx context.Context, service *app.Automa
 		return nil, err
 	}
 	local := peer.LocalDescription()
+	slog.Info("browser live WebRTC answer created", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId())
 	return &browserautomationv1.BrowserLiveWebRTCAnswerResponse{AnswerSdp: local.SDP, AnswerType: local.Type.String()}, nil
 }
 
@@ -145,6 +187,7 @@ func pumpWebRTCFrames(ctx context.Context, service *app.AutomationService, view 
 		case <-ticker.C:
 			sequence++
 			if err := sendWebRTCFrame(ctx, service, view, channel, sequence); err != nil {
+				slog.Warn("browser live WebRTC frame pump stopped", "live_view_id", view.GetLiveViewId(), "session_id", view.GetSessionId(), "error", err)
 				return
 			}
 		}

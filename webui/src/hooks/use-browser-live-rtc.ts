@@ -3,10 +3,11 @@ import { createLiveWebRTCAnswer } from '../api/browser-api';
 import type { BrowserLiveFrame, BrowserLiveInputEvent, BrowserLiveServerMessage } from '../proto/browser/automation/v1/browser_automation';
 import type { LiveViewState } from './live-view-state';
 
-const maxReconnectAttempts = 5;
+const maxReconnectAttempts = 2;
 const reconnectBaseDelayMs = 800;
 const reconnectMaxDelayMs = 8_000;
 const iceGatherTimeoutMs = 10_000;
+const connectTimeoutMs = 12_000;
 const liveDataChannel = 'browser-live';
 
 export function useBrowserLiveRTC(answerPath: string): LiveViewState {
@@ -23,6 +24,7 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
     let closed = false;
     let fatal = false;
     let reconnectScheduled = false;
+    let connectTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
 
     function resetState() {
       setConnected(false);
@@ -48,7 +50,13 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
       const channel = peer.createDataChannel(liveDataChannel);
       peerRef.current = peer;
       channelRef.current = channel;
+      connectTimer = globalThis.setTimeout(() => {
+        if (channel.readyState === 'open' || closed) return;
+        setError('WebRTC 连接超时，正在切换备用通道。');
+        scheduleReconnect();
+      }, connectTimeoutMs);
       channel.onopen = () => {
+        clearConnectTimer();
         attempts = 0;
         setConnected(true);
         setError(undefined);
@@ -59,6 +67,9 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
       channel.onmessage = (event) => handleMessage(event.data);
       peer.onconnectionstatechange = () => {
         if (peer.connectionState === 'failed' || peer.connectionState === 'disconnected' || peer.connectionState === 'closed') scheduleReconnect();
+      };
+      peer.oniceconnectionstatechange = () => {
+        if (peer.iceConnectionState === 'failed' || peer.iceConnectionState === 'disconnected' || peer.iceConnectionState === 'closed') scheduleReconnect();
       };
       try {
         await negotiate(peer);
@@ -83,6 +94,7 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
       if (message.error?.message) {
         fatal = true;
         setError(message.error.message);
+        clearConnectTimer();
         closePeer();
         return;
       }
@@ -93,8 +105,9 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
       if (closed || fatal || reconnectScheduled) return;
       setConnected(false);
       if (attempts >= maxReconnectAttempts) {
-        setError('WebRTC 连接已断开，请刷新页面。');
+        setError('WebRTC 连接失败，正在切换备用通道。');
         setReconnecting(false);
+        clearConnectTimer();
         return;
       }
       attempts += 1;
@@ -105,9 +118,20 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
     }
 
     function closePeer() {
-      channelRef.current?.close();
+      clearConnectTimer();
+      if (channelRef.current) {
+        channelRef.current.onclose = null;
+        channelRef.current.onerror = null;
+        channelRef.current.onmessage = null;
+        channelRef.current.onopen = null;
+        channelRef.current.close();
+      }
       channelRef.current = null;
-      peerRef.current?.close();
+      if (peerRef.current) {
+        peerRef.current.onconnectionstatechange = null;
+        peerRef.current.oniceconnectionstatechange = null;
+        peerRef.current.close();
+      }
       peerRef.current = null;
     }
 
@@ -117,9 +141,16 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
       reconnectTimerRef.current = undefined;
     }
 
+    function clearConnectTimer() {
+      if (!connectTimer) return;
+      globalThis.clearTimeout(connectTimer);
+      connectTimer = undefined;
+    }
+
     return () => {
       closed = true;
       clearReconnectTimer();
+      clearConnectTimer();
       closePeer();
     };
   }, [answerPath]);
@@ -130,7 +161,7 @@ export function useBrowserLiveRTC(answerPath: string): LiveViewState {
     channel.send(JSON.stringify({ input }));
   }
 
-  return { connected, error, frame, reconnecting, sendInput };
+  return { connected, error, frame, reconnecting, sendInput, transport: 'webrtc' };
 }
 
 function parseLiveServerMessage(data: unknown): BrowserLiveServerMessage {
@@ -163,5 +194,5 @@ function reconnectDelayMs(attempt: number) {
 }
 
 function errorMessage(cause: unknown) {
-  return cause instanceof Error ? cause.message : 'WebRTC 连接失败。';
+  return cause instanceof Error ? cause.message : 'WebRTC 连接失败，正在切换备用通道。';
 }
