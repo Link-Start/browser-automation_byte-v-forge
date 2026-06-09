@@ -1,7 +1,8 @@
+import { Badge, Box, Button, Card, Text } from '@radix-ui/themes';
 import { Rows3, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
-import { statusLabel, statusTone } from '../api/defaults';
+import { statusLabel, statusThemeColor } from '../api/defaults';
 import { safeJSONStringify, safeMessage, safeTextPreview, safeURL } from '../api/safe-json';
 import { EmptyState } from './empty-state';
 
@@ -14,13 +15,13 @@ export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
   const firstResult = task?.results?.[0];
   const pageLabel = task ? resultPageLabel(task) : '-';
   return (
-    <section className="card result-card">
+    <Card className="card result-card">
       <div className="card-title">
-        <div>
+        <Box>
           <p className="section-kicker">Step 03</p>
-          <h2>最近结果</h2>
-        </div>
-        <span className={`status-chip ${task ? statusTone(task.status) : ''}`}>{task ? statusLabel(task.status) : '空闲'}</span>
+          <Text as="p" size="5" weight="bold">最近结果</Text>
+        </Box>
+        <Badge color={task ? statusThemeColor(task.status) : 'gray'} variant="soft">{task ? statusLabel(task.status) : '空闲'}</Badge>
       </div>
       {task ? (
         <div className="result-body">
@@ -29,21 +30,20 @@ export function ResultCard({ task, taskHistoryPath }: ResultCardProps) {
           {task.last_error?.message ? <p className="error-box">{safeMessage(task.last_error.message)}</p> : null}
           {firstResult?.text ? <pre className="text-preview">{safeTextPreview(firstResult.text)}</pre> : null}
           <details className="json-editor">
-            <summary>脱敏 Proto JSON</summary>
-            <p className="json-feedback">正文预览和 JSON 中的 Cookie、token、secret、凭据和代理引用会在展示前隐藏。</p>
+            <summary>JSON</summary>
             <pre>{safeJSONStringify(task)}</pre>
           </details>
-          {taskHistoryPath ? <Link className="mini-link" to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link> : null}
+          {taskHistoryPath ? <Button asChild size="2" variant="soft"><Link to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link></Button> : null}
         </div>
       ) : (
         <EmptyState
-          action={taskHistoryPath ? <Link className="mini-link" to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link> : undefined}
-          description="执行命令后会在这里展示摘要、脱敏正文预览和脱敏 Proto JSON。"
+          action={taskHistoryPath ? <Button asChild size="2" variant="soft"><Link to={taskHistoryPath}><Rows3 size={14} />查看任务记录</Link></Button> : undefined}
+          description="暂无结果"
           icon={<Sparkles size={22} />}
           title="等待最近结果"
         />
       )}
-    </section>
+    </Card>
   );
 }
 

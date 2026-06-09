@@ -1,3 +1,4 @@
+import { Button } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import { ArrowRight, Radio } from 'lucide-react';
@@ -23,9 +24,8 @@ export function OpenSessionRoute() {
   return (
     <PageFrame>
       <PageHeader
-        description="只处理已有 session 的接管入口，实时画面、命令和任务记录继续走各自子路由。"
         pending={false}
-        title="接管已有会话"
+        title="接管已有云浏览器"
       />
       <div className="single-column">
         <form className="card route-card" onSubmit={openExistingSession}>
@@ -33,8 +33,7 @@ export function OpenSessionRoute() {
             <span className="route-card-icon"><Radio size={18} /></span>
             <div>
               <p className="section-kicker">Resume</p>
-              <h2>打开指定 session 的实时浏览器</h2>
-              <p>输入 session ID 后直接进入 /sessions/:sessionId/live；命令和任务记录通过页内 tabs 切换。</p>
+              <h2>打开指定 session</h2>
             </div>
           </div>
           <label>
@@ -51,12 +50,12 @@ export function OpenSessionRoute() {
             />
           </label>
           <div className="actions">
-            <button className="primary" disabled={Boolean(validationError)} type="submit">
+            <Button disabled={Boolean(validationError)} type="submit">
               打开实时浏览器<ArrowRight size={16} />
-            </button>
+            </Button>
           </div>
           <p id="session-id-feedback" className={showValidationError ? 'form-feedback form-feedback-error' : 'form-feedback'} role={showValidationError ? 'alert' : 'status'} aria-live="polite">
-            {showValidationError ? validationError : '输入已有 session ID 后，可按 Enter 或点击按钮进入实时浏览器。'}
+            {showValidationError ? validationError : ''}
           </p>
         </form>
       </div>

@@ -30,13 +30,12 @@ export function NewSessionRoute() {
   return (
     <PageFrame>
       <PageHeader
-        activeSessionId="新会话"
-        description="只处理会话配置和启动，成功后进入实时浏览器子路由。"
+        activeSessionId="简单配置"
         error={start.error?.message}
         pending={start.isPending}
-        title="新建会话"
+        title="简单配置"
       />
-      <Status error={start.error?.message} message="服务端会根据 Pod 内存限制控制最大浏览器并发。" />
+      <Status error={start.error?.message} />
       <div className="single-column">
         <SessionCard
           browserKind={config.browserKind}

@@ -6,11 +6,11 @@ import { SessionTabs } from './session-tabs';
 
 type SessionPageProps = {
   children: ReactNode;
-  description: string;
+  description?: string;
   error?: string;
   pending: boolean;
   sessionId: string;
-  statusMessage: string;
+  statusMessage?: string;
   title: string;
 };
 

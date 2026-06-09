@@ -89,6 +89,15 @@ export function statusTone(value?: BrowserTaskStatus): string {
   return 'tone-muted';
 }
 
+export type ThemeColor = 'amber' | 'gray' | 'green' | 'orange' | 'red';
+
+export function statusThemeColor(value?: BrowserTaskStatus): ThemeColor {
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_SUCCEEDED) return 'green';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_FAILED || value === BrowserTaskStatus.BROWSER_TASK_STATUS_TIMEOUT) return 'red';
+  if (value === BrowserTaskStatus.BROWSER_TASK_STATUS_RUNNING || value === BrowserTaskStatus.BROWSER_TASK_STATUS_QUEUED) return 'amber';
+  return 'gray';
+}
+
 export function formatJSON(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
@@ -102,4 +111,11 @@ export function sessionStatusTone(value?: BrowserSessionStatus): string {
   if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_FAILED || value === BrowserSessionStatus.BROWSER_SESSION_STATUS_EXPIRED) return 'tone-danger';
   if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STARTING || value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STOPPING) return 'tone-warn';
   return 'tone-muted';
+}
+
+export function sessionStatusThemeColor(value?: BrowserSessionStatus): ThemeColor {
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_RUNNING) return 'green';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_FAILED || value === BrowserSessionStatus.BROWSER_SESSION_STATUS_EXPIRED) return 'red';
+  if (value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STARTING || value === BrowserSessionStatus.BROWSER_SESSION_STATUS_STOPPING) return 'amber';
+  return 'gray';
 }

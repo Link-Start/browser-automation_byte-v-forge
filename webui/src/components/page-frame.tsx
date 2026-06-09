@@ -8,7 +8,7 @@ type PageFrameProps = {
 
 export function PageFrame({ children, className, role }: PageFrameProps) {
   return (
-    <main className={className} id="main-content" role={role} tabIndex={-1}>
+    <main className={['page-frame', className].filter(Boolean).join(' ')} id="main-content" role={role} tabIndex={-1}>
       {children}
     </main>
   );

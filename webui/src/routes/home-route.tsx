@@ -9,24 +9,39 @@ import { PageFrame } from '../components/page-frame';
 import { SessionRail } from '../components/session-rail';
 import type { BrowserCommand, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
 import { paths } from './paths';
-import { buildStartSessionRequest, defaultSessionConfig } from './session-config';
+import { buildStartSessionRequest, defaultSessionConfig, type SessionConfig } from './session-config';
 import { newRequestId } from './session-route-utils';
 import '../workbench.css';
+
+type CloudBrowserPreset = {
+  config: SessionConfig;
+  description: string;
+  id: string;
+  label: string;
+};
 
 type LaunchResult = {
   sessionId: string;
   warning?: string;
 };
 
+const cloudBrowserPresets: CloudBrowserPreset[] = [
+  { config: defaultSessionConfig, description: '默认', id: 'auto', label: '自动' },
+  { config: { ...defaultSessionConfig, locale: 'en-US', timezone: 'America/New_York' }, description: 'en-US', id: 'us', label: '美国' },
+  { config: { ...defaultSessionConfig, locale: 'ja-JP', timezone: 'Asia/Tokyo' }, description: 'ja-JP', id: 'jp', label: '日本' }
+];
+
 export function HomeRoute() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [targetUrl, setTargetUrl] = useState(defaultQuickCommand.targetUrl);
   const [launchWarning, setLaunchWarning] = useState('');
+  const [presetId, setPresetId] = useState(cloudBrowserPresets[0].id);
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
   const recentSession = sessionItems[0];
   const validationError = validateLaunchTarget(targetUrl);
+  const selectedPreset = cloudBrowserPresets.find((preset) => preset.id === presetId) || cloudBrowserPresets[0];
   const launch = useMutation({ mutationFn: launchCloudBrowser, onSuccess: handleLaunchSuccess });
 
   async function launchCloudBrowser(): Promise<LaunchResult> {
@@ -34,7 +49,7 @@ export function HomeRoute() {
       throw new Error(validationError);
     }
     const normalizedUrl = normalizeLaunchTarget(targetUrl);
-    const sessionResponse = await startSession(buildStartSessionRequest(defaultSessionConfig, newRequestId('session')));
+    const sessionResponse = await startSession(buildStartSessionRequest(selectedPreset.config, newRequestId('session')));
     const sessionId = sessionResponse.session?.session_id;
     if (!sessionId) {
       throw new Error('浏览器会话启动失败，请稍后重试。');
@@ -57,8 +72,7 @@ export function HomeRoute() {
     <PageFrame className="cloud-workbench-page">
       <div className="cloud-workbench-header">
         <p className="section-kicker">Cloud Browser</p>
-        <h1>远端隔离浏览器</h1>
-        <p>首页直接给用户浏览器入口和会话列表，不再让用户先理解后台流程或手动记 session。</p>
+        <h1>云浏览器</h1>
       </div>
       <div className="cloud-workbench">
         <SessionRail
@@ -75,11 +89,14 @@ export function HomeRoute() {
           launchError={launch.error?.message || sessions.error?.message || launchWarning}
           launching={launch.isPending}
           onLaunch={() => launch.mutate()}
+          onPresetChange={setPresetId}
           onTargetUrlChange={(value) => {
             setLaunchWarning('');
             setTargetUrl(value);
           }}
+          presets={cloudBrowserPresets}
           recentSession={recentSession}
+          selectedPresetId={presetId}
           sessionCount={sessionItems.length}
           targetUrl={targetUrl}
           validationError={validationError}

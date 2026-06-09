@@ -1,3 +1,4 @@
+import { Box, Button, Card, Checkbox, Flex, Grid, Select, Text, TextArea, TextField } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
 import { Code2, PlayCircle, Wand2 } from 'lucide-react';
 import type { BrowserNavigationWaitUntil } from '../proto/browser/automation/v1/browser_automation';
@@ -35,18 +36,19 @@ export function CommandCard(props: CommandCardProps) {
   }
 
   return (
-    <form className="card command-card" onSubmit={submitCommand}>
+    <Card className="card command-card">
+      <form className="card-form" onSubmit={submitCommand}>
       <div className="card-title">
-        <div>
-          <p className="section-kicker">Step 02</p>
-          <h2>快捷执行</h2>
-        </div>
-        <span>表单生成 Proto JSON</span>
+        <Box>
+          <p className="section-kicker">Advanced</p>
+          <Text as="p" size="5" weight="bold">开发者操作</Text>
+        </Box>
+        <Text as="span" color="gray" size="2">可选</Text>
       </div>
-      <div className="form-grid command-builder">
+      <Grid className="form-grid command-builder" gap="3">
         <label className="wide" htmlFor="command-target-url">
           目标 URL
-          <input
+          <TextField.Root
             id="command-target-url"
             autoComplete="url"
             inputMode="url"
@@ -59,33 +61,37 @@ export function CommandCard(props: CommandCardProps) {
         </label>
         <label htmlFor="command-wait-until">
           等待策略
-          <select id="command-wait-until" value={props.waitUntil} onChange={(event) => props.onWaitUntilChange(event.target.value as BrowserNavigationWaitUntil)}>
-            {waitUntilOptions.map((item) => (
-              <option key={item} value={item}>{waitUntilLabel(item)}</option>
-            ))}
-          </select>
+          <Select.Root value={props.waitUntil} onValueChange={(value) => props.onWaitUntilChange(value as BrowserNavigationWaitUntil)}>
+            <Select.Trigger id="command-wait-until" />
+            <Select.Content>
+              {waitUntilOptions.map((item) => (
+                <Select.Item key={item} value={item}>{waitUntilLabel(item)}</Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
         </label>
-      </div>
-      <div className="toggle-row">
-        <label><input checked={props.includeText} type="checkbox" onChange={(event) => props.onIncludeTextChange(event.target.checked)} />抓取正文</label>
-        <label><input checked={props.includeHtml} type="checkbox" onChange={(event) => props.onIncludeHtmlChange(event.target.checked)} />抓取 HTML</label>
-        <label><input checked={props.captureScreenshot} type="checkbox" onChange={(event) => props.onCaptureScreenshotChange(event.target.checked)} />全页截图</label>
-      </div>
-      <div className="actions">
-        <button className="secondary" onClick={props.onApplyTemplate} type="button">
+      </Grid>
+      <Flex className="toggle-row" gap="2" wrap="wrap">
+        <label><Checkbox checked={props.includeText} onCheckedChange={(checked) => props.onIncludeTextChange(checked === true)} />抓取正文</label>
+        <label><Checkbox checked={props.includeHtml} onCheckedChange={(checked) => props.onIncludeHtmlChange(checked === true)} />抓取 HTML</label>
+        <label><Checkbox checked={props.captureScreenshot} onCheckedChange={(checked) => props.onCaptureScreenshotChange(checked === true)} />全页截图</label>
+      </Flex>
+      <Flex className="actions" gap="2" wrap="wrap">
+        <Button onClick={props.onApplyTemplate} type="button" variant="soft">
           <Wand2 size={16} />生成命令
-        </button>
-        <button className="primary" disabled={!canExecute} type="submit">
+        </Button>
+        <Button disabled={!canExecute} type="submit">
           <PlayCircle size={16} />执行
-        </button>
-      </div>
-      <p id="command-validation-feedback" className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'} role={props.validationError ? 'alert' : 'status'} aria-live="polite">
+        </Button>
+      </Flex>
+      <Text as="p" id="command-validation-feedback" className={props.validationError ? 'json-feedback json-feedback-error' : 'json-feedback'} role={props.validationError ? 'alert' : 'status'} aria-live="polite">
         {props.validationError || `${props.commandCount} 条命令已通过校验。`}
-      </p>
+      </Text>
       <details className="json-editor">
-        <summary><Code2 size={15} />高级 Proto JSON<span className="summary-hint">按需编辑</span></summary>
-        <textarea spellCheck={false} value={props.commandsText} onChange={(event) => props.onChange(event.target.value)} aria-label="Browser commands JSON" />
+        <summary><Code2 size={15} />JSON<span className="summary-hint">高级</span></summary>
+        <TextArea spellCheck={false} value={props.commandsText} onChange={(event) => props.onChange(event.target.value)} aria-label="Browser commands JSON" />
       </details>
-    </form>
+      </form>
+    </Card>
   );
 }

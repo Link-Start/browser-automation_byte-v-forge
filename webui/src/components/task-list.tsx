@@ -20,7 +20,7 @@ export function TaskList({ lastUpdatedAt, onRefresh, refreshing = false, session
       <div className="card-title">
         <div>
           <p className="section-kicker">History</p>
-          <h2>任务记录</h2>
+          <h2>历史记录</h2>
         </div>
         <div className="card-title-actions">
           <span>{tasks.length} 条</span>
@@ -74,7 +74,7 @@ function EmptyTasks({ sessionId }: { sessionId: string }) {
   return (
     <EmptyState
       action={<Link className="mini-link" to={paths.sessionCommands(sessionId)}><Code2 size={14} />执行快捷命令</Link>}
-      description="当前 session 暂无任务。执行命令后，这里会显示状态、页面摘要和后续操作入口。"
+      description="暂无记录"
       icon={<ClipboardList size={22} />}
       title="还没有任务记录"
     />

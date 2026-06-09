@@ -1,3 +1,5 @@
+import { Callout } from '@radix-ui/themes';
+import { AlertTriangle, Info } from 'lucide-react';
 import { safeMessage } from '../api/safe-json';
 
 type StatusProps = {
@@ -9,5 +11,16 @@ export function Status({ error, message }: StatusProps) {
   if (!error && !message) {
     return null;
   }
-  return <p className={error ? 'notice notice-error' : 'notice'} role={error ? 'alert' : 'status'} aria-live={error ? 'assertive' : 'polite'}>{error ? safeMessage(error) : message}</p>;
+  return (
+    <Callout.Root
+      className={error ? 'notice notice-error' : 'notice'}
+      color={error ? 'red' : 'orange'}
+      role={error ? 'alert' : 'status'}
+      aria-live={error ? 'assertive' : 'polite'}
+      variant="soft"
+    >
+      <Callout.Icon>{error ? <AlertTriangle size={16} /> : <Info size={16} />}</Callout.Icon>
+      <Callout.Text>{error ? safeMessage(error) : message}</Callout.Text>
+    </Callout.Root>
+  );
 }

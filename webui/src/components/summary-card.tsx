@@ -1,3 +1,4 @@
+import { Card, Grid, Text } from '@radix-ui/themes';
 import type { ReactNode } from 'react';
 import { CheckCircle2, CircleDot, ListChecks, XCircle } from 'lucide-react';
 
@@ -10,12 +11,12 @@ type SummaryCardProps = {
 
 export function SummaryCard({ failed, running, succeeded, total }: SummaryCardProps) {
   return (
-    <section className="summary-grid" aria-label="任务概览">
+    <Grid className="summary-grid" gap="3" role="region" aria-label="任务概览">
       <Metric icon={<ListChecks size={18} />} label="任务总数" value={total} tone="info" />
       <Metric icon={<CircleDot size={18} />} label="执行中" value={running} tone="warn" />
       <Metric icon={<CheckCircle2 size={18} />} label="成功" value={succeeded} tone="success" />
       <Metric icon={<XCircle size={18} />} label="失败" value={failed} tone="danger" />
-    </section>
+    </Grid>
   );
 }
 
@@ -28,12 +29,12 @@ type MetricProps = {
 
 function Metric({ icon, label, tone, value }: MetricProps) {
   return (
-    <div className={`metric metric-${tone}`}>
+    <Card className={`metric metric-${tone}`}>
       <span>{icon}</span>
       <div>
         <strong>{value}</strong>
-        <p>{label}</p>
+        <Text as="p" color="gray">{label}</Text>
       </div>
-    </div>
+    </Card>
   );
 }

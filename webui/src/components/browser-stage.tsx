@@ -22,7 +22,7 @@ export function BrowserStage(props: BrowserStageProps) {
   const interactive = props.connected && Boolean(props.frame?.image_base64);
   const status = stageStatus(props.error, props.connected, props.pending, interactive);
   const title = props.frame?.title || props.placeholderTitle || (props.activeSessionId ? '等待浏览器画面' : '启动一个云端浏览器会话');
-  const preview = props.placeholderPreview || 'LiveView 会在启动会话后把远端浏览器画面推到这里。';
+  const preview = props.placeholderPreview || '启动后显示画面。';
 
   function dispatch(input?: BrowserLiveInputEvent) {
     if (interactive && input) {
@@ -86,7 +86,7 @@ export function BrowserStage(props: BrowserStageProps) {
           ) : (
             <Placeholder title={title} preview={preview} />
           )}
-          <div className="control-hint">{interactive ? '点击画面聚焦；支持键盘输入、粘贴和滚轮。' : '等待 LiveView 连接并收到首帧后即可操作。'}</div>
+          <div className="control-hint">{interactive ? '可操作' : '连接中'}</div>
         </div>
       </div>
     </section>

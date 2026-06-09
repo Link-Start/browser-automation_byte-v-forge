@@ -1,3 +1,4 @@
+import { Button } from '@radix-ui/themes';
 import { AlertTriangle, Home, RotateCcw } from 'lucide-react';
 import { Link, useRouteError } from 'react-router';
 import { safeMessage } from '../api/safe-json';
@@ -11,16 +12,15 @@ export function AppRouteError() {
       <section className="card error-panel">
         <span className="error-icon"><AlertTriangle size={22} /></span>
         <p className="section-kicker">Route Error</p>
-        <h1>页面暂时不可用</h1>
-        <p className="muted">浏览器控制台遇到一个未预期错误。可以刷新当前页面，或回到入口重新选择路径。</p>
+        <h1>页面不可用</h1>
         <p className="error-box">{routeErrorMessage(error)}</p>
         <div className="actions">
-          <button className="primary" onClick={() => window.location.reload()} type="button">
+          <Button onClick={() => window.location.reload()} type="button">
             <RotateCcw size={16} />刷新页面
-          </button>
-          <Link className="secondary link-button" to={paths.home}>
-            <Home size={16} />回到入口
-          </Link>
+          </Button>
+          <Button asChild variant="soft">
+            <Link to={paths.home}><Home size={16} />回到入口</Link>
+          </Button>
         </div>
       </section>
     </PageFrame>

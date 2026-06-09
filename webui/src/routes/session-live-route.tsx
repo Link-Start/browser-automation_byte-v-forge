@@ -14,15 +14,14 @@ export function SessionLiveRoute() {
   const liveView = useLiveView(sessionId);
   const stop = useMutation({ mutationFn: () => stopSession(sessionId, 'webui stop'), onSuccess: () => navigate(paths.home) });
   const pending = !liveView.connected && !liveView.error;
-  const message = liveView.connected ? 'LiveView 已连接。' : liveView.reconnecting ? 'LiveView 连接中断，正在自动重连。' : '正在连接远端浏览器画面。';
+  const message = liveView.connected ? '已连接' : liveView.reconnecting ? '重连中' : '连接中';
   return (
     <SessionPage
-      description="专注展示 LiveView 画面和输入回放，不混入命令表单与任务列表。"
       error={liveView.error || stop.error?.message}
       pending={pending || stop.isPending}
       sessionId={sessionId}
       statusMessage={message}
-      title="实时浏览器"
+      title="云浏览器"
     >
       <SessionToolbar connected={liveView.connected} liveViewUrl={liveView.view?.url} onStop={() => stop.mutate()} pending={stop.isPending} sessionId={sessionId} />
       <BrowserStage activeSessionId={sessionId} connected={liveView.connected} error={liveView.error} frame={liveView.frame} onInput={liveView.sendInput} pending={pending} targetUrl={liveView.view?.url || 'about:blank'} />

@@ -73,7 +73,6 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
         <span className={connected ? 'live-dot live-dot-on' : 'live-dot'} />
         <div>
           <strong>{sessionId ? '会话已路由化' : '等待启动会话'}</strong>
-          <p>{sessionId ? '刷新 / 复制链接后仍会打开同一个 session 控制台。' : '启动后会自动跳转到 /sessions/:sessionId/live。'}</p>
         </div>
       </div>
       <div className="session-toolbar-actions">
@@ -133,7 +132,7 @@ function stopButtonLabel(confirming: boolean) {
 }
 
 function toolbarFeedback(copyState: CopyState, stopConfirming: boolean) {
-  if (stopConfirming) return '再次点击停止会话，或等待取消。';
+  if (stopConfirming) return '再次点击停止';
   return copyFeedback(copyState);
 }
 

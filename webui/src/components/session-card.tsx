@@ -1,3 +1,4 @@
+import { Box, Button, Card, Flex, Grid, Select, Text, TextField } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
 import { Play } from 'lucide-react';
 import type { BrowserKind } from '../proto/browser/automation/v1/browser_automation';
@@ -26,45 +27,56 @@ export function SessionCard(props: SessionCardProps) {
   }
 
   return (
-    <form className="card session-card" onSubmit={submitSession}>
+    <Card className="card session-card">
+      <form className="card-form" onSubmit={submitSession}>
       <div className="card-title">
-        <div>
-          <p className="section-kicker">Step 01</p>
-          <h2>会话配置</h2>
-        </div>
-        <span>Runtime 由服务端配置选择</span>
+        <Box>
+          <p className="section-kicker">Simple Profile</p>
+          <Text as="p" size="5" weight="bold">浏览器配置</Text>
+        </Box>
+        <Text as="span" color="gray" size="2">默认自动画像</Text>
       </div>
-      <div className="form-grid">
+      <Grid className="form-grid" gap="3">
         <label htmlFor="browser-kind">
           浏览器内核
-          <select id="browser-kind" value={props.browserKind} onChange={(event) => props.onBrowserKindChange(event.target.value as BrowserKind)}>
-            {browserKindOptions.map((item) => (
-              <option key={item} value={item}>{browserKindLabel(item)}</option>
-            ))}
-          </select>
+          <Select.Root value={props.browserKind} onValueChange={(value) => props.onBrowserKindChange(value as BrowserKind)}>
+            <Select.Trigger id="browser-kind" />
+            <Select.Content>
+              {browserKindOptions.map((item) => (
+                <Select.Item key={item} value={item}>{browserKindLabel(item)}</Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Root>
         </label>
         <label htmlFor="proxy-ref">
           代理引用
-          <input id="proxy-ref" autoComplete="off" value={props.proxyRef} onChange={(event) => props.onProxyRefChange(event.target.value)} placeholder="可选，如 register" />
+          <TextField.Root id="proxy-ref" autoComplete="off" value={props.proxyRef} onChange={(event) => props.onProxyRefChange(event.target.value)} placeholder="可选，如 register" />
         </label>
+      </Grid>
+      <details className="json-editor">
+        <summary>高级指纹参数<span className="summary-hint">一般不用改</span></summary>
+        <Grid className="form-grid" gap="3">
         <label htmlFor="session-locale">
           Locale
-          <input id="session-locale" autoComplete="language" value={props.locale} onChange={(event) => props.onLocaleChange(event.target.value)} placeholder="en-US" />
+          <TextField.Root id="session-locale" autoComplete="language" value={props.locale} onChange={(event) => props.onLocaleChange(event.target.value)} placeholder="en-US" />
         </label>
         <label htmlFor="session-timezone">
           Timezone
-          <input id="session-timezone" autoComplete="off" value={props.timezone} onChange={(event) => props.onTimezoneChange(event.target.value)} placeholder="America/New_York" />
+          <TextField.Root id="session-timezone" autoComplete="off" value={props.timezone} onChange={(event) => props.onTimezoneChange(event.target.value)} placeholder="America/New_York" />
         </label>
-      </div>
-      <div className="actions">
-        <button className="primary" disabled={props.pending || Boolean(props.validationError)} type="submit">
+        </Grid>
+      </details>
+      <Flex className="actions" gap="2">
+        <Button disabled={props.pending || Boolean(props.validationError)} type="submit">
           <Play size={16} />启动会话
-        </button>
-      </div>
-      <p className={props.validationError ? 'form-feedback form-feedback-error' : 'form-feedback'} role={props.validationError ? 'alert' : 'status'} aria-live="polite">
-        {props.validationError || '配置已通过校验，启动后自动进入实时浏览器。'}
-      </p>
-      <p className="muted">会话 TTL：30 分钟。服务端会按 Pod 内存限制保护最大浏览器并发，用完请主动停止。</p>
-    </form>
+        </Button>
+      </Flex>
+      {props.validationError ? (
+        <Text as="p" className="form-feedback form-feedback-error" role="alert" aria-live="polite">
+          {props.validationError}
+        </Text>
+      ) : null}
+      </form>
+    </Card>
   );
 }

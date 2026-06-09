@@ -1,3 +1,4 @@
+import { Box, Card, Flex, Heading, Text } from '@radix-ui/themes';
 import type { ReactNode } from 'react';
 
 type EmptyStateProps = {
@@ -9,13 +10,13 @@ type EmptyStateProps = {
 
 export function EmptyState({ action, description, icon, title }: EmptyStateProps) {
   return (
-    <div className="empty-state">
+    <Card className="empty-state">
       <span className="empty-state-icon">{icon}</span>
-      <div>
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
-      {action ? <div className="empty-state-action">{action}</div> : null}
-    </div>
+      <Box>
+        <Heading as="h3" size="3">{title}</Heading>
+        <Text as="p" color="gray">{description}</Text>
+      </Box>
+      {action ? <Flex className="empty-state-action" justify="center">{action}</Flex> : null}
+    </Card>
   );
 }
