@@ -56,6 +56,14 @@ RUN if [ -n "$BROWSER_FETCH_PROXY" ]; then \
          python -m camoufox fetch; \
        fi
 
+RUN if [ -n "$BROWSER_FETCH_PROXY" ]; then \
+         HTTP_PROXY="$BROWSER_FETCH_PROXY" HTTPS_PROXY="$BROWSER_FETCH_PROXY" python -m cloakbrowser install; \
+       else \
+         python -m cloakbrowser install; \
+       fi
+
+ENV CLOAKBROWSER_AUTO_UPDATE=false
+
 RUN if PLAYWRIGHT_DOWNLOAD_HOST="$PLAYWRIGHT_DOWNLOAD_HOST" python -m playwright install chromium; then \
          true; \
        elif [ -n "$BROWSER_FETCH_PROXY" ]; then \
