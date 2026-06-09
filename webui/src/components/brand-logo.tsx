@@ -2,9 +2,9 @@ export function BrandLogo() {
   return (
     <span className="brand-logo" aria-hidden="true">
       <svg viewBox="0 0 32 32" role="img">
-        <path d="M16 3.5 27.2 10v12L16 28.5 4.8 22V10L16 3.5Z" />
-        <path d="M10.2 18.7c1.2 2.1 3.4 3.4 5.8 3.4 2.1 0 4-.9 5.3-2.5" />
-        <path d="M21.8 13.3C20.6 11.2 18.4 10 16 10c-2.1 0-4 .9-5.3 2.5" />
+        <path d="M8.6 21.3h14.1a5 5 0 0 0 .8-9.9 7.5 7.5 0 0 0-14.2 2.2 4 4 0 0 0-.7 7.7Z" />
+        <path d="M11 21.5v3.6h10v-3.6" fill="none" />
+        <path d="M13.5 24.9h5" fill="none" />
       </svg>
     </span>
   );
