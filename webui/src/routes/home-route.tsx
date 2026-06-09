@@ -13,6 +13,7 @@ import {
   type ExecuteBrowserCommandsRequest
 } from '../proto/browser/automation/v1/browser_automation';
 import { paths } from './paths';
+import { normalizeBrowserUrl, validateBrowserUrl } from './browser-url';
 import { initialLocale, initialTimezone, localeOptions, timezoneOptions } from './fingerprint-options';
 import { buildStartSessionRequest, defaultSessionConfig, validateSessionConfig, type SessionConfig } from './session-config';
 import { newRequestId } from './session-route-utils';
@@ -49,14 +50,14 @@ export function HomeRoute() {
     manualProxyUrl,
     proxyRuntimeAccountId
   );
-  const validationError = validateLaunchTarget(targetUrl) || validateSessionConfig(sessionConfig);
+  const validationError = validateBrowserUrl(targetUrl) || validateSessionConfig(sessionConfig);
   const launch = useMutation({ mutationFn: launchCloudBrowser, onSuccess: handleLaunchSuccess });
 
   async function launchCloudBrowser(): Promise<LaunchResult> {
     if (validationError) {
       throw new Error(validationError);
     }
-    const normalizedUrl = normalizeLaunchTarget(targetUrl);
+    const normalizedUrl = normalizeBrowserUrl(targetUrl);
     const sessionResponse = await startSession(buildStartSessionRequest(sessionConfig, newRequestId('session')));
     const sessionId = sessionResponse.session?.session_id;
     if (!sessionId) {
@@ -161,25 +162,4 @@ function launchCommands(targetUrl: string): BrowserCommand[] {
     targetUrl,
     waitUntil: defaultQuickCommand.waitUntil
   });
-}
-
-function validateLaunchTarget(value: string) {
-  const normalized = normalizeLaunchTarget(value);
-  if (!normalized) return '请输入网址。';
-  try {
-    const url = new URL(normalized);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-      return '仅支持 http/https。';
-    }
-    return '';
-  } catch {
-    return '网址无效。';
-  }
-}
-
-function normalizeLaunchTarget(value: string) {
-  const trimmed = value.trim();
-  if (!trimmed) return '';
-  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed;
-  return `https://${trimmed}`;
 }

@@ -17,22 +17,17 @@ export function LiveViewRoute() {
   return (
     <PageFrame>
       <PageHeader
-        activeSessionId="LiveView Token"
         error={liveView.error}
         pending={pending}
         title="独立 LiveView"
       />
       <Status error={liveView.error} message={message} />
       <BrowserStage
-        activeSessionId="LiveView Token"
         connected={liveView.connected}
         error={liveView.error}
         frame={liveView.frame}
         onInput={liveView.sendInput}
         pending={pending}
-        placeholderPreview="连接中"
-        placeholderTitle="云浏览器"
-        targetUrl="about:blank"
       />
       <p className="route-back"><Link to={paths.home}>返回入口</Link></p>
     </PageFrame>
