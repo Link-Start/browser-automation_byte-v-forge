@@ -4,7 +4,6 @@ import { AppShell } from './app-shell';
 import { HomeRoute } from './home-route';
 import { LiveViewRoute } from './live-view-route';
 import { NewSessionRoute } from './new-session-route';
-import { OpenSessionRoute } from './open-session-route';
 import { SessionCommandsRoute } from './session-commands-route';
 import { SessionLiveRoute } from './session-live-route';
 import { SessionRouteLayout } from './session-route-layout';
@@ -23,7 +22,6 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: HomeRoute },
           { path: 'new', Component: NewSessionRoute },
-          { path: 'open', Component: OpenSessionRoute },
           {
             path: ':sessionId',
             Component: SessionRouteLayout,

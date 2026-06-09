@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Flex, SegmentedControl, Select, Text, TextField } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
-import { ArrowRight, Cloud, ExternalLink, LockKeyhole, Play, Radio, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Cloud, ExternalLink, LockKeyhole, Play, ShieldCheck, Sparkles } from 'lucide-react';
 import { Link } from 'react-router';
 import { browserKindLabel, sessionStatusLabel } from '../api/defaults';
 import { BrowserKind, type BrowserSession } from '../proto/browser/automation/v1/browser_automation';
@@ -74,7 +74,6 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
             </Flex>
             <Flex align="center" gap="2" wrap="wrap">
               {props.recentSession ? <RecentSessionAction session={props.recentSession} /> : null}
-              <Button asChild size="2" variant="ghost"><Link to={paths.openSession}><Radio size={14} />高级</Link></Button>
             </Flex>
           </Flex>
           <Text as="p" id="cloud-browser-feedback" className={props.validationError || props.launchError ? 'form-feedback form-feedback-error' : 'form-feedback'} role={props.validationError || props.launchError ? 'alert' : 'status'} aria-live="polite">
