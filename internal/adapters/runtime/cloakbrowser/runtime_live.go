@@ -11,11 +11,11 @@ import (
 )
 
 func (r *Runtime) DefaultLiveViewProvider() browserautomationv1.BrowserLiveViewProvider {
-	return browserautomationv1.BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_CDP
+	return browserautomationv1.BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_WEBRTC
 }
 
 func (r *Runtime) SupportsLiveViewProvider(provider browserautomationv1.BrowserLiveViewProvider) bool {
-	return provider == browserautomationv1.BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_CDP
+	return provider == browserautomationv1.BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_CDP || provider == browserautomationv1.BrowserLiveViewProvider_BROWSER_LIVE_VIEW_PROVIDER_WEBRTC
 }
 
 func (r *Runtime) CaptureLiveFrame(ctx context.Context, sessionID string, liveView *browserautomationv1.BrowserLiveView, sequence int64) (*browserautomationv1.BrowserLiveFrame, error) {

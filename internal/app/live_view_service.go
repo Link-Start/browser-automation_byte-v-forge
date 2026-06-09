@@ -65,6 +65,7 @@ func (s *AutomationService) CreateBrowserLiveView(ctx context.Context, request *
 	}
 	view.Url = "/live/" + token
 	view.WebsocketUrl = "/ws/browser-automation/live/" + token
+	view.WebrtcUrl = "/api/browser-automation/live/" + token + "/webrtc/answer"
 	return view, nil
 }
 

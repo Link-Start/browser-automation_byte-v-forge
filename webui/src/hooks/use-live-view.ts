@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { createLiveView, liveViewWebSocketPath } from '../api/browser-api';
+import { createLiveView } from '../api/browser-api';
 import { browserQueryKeys } from '../api/query-keys';
 import type { BrowserLiveView } from '../proto/browser/automation/v1/browser_automation';
-import { type LiveViewState, useBrowserLiveSocket } from './use-browser-live-socket';
+import { useBrowserLiveRTC } from './use-browser-live-rtc';
+import type { LiveViewState } from './live-view-state';
 
 export function useLiveView(sessionId: string): LiveViewState {
   const liveView = useQuery({
@@ -12,19 +13,19 @@ export function useLiveView(sessionId: string): LiveViewState {
     retry: 1,
     staleTime: 60_000
   });
-  const socket = useBrowserLiveSocket(liveView.data?.websocket_url || '');
-  return { ...socket, error: liveView.error?.message || socket.error, view: liveView.data };
+  const rtc = useBrowserLiveRTC(liveView.data?.webrtc_url || '');
+  return { ...rtc, error: liveView.error?.message || rtc.error, view: liveView.data };
 }
 
 export function useLiveViewToken(token: string): LiveViewState {
-  return useBrowserLiveSocket(token ? liveViewWebSocketPath(token) : '');
+  return useBrowserLiveRTC(token ? `/api/browser-automation/live/${encodeURIComponent(token)}/webrtc/answer` : '');
 }
 
 async function createSessionLiveView(sessionId: string): Promise<BrowserLiveView> {
   const response = await createLiveView(sessionId);
   const liveView = response.live_view;
-  if (!liveView?.websocket_url) {
-    throw new Error(response.error?.message || 'live view is unavailable');
+  if (!liveView?.webrtc_url) {
+    throw new Error(response.error?.message || 'WebRTC live view is unavailable');
   }
   return liveView;
 }

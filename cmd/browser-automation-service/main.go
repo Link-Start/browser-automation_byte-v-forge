@@ -41,6 +41,7 @@ const (
 	defaultConnectTimeout       = 10 * time.Second
 	defaultStatementTimeout     = 10 * time.Second
 	defaultShutdownGrace        = 10 * time.Second
+	defaultWebRTCUDPListenAddr  = ":3478"
 	defaultCamoufoxStartup      = 30 * time.Second
 	defaultCamoufoxShutdown     = 5 * time.Second
 	defaultCamoufoxTaskTimeout  = 2 * time.Minute
@@ -63,6 +64,8 @@ type config struct {
 	ApplyMigrations          bool
 	MigrationsDir            string
 	ShutdownGrace            time.Duration
+	WebRTCUDPListenAddr      string
+	WebRTCPublicIPs          []string
 
 	Runtime               string
 	MaxConcurrentSessions int
@@ -144,6 +147,11 @@ func run() error {
 
 	store := postgres.NewRepository(pool, cfg.PostgresStatementTimeout)
 	service := app.NewAutomationService(store, runtime, proxyController, app.SystemClock{}, app.RandomIDGenerator{})
+	liveRTC, err := httpadapter.NewLiveWebRTCServer(httpadapter.LiveWebRTCConfig{PublicIPs: cfg.WebRTCPublicIPs, UDPListenAddr: cfg.WebRTCUDPListenAddr})
+	if err != nil {
+		return fmt.Errorf("configure browser live WebRTC: %w", err)
+	}
+	defer liveRTC.Close()
 
 	listener, err := net.Listen("tcp", cfg.ListenAddr)
 	if err != nil {
@@ -158,7 +166,7 @@ func run() error {
 
 	httpServer := &http.Server{
 		Addr:              cfg.HTTPListenAddr,
-		Handler:           httpadapter.NewServer(service, cfg.WebDir),
+		Handler:           httpadapter.NewServer(service, cfg.WebDir, liveRTC),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
@@ -201,6 +209,8 @@ func loadConfig(runtimeRegistry *runtimeplugin.Registry[config]) (config, error)
 		ApplyMigrations:          envx.Bool("BROWSER_AUTOMATION_APPLY_MIGRATIONS", false),
 		MigrationsDir:            envx.StringDefault("BROWSER_AUTOMATION_MIGRATIONS_DIR", defaultMigrationsDir),
 		ShutdownGrace:            envx.DurationSeconds("BROWSER_AUTOMATION_SHUTDOWN_GRACE_SECONDS", defaultShutdownGrace),
+		WebRTCUDPListenAddr:      envx.StringDefault("BROWSER_AUTOMATION_WEBRTC_UDP_LISTEN_ADDR", defaultWebRTCUDPListenAddr),
+		WebRTCPublicIPs:          envx.List("BROWSER_AUTOMATION_WEBRTC_PUBLIC_IPS"),
 		Runtime:                  strings.ToLower(envx.StringDefault("BROWSER_AUTOMATION_RUNTIME", defaultRuntime)),
 		MaxConcurrentSessions:    envx.Int("BROWSER_AUTOMATION_MAX_CONCURRENT_SESSIONS", defaultMaxSessionsEnvValue),
 

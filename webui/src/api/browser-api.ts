@@ -1,12 +1,15 @@
-import type {
-  ExecuteBrowserCommandsRequest,
-  CreateBrowserLiveViewResponse,
-  ExecuteBrowserCommandsResponse,
-  ListBrowserSessionsResponse,
-  ListBrowserTasksResponse,
-  StartBrowserSessionRequest,
-  StartBrowserSessionResponse,
-  StopBrowserSessionResponse
+import {
+  BrowserLiveViewProvider,
+  type BrowserLiveWebRTCAnswerRequest,
+  type BrowserLiveWebRTCAnswerResponse,
+  type CreateBrowserLiveViewResponse,
+  type ExecuteBrowserCommandsRequest,
+  type ExecuteBrowserCommandsResponse,
+  type ListBrowserSessionsResponse,
+  type ListBrowserTasksResponse,
+  type StartBrowserSessionRequest,
+  type StartBrowserSessionResponse,
+  type StopBrowserSessionResponse
 } from '../proto/browser/automation/v1/browser_automation';
 import { ensureProtoSuccess, fetchProto, postProto } from './proto-http';
 
@@ -32,6 +35,7 @@ export async function createLiveView(sessionId: string): Promise<CreateBrowserLi
     `${basePath}/sessions/${encodeURIComponent(sessionId)}/live`,
     {
       session_id: sessionId,
+      provider: BrowserLiveViewProvider.BROWSER_LIVE_VIEW_PROVIDER_WEBRTC,
       control_enabled: true,
       max_width: 1280,
       max_height: 900
@@ -43,9 +47,13 @@ export async function createLiveView(sessionId: string): Promise<CreateBrowserLi
   ));
 }
 
-export function liveViewWebSocketPath(token: string) {
-  return `/ws/browser-automation/live/${encodeURIComponent(token)}`;
+export async function createLiveWebRTCAnswer(path: string, request: BrowserLiveWebRTCAnswerRequest): Promise<BrowserLiveWebRTCAnswerResponse> {
+  return ensureProtoSuccess(await postProto<BrowserLiveWebRTCAnswerResponse>(path, request, {
+    timeoutMessage: '创建 WebRTC 连接超时，请确认网络可达。',
+    timeoutMs: 30_000
+  }));
 }
+
 
 export async function stopSession(sessionId: string, reason: string): Promise<StopBrowserSessionResponse> {
   return ensureProtoSuccess(await postProto<StopBrowserSessionResponse>(

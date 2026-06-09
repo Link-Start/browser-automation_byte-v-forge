@@ -27,10 +27,11 @@ const liveOperationTimeout = 5 * time.Second
 type Server struct {
 	service *app.AutomationService
 	webDir  string
+	webrtc  *LiveWebRTCServer
 }
 
-func NewServer(service *app.AutomationService, webDir string) *Server {
-	return &Server{service: service, webDir: strings.TrimSpace(webDir)}
+func NewServer(service *app.AutomationService, webDir string, webrtc *LiveWebRTCServer) *Server {
+	return &Server{service: service, webDir: strings.TrimSpace(webDir), webrtc: webrtc}
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -64,6 +65,8 @@ func (s *Server) serveAPI(w http.ResponseWriter, r *http.Request) {
 		s.getSession(w, r, strings.TrimPrefix(path, "/sessions/"))
 	case r.Method == http.MethodPost && strings.HasPrefix(path, "/sessions/") && strings.HasSuffix(path, "/live"):
 		s.createLiveView(w, r, path)
+	case r.Method == http.MethodPost && strings.HasPrefix(path, "/live/") && strings.HasSuffix(path, "/webrtc/answer"):
+		s.createLiveWebRTCAnswer(w, r, path)
 	case r.Method == http.MethodPost && strings.HasPrefix(path, "/sessions/") && strings.HasSuffix(path, "/stop"):
 		s.stopSession(w, r, path)
 	case r.Method == http.MethodPost && path == "/tasks/execute":
@@ -121,6 +124,37 @@ func (s *Server) createLiveView(w http.ResponseWriter, r *http.Request, path str
 	}
 	liveView, err := s.service.CreateBrowserLiveView(r.Context(), request)
 	writeProto(w, &browserautomationv1.CreateBrowserLiveViewResponse{LiveView: liveView, Error: core.AutomationError(err)})
+}
+
+func (s *Server) createLiveWebRTCAnswer(w http.ResponseWriter, r *http.Request, path string) {
+	if !sameOrigin(r) {
+		writeError(w, http.StatusForbidden, "origin is not allowed")
+		return
+	}
+	token := strings.TrimSuffix(strings.TrimPrefix(path, "/live/"), "/webrtc/answer")
+	request := &browserautomationv1.BrowserLiveWebRTCAnswerRequest{}
+	if !readProto(w, r, request) {
+		return
+	}
+	if request.LiveViewToken == "" {
+		request.LiveViewToken = strings.TrimSpace(token)
+	}
+	if request.GetOfferType() != "" && request.GetOfferType() != "offer" {
+		err := core.NewError(core.CodeValidationFailed, "offer_type must be offer", false)
+		writeProto(w, &browserautomationv1.BrowserLiveWebRTCAnswerResponse{Error: core.AutomationError(err)})
+		return
+	}
+	view, err := s.service.AuthorizeBrowserLiveView(r.Context(), request.GetLiveViewToken())
+	if err != nil {
+		writeProto(w, &browserautomationv1.BrowserLiveWebRTCAnswerResponse{Error: core.AutomationError(err)})
+		return
+	}
+	answer, err := s.webrtc.CreateAnswer(r.Context(), s.service, view, request.GetOfferSdp())
+	if err != nil {
+		writeProto(w, &browserautomationv1.BrowserLiveWebRTCAnswerResponse{Error: core.AutomationError(err)})
+		return
+	}
+	writeProto(w, answer)
 }
 
 func (s *Server) executeTask(w http.ResponseWriter, r *http.Request) {

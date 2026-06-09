@@ -622,6 +622,7 @@ message BrowserLiveView {
   int32 max_height = 6;
   string url = 7;
   string websocket_url = 8;
+  string webrtc_url = 9;
   google.protobuf.Timestamp created_at = 30;
   google.protobuf.Timestamp expires_at = 31;
 }
@@ -658,6 +659,18 @@ message BrowserLiveClientMessage {
 message BrowserLiveServerMessage {
   BrowserLiveFrame frame = 1;
   BrowserAutomationError error = 2;
+}
+
+message BrowserLiveWebRTCAnswerRequest {
+  string live_view_token = 1;
+  string offer_sdp = 2;
+  string offer_type = 3;
+}
+
+message BrowserLiveWebRTCAnswerResponse {
+  string answer_sdp = 1;
+  string answer_type = 2;
+  BrowserAutomationError error = 3;
 }
 
 message BrowserTaskInput {
