@@ -17,9 +17,9 @@ type SessionRailProps = {
 export function SessionRail({ activeSessionId, lastUpdatedAt, onRefresh, refreshing, sessions }: SessionRailProps) {
   const activeCount = sessions.filter(isActiveSession).length;
   return (
-    <aside className="session-rail" aria-label="浏览器会话">
+    <aside className="session-rail" aria-label="浏览器窗口">
       <div className="session-rail-header">
-        <Text as="p" size="3" weight="bold">Sessions</Text>
+        <Text as="p" size="3" weight="bold">Windows</Text>
         <Flex align="center" gap="2">
           <Badge color="gray" variant="soft">{activeCount}/{sessions.length}</Badge>
           <IconButton disabled={refreshing} onClick={onRefresh} title="刷新" type="button" aria-label="刷新" variant="ghost">

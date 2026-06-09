@@ -9,26 +9,34 @@ import { PageFrame } from '../components/page-frame';
 import { SessionRail } from '../components/session-rail';
 import type { BrowserCommand, ExecuteBrowserCommandsRequest } from '../proto/browser/automation/v1/browser_automation';
 import { paths } from './paths';
-import { buildStartSessionRequest, defaultSessionConfig, type SessionConfig } from './session-config';
+import { buildStartSessionRequest, defaultSessionConfig, validateSessionConfig, type SessionConfig } from './session-config';
 import { newRequestId } from './session-route-utils';
 import '../workbench.css';
 
-type CloudBrowserPreset = {
-  config: SessionConfig;
-  description: string;
-  id: string;
-  label: string;
-};
+type FingerprintMode = 'ip' | 'manual';
+
+type SelectOption = { label: string; value: string };
 
 type LaunchResult = {
   sessionId: string;
   warning?: string;
 };
 
-const cloudBrowserPresets: CloudBrowserPreset[] = [
-  { config: defaultSessionConfig, description: '默认', id: 'auto', label: '自动' },
-  { config: { ...defaultSessionConfig, locale: 'en-US', timezone: 'America/New_York' }, description: 'en-US', id: 'us', label: '美国' },
-  { config: { ...defaultSessionConfig, locale: 'ja-JP', timezone: 'Asia/Tokyo' }, description: 'ja-JP', id: 'jp', label: '日本' }
+const localeOptions: SelectOption[] = [
+  { label: 'zh-CN', value: 'zh-CN' },
+  { label: 'en-US', value: 'en-US' },
+  { label: 'ja-JP', value: 'ja-JP' },
+  { label: 'de-DE', value: 'de-DE' }
+];
+
+const timezoneOptions: SelectOption[] = [
+  { label: 'Asia/Shanghai', value: 'Asia/Shanghai' },
+  { label: 'America/New_York', value: 'America/New_York' },
+  { label: 'America/Los_Angeles', value: 'America/Los_Angeles' },
+  { label: 'Europe/London', value: 'Europe/London' },
+  { label: 'Europe/Berlin', value: 'Europe/Berlin' },
+  { label: 'Asia/Tokyo', value: 'Asia/Tokyo' },
+  { label: 'UTC', value: 'UTC' }
 ];
 
 export function HomeRoute() {
@@ -36,12 +44,14 @@ export function HomeRoute() {
   const queryClient = useQueryClient();
   const [targetUrl, setTargetUrl] = useState(defaultQuickCommand.targetUrl);
   const [launchWarning, setLaunchWarning] = useState('');
-  const [presetId, setPresetId] = useState(cloudBrowserPresets[0].id);
+  const [fingerprintMode, setFingerprintMode] = useState<FingerprintMode>('ip');
+  const [locale, setLocale] = useState('zh-CN');
+  const [timezone, setTimezone] = useState('Asia/Shanghai');
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
   const recentSession = sessionItems[0];
-  const validationError = validateLaunchTarget(targetUrl);
-  const selectedPreset = cloudBrowserPresets.find((preset) => preset.id === presetId) || cloudBrowserPresets[0];
+  const sessionConfig = buildFingerprintConfig(fingerprintMode, locale, timezone);
+  const validationError = validateLaunchTarget(targetUrl) || validateSessionConfig(sessionConfig);
   const launch = useMutation({ mutationFn: launchCloudBrowser, onSuccess: handleLaunchSuccess });
 
   async function launchCloudBrowser(): Promise<LaunchResult> {
@@ -49,7 +59,7 @@ export function HomeRoute() {
       throw new Error(validationError);
     }
     const normalizedUrl = normalizeLaunchTarget(targetUrl);
-    const sessionResponse = await startSession(buildStartSessionRequest(selectedPreset.config, newRequestId('session')));
+    const sessionResponse = await startSession(buildStartSessionRequest(sessionConfig, newRequestId('session')));
     const sessionId = sessionResponse.session?.session_id;
     if (!sessionId) {
       throw new Error('浏览器会话启动失败，请稍后重试。');
@@ -73,19 +83,25 @@ export function HomeRoute() {
       <div className="cloud-workbench">
         <CloudBrowserLauncher
           disabled={launch.isPending}
+          fingerprintMode={fingerprintMode}
           launchError={launch.error?.message || sessions.error?.message || launchWarning}
           launching={launch.isPending}
+          locale={locale}
+          localeOptions={localeOptions}
+          onFingerprintModeChange={(value) => setFingerprintMode(value as FingerprintMode)}
           onLaunch={() => launch.mutate()}
-          onPresetChange={setPresetId}
+          onLocaleChange={setLocale}
           onTargetUrlChange={(value) => {
             setLaunchWarning('');
             setTargetUrl(value);
           }}
-          presets={cloudBrowserPresets}
+          onTimezoneChange={setTimezone}
           recentSession={recentSession}
-          selectedPresetId={presetId}
           targetUrl={targetUrl}
+          timezone={timezone}
+          timezoneOptions={timezoneOptions}
           validationError={validationError}
+          windowCount={sessionItems.length}
         />
         <SessionRail
           activeSessionId={recentSession?.session_id}
@@ -99,6 +115,13 @@ export function HomeRoute() {
       </div>
     </PageFrame>
   );
+}
+
+function buildFingerprintConfig(mode: FingerprintMode, locale: string, timezone: string): SessionConfig {
+  if (mode === 'manual') {
+    return { ...defaultSessionConfig, locale, timezone };
+  }
+  return { ...defaultSessionConfig, locale: '', timezone: '' };
 }
 
 function buildLaunchRequest(sessionId: string, targetUrl: string): ExecuteBrowserCommandsRequest {

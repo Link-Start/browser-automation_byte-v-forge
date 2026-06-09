@@ -30,7 +30,7 @@ export function AppShell() {
           </nav>
           <Flex align="center" className="app-topbar-actions" gap="2">
             <Badge color="gray" variant="soft">{activeCount}/{sessionItems.length}</Badge>
-            <Button asChild size="2"><NavLink to={paths.newSession}><Plus size={15} />新建</NavLink></Button>
+            <Button asChild size="2"><NavLink to={paths.home}><Plus size={15} />新窗口</NavLink></Button>
           </Flex>
         </Flex>
       </header>

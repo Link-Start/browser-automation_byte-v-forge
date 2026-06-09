@@ -34,7 +34,7 @@ export function SessionCard(props: SessionCardProps) {
           <p className="section-kicker">Simple Profile</p>
           <Text as="p" size="5" weight="bold">浏览器配置</Text>
         </Box>
-        <Text as="span" color="gray" size="2">默认自动画像</Text>
+        <Text as="span" color="gray" size="2">留空跟随 IP</Text>
       </div>
       <Grid className="form-grid" gap="3">
         <label htmlFor="browser-kind">
@@ -54,15 +54,15 @@ export function SessionCard(props: SessionCardProps) {
         </label>
       </Grid>
       <details className="json-editor">
-        <summary>高级指纹参数<span className="summary-hint">一般不用改</span></summary>
+        <summary>语言 / Timezone<span className="summary-hint">可选</span></summary>
         <Grid className="form-grid" gap="3">
         <label htmlFor="session-locale">
           Locale
-          <TextField.Root id="session-locale" autoComplete="language" value={props.locale} onChange={(event) => props.onLocaleChange(event.target.value)} placeholder="en-US" />
+          <TextField.Root id="session-locale" autoComplete="language" value={props.locale} onChange={(event) => props.onLocaleChange(event.target.value)} placeholder="留空" />
         </label>
         <label htmlFor="session-timezone">
           Timezone
-          <TextField.Root id="session-timezone" autoComplete="off" value={props.timezone} onChange={(event) => props.onTimezoneChange(event.target.value)} placeholder="America/New_York" />
+          <TextField.Root id="session-timezone" autoComplete="off" value={props.timezone} onChange={(event) => props.onTimezoneChange(event.target.value)} placeholder="留空" />
         </label>
         </Grid>
       </details>

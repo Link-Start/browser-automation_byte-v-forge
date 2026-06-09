@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Copy, ExternalLink, Link2, Radio, Square } from 'lucide-react';
+import { AlertTriangle, Check, Copy, ExternalLink, Link2, Plus, Radio, Square } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { paths } from '../routes/paths';
@@ -76,8 +76,11 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
         </div>
       </div>
       <div className="session-toolbar-actions">
+        <Link className="toolbar-link" to={paths.home} title="打开新窗口">
+          <Plus size={15} />新窗口
+        </Link>
         {sessionId ? (
-          <Link className="toolbar-link" to={paths.sessionLive(sessionId)} title="打开当前会话 Live 路由">
+          <Link className="toolbar-link" to={paths.sessionLive(sessionId)} title="打开当前窗口 Live 路由">
             <Link2 size={15} />Live 路由
           </Link>
         ) : null}

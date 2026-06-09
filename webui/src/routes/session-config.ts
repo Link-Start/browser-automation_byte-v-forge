@@ -12,22 +12,16 @@ export type SessionConfig = {
 
 export const defaultSessionConfig: SessionConfig = {
   browserKind: BrowserKind.BROWSER_KIND_CHROMIUM,
-  locale: 'en-US',
+  locale: '',
   proxyRef: '',
-  timezone: 'America/New_York'
+  timezone: ''
 };
 
 export function validateSessionConfig(config: SessionConfig): string {
-  if (!config.locale.trim()) {
-    return 'Locale 不能为空。';
-  }
-  if (hasWhitespace(config.locale)) {
+  if (config.locale && hasWhitespace(config.locale)) {
     return 'Locale 不能包含空格。';
   }
-  if (!config.timezone.trim()) {
-    return 'Timezone 不能为空。';
-  }
-  if (hasWhitespace(config.timezone)) {
+  if (config.timezone && hasWhitespace(config.timezone)) {
     return 'Timezone 不能包含空格。';
   }
   if (config.proxyRef.length > 120) {
