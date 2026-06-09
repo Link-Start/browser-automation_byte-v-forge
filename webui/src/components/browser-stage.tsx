@@ -1,4 +1,4 @@
-import { Card, Inset, Spinner, Text } from '@radix-ui/themes';
+import { Card, Spinner, Text } from '@radix-ui/themes';
 import { useRef, type ClipboardEvent, type KeyboardEvent, type MouseEvent, type WheelEvent } from 'react';
 import { safeMessage } from '../api/safe-json';
 import type { BrowserLiveFrame, BrowserLiveInputEvent } from '../proto/browser/automation/v1/browser_automation';
@@ -52,34 +52,26 @@ export function BrowserStage(props: BrowserStageProps) {
 
   return (
     <Card className="browser-stage" aria-label="云端浏览器">
-      <Inset className="browser-stage-inset" clip="padding-box">
-        <div
-          aria-busy={waiting || props.pending}
-          aria-disabled={!interactive}
-          aria-label={interactive ? '云端浏览器画面' : '云端浏览器正在连接'}
-          className={interactive ? 'browser-viewport' : 'browser-viewport browser-viewport-disabled'}
-          onClick={handleClick}
-          onKeyDown={handleKeyboard}
-          onPaste={handlePaste}
-          onWheel={handleWheel}
-          role="application"
-          tabIndex={interactive ? 0 : -1}
-        >
-          {props.frame?.image_base64 ? (
-            <img alt="云端浏览器画面" className="live-frame" draggable={false} ref={imageRef} src={`data:${frameContentType(props.frame)};base64,${props.frame.image_base64}`} />
-          ) : (
-            <Placeholder error={props.error} />
-          )}
-        </div>
-      </Inset>
+      <div
+        aria-busy={waiting || props.pending}
+        aria-disabled={!interactive}
+        aria-label={interactive ? '云端浏览器画面' : '云端浏览器正在连接'}
+        className={interactive ? 'browser-viewport' : 'browser-viewport browser-viewport-disabled'}
+        onClick={handleClick}
+        onKeyDown={handleKeyboard}
+        onPaste={handlePaste}
+        onWheel={handleWheel}
+        role="application"
+        tabIndex={interactive ? 0 : -1}
+      >
+        {props.frame?.image_base64 ? <img alt="云端浏览器画面" className="live-frame" draggable={false} ref={imageRef} src={`data:${frameContentType(props.frame)};base64,${props.frame.image_base64}`} /> : <Placeholder error={props.error} />}
+      </div>
     </Card>
   );
 }
 
 function Placeholder({ error }: { error?: string }) {
-  if (error) {
-    return <Text as="div" className="viewport-state viewport-state-error" color="red">{safeMessage(error)}</Text>;
-  }
+  if (error) return <Text as="div" className="viewport-state viewport-state-error" color="red">{safeMessage(error)}</Text>;
   return <Text as="div" className="viewport-state" color="gray"><Spinner size="2" />连接中</Text>;
 }
 

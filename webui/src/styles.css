@@ -33,10 +33,11 @@ button, input, select, textarea { font: inherit; }
 .session-tab-active { background: #111827; border-color: #111827; color: #fff; }
 .muted { color: #6b7280; margin: 3px 0 0; }
 .browser-stage, .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; box-shadow: 0 18px 50px rgba(15, 23, 42, .07); overflow: hidden; }
-.browser-viewport { align-items: center; background: #f9fafb; cursor: crosshair; display: flex; justify-content: center; min-height: clamp(420px, 62vh, 720px); outline: none; overflow: hidden; position: relative; }
+.browser-stage { display: flex; padding: 0; }
+.browser-viewport { align-items: center; background: #f9fafb; cursor: crosshair; display: flex; flex: 1 1 auto; justify-content: center; min-height: clamp(420px, 62vh, 720px); outline: none; overflow: hidden; position: relative; width: 100%; }
 .browser-viewport-disabled { cursor: wait; }
 .browser-viewport:focus-visible { box-shadow: inset 0 0 0 3px rgba(249, 115, 22, .36); }
-.live-frame { display: block; height: 100%; max-height: min(86vh, 980px); object-fit: contain; pointer-events: none; user-select: none; width: 100%; }
+.live-frame { display: block; height: 100%; max-height: min(86vh, 980px); object-fit: fill; pointer-events: none; user-select: none; width: 100%; }
 .viewport-state { align-items: center; display: flex; gap: 8px; inset: 0; justify-content: center; position: absolute; }
 .viewport-state-error { padding: 18px; text-align: center; }
 .summary-grid { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 16px; }

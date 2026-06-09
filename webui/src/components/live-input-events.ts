@@ -53,7 +53,7 @@ function baseInput(kind: BrowserLiveInputKind, patch: Partial<BrowserLiveInputEv
 }
 
 function scaledPoint(event: MouseEvent<HTMLElement> | WheelEvent<HTMLElement>, frame?: BrowserLiveFrame, image?: HTMLImageElement | null) {
-  const rect = renderedFrameRect(event.currentTarget, frame, image);
+  const rect = renderedFrameRect(event.currentTarget, image);
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
   if (x < 0 || y < 0 || x > rect.width || y > rect.height) return undefined;
@@ -62,17 +62,6 @@ function scaledPoint(event: MouseEvent<HTMLElement> | WheelEvent<HTMLElement>, f
   return { x: (x * width) / rect.width, y: (y * height) / rect.height };
 }
 
-function renderedFrameRect(target: HTMLElement, frame?: BrowserLiveFrame, image?: HTMLImageElement | null) {
-  const rect = image?.getBoundingClientRect() || target.getBoundingClientRect();
-  const frameWidth = frame?.width || image?.naturalWidth || rect.width;
-  const frameHeight = frame?.height || image?.naturalHeight || rect.height;
-  if (frameWidth <= 0 || frameHeight <= 0 || rect.width <= 0 || rect.height <= 0) return rect;
-  const frameRatio = frameWidth / frameHeight;
-  const rectRatio = rect.width / rect.height;
-  if (rectRatio > frameRatio) {
-    const width = rect.height * frameRatio;
-    return new DOMRect(rect.left + (rect.width - width) / 2, rect.top, width, rect.height);
-  }
-  const height = rect.width / frameRatio;
-  return new DOMRect(rect.left, rect.top + (rect.height - height) / 2, rect.width, height);
+function renderedFrameRect(target: HTMLElement, image?: HTMLImageElement | null) {
+  return image?.getBoundingClientRect() || target.getBoundingClientRect();
 }

@@ -1,4 +1,4 @@
-import { Badge, Card, Flex, IconButton, Spinner, TextField, Tooltip } from '@radix-ui/themes';
+import { Badge, Card, Flex, Grid, IconButton, Spinner, TextField, Tooltip } from '@radix-ui/themes';
 import type { FormEvent, ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Globe2, Plus, RotateCw, X } from 'lucide-react';
 import { Link } from 'react-router';
@@ -31,7 +31,7 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
 
   return (
     <Card className="cloud-session-toolbar" role="toolbar" aria-label="浏览器控制栏">
-      <Flex align="center" className="cloud-session-toolbar-inner" gap="2">
+      <Grid align="center" className="cloud-session-toolbar-grid" gap="2">
         <Flex align="center" className="cloud-session-nav" gap="1" wrap="nowrap">
           <ToolbarButton label="后退" disabled={props.disabled} onClick={props.onBack}><ArrowLeft size={16} /></ToolbarButton>
           <ToolbarButton label="前进" disabled={props.disabled} onClick={props.onForward}><ArrowRight size={16} /></ToolbarButton>
@@ -50,22 +50,14 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
           >
             <TextField.Slot><Globe2 size={15} /></TextField.Slot>
           </TextField.Root>
-          <Tooltip content="访问">
-            <IconButton aria-label="访问" disabled={props.disabled || props.navigating || props.stopping} size="3" type="submit" variant="solid">
-              {props.navigating ? <Spinner size="2" /> : <ArrowRight size={16} />}
-            </IconButton>
-          </Tooltip>
+          <Tooltip content="访问"><IconButton aria-label="访问" disabled={props.disabled || props.navigating || props.stopping} size="3" type="submit" variant="solid">{props.navigating ? <Spinner size="2" /> : <ArrowRight size={16} />}</IconButton></Tooltip>
         </form>
         <Flex align="center" className="cloud-session-window-actions" gap="1" justify="end">
           <Badge aria-label={status.label} className="cloud-session-status" color={status.color} variant="soft" />
           <ToolbarLink label="新窗口" to={paths.home}><Plus size={16} /></ToolbarLink>
-          <Tooltip content="关闭窗口">
-            <IconButton aria-label="关闭窗口" color="red" disabled={props.stopping} onClick={props.onStop} type="button" variant="ghost">
-              {props.stopping ? <Spinner size="2" /> : <X size={16} />}
-            </IconButton>
-          </Tooltip>
+          <Tooltip content="关闭窗口"><IconButton aria-label="关闭窗口" color="red" disabled={props.stopping} onClick={props.onStop} type="button" variant="ghost">{props.stopping ? <Spinner size="2" /> : <X size={16} />}</IconButton></Tooltip>
         </Flex>
-      </Flex>
+      </Grid>
     </Card>
   );
 }
