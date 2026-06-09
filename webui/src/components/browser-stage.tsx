@@ -1,5 +1,5 @@
+import { Card, Inset, Spinner, Text } from '@radix-ui/themes';
 import type { ClipboardEvent, KeyboardEvent, MouseEvent, WheelEvent } from 'react';
-import { Loader2 } from 'lucide-react';
 import { safeMessage } from '../api/safe-json';
 import type { BrowserLiveFrame, BrowserLiveInputEvent } from '../proto/browser/automation/v1/browser_automation';
 import { clickInput, keyboardInput, pasteInput, wheelInput } from './live-input-events';
@@ -17,9 +17,7 @@ export function BrowserStage(props: BrowserStageProps) {
   const waiting = !interactive && !props.error;
 
   function dispatch(input?: BrowserLiveInputEvent) {
-    if (interactive && input) {
-      props.onInput(input);
-    }
+    if (interactive && input) props.onInput(input);
   }
 
   function handleClick(event: MouseEvent<HTMLElement>) {
@@ -51,8 +49,8 @@ export function BrowserStage(props: BrowserStageProps) {
   }
 
   return (
-    <section className="browser-stage" aria-label="云端浏览器">
-      <div className="browser-shell">
+    <Card className="browser-stage" aria-label="云端浏览器">
+      <Inset clip="padding-box">
         <div
           aria-busy={waiting || props.pending}
           aria-disabled={!interactive}
@@ -71,21 +69,16 @@ export function BrowserStage(props: BrowserStageProps) {
             <Placeholder error={props.error} />
           )}
         </div>
-      </div>
-    </section>
+      </Inset>
+    </Card>
   );
 }
 
 function Placeholder({ error }: { error?: string }) {
   if (error) {
-    return <div className="viewport-state viewport-state-error">{safeMessage(error)}</div>;
+    return <Text as="div" className="viewport-state viewport-state-error" color="red">{safeMessage(error)}</Text>;
   }
-  return (
-    <div className="viewport-state">
-      <Loader2 className="spin" size={18} />
-      <span>连接中</span>
-    </div>
-  );
+  return <Text as="div" className="viewport-state" color="gray"><Spinner size="2" />连接中</Text>;
 }
 
 function frameContentType(frame: BrowserLiveFrame) {

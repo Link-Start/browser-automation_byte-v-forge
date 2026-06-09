@@ -1,17 +1,9 @@
 .cloud-session-page { padding: 12px 0 18px; width: min(1440px, calc(100vw - 24px)); }
 .cloud-session-workspace { align-items: stretch; display: grid; gap: 12px; grid-template-columns: 268px minmax(0, 1fr); min-height: calc(100vh - 88px); }
 .cloud-session-main { display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; }
-.cloud-session-toolbar { align-items: center; background: rgba(255, 255, 255, .96); border: 1px solid #e5e7eb; border-radius: 18px; box-shadow: 0 14px 40px rgba(15, 23, 42, .06); display: grid; gap: 10px; grid-template-columns: auto minmax(0, 1fr) auto; padding: 8px; }
-.cloud-session-nav, .cloud-session-actions { align-items: center; display: flex; gap: 2px; }
-.cloud-session-address { align-items: center; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) auto; min-width: 0; }
-.cloud-session-address-input { min-width: 0; }
-.cloud-session-connection { border-radius: 999px; display: inline-flex; height: 9px; margin: 0 8px; width: 9px; }
-.cloud-session-connection.tone-success { background: #16a34a; box-shadow: 0 0 0 6px rgba(22, 163, 74, .12); }
-.cloud-session-connection.tone-danger { background: #dc2626; box-shadow: 0 0 0 6px rgba(220, 38, 38, .11); }
-.cloud-session-connection.tone-warn { background: #f59e0b; box-shadow: 0 0 0 6px rgba(245, 158, 11, .13); }
-.cloud-session-connection.tone-muted { background: #9ca3af; }
+.cloud-session-toolbar { align-items: center; display: grid; gap: 10px; grid-template-columns: auto minmax(0, 1fr) auto; padding: 8px; }
+.cloud-session-status { border-radius: 999px; height: 9px; min-width: 9px; padding: 0; width: 9px; }
 .cloud-session-main .browser-stage { flex: 1; margin: 0; min-height: 0; }
-.cloud-session-main .browser-shell { height: 100%; }
 .cloud-session-main .browser-viewport { min-height: min(760px, calc(100vh - 160px)); }
 .cloud-session-workspace .session-rail { height: calc(100vh - 88px); min-height: 0; }
 .cloud-session-workspace .session-rail-list { max-height: calc(100vh - 150px); }
@@ -23,5 +15,4 @@
 @media (max-width: 720px) {
   .cloud-session-page { width: min(100vw - 16px, 1440px); }
   .cloud-session-toolbar { grid-template-columns: 1fr; }
-  .cloud-session-actions { justify-content: space-between; }
 }

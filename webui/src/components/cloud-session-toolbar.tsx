@@ -1,6 +1,6 @@
-import { Button, IconButton, TextField, Tooltip } from '@radix-ui/themes';
-import type { FormEvent, ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Loader2, Plus, RotateCw, Square } from 'lucide-react';
+import { Badge, Button, Card, Flex, Grid, IconButton, Spinner, TextField, Tooltip } from '@radix-ui/themes';
+import type { FormEvent } from 'react';
+import { ArrowLeft, ArrowRight, Plus, RotateCw, Square } from 'lucide-react';
 import { Link } from 'react-router';
 import { paths } from '../routes/paths';
 
@@ -26,70 +26,61 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!props.disabled && !props.navigating) {
-      props.onNavigate();
-    }
+    if (!props.disabled && !props.navigating) props.onNavigate();
   }
 
   return (
-    <section className="cloud-session-toolbar" aria-label="浏览器控制栏">
-      <div className="cloud-session-nav">
-        <ToolbarLink label="新窗口" to={paths.home}><Plus size={16} /></ToolbarLink>
-        <ToolbarButton disabled={props.disabled} label="后退" onClick={props.onBack}><ArrowLeft size={16} /></ToolbarButton>
-        <ToolbarButton disabled={props.disabled} label="前进" onClick={props.onForward}><ArrowRight size={16} /></ToolbarButton>
-        <ToolbarButton disabled={props.disabled} label="刷新" onClick={props.onReload}><RotateCw size={16} /></ToolbarButton>
-      </div>
-      <form className="cloud-session-address" onSubmit={submit}>
-        <TextField.Root
-          aria-label="地址"
-          className="cloud-session-address-input"
-          disabled={props.stopping}
-          onBlur={() => props.onAddressFocusChange(false)}
-          onChange={(event) => props.onAddressChange(event.target.value)}
-          onFocus={() => props.onAddressFocusChange(true)}
-          placeholder="输入 URL"
-          size="3"
-          value={props.addressValue}
-        />
-        <Button aria-label="访问" disabled={props.disabled || props.navigating || props.stopping} size="3" type="submit" variant="solid">
-          {props.navigating ? <Loader2 className="spin" size={16} /> : <ArrowRight size={16} />}
-        </Button>
-      </form>
-      <div className="cloud-session-actions">
-        <span className={`cloud-session-connection ${status.tone}`} title={status.label} aria-label={status.label} role="status" />
-        <ToolbarButton danger disabled={props.stopping} label="停止窗口" onClick={props.onStop}>
-          {props.stopping ? <Loader2 className="spin" size={16} /> : <Square size={16} />}
-        </ToolbarButton>
-      </div>
-    </section>
+    <Card className="cloud-session-toolbar" role="toolbar" aria-label="浏览器控制栏">
+      <Flex align="center" gap="1" wrap="nowrap">
+        <Tooltip content="新窗口">
+          <IconButton asChild aria-label="新窗口" title="新窗口" variant="ghost">
+            <Link to={paths.home}><Plus size={16} /></Link>
+          </IconButton>
+        </Tooltip>
+        <Tooltip content="后退">
+          <IconButton aria-label="后退" disabled={props.disabled} onClick={props.onBack} title="后退" type="button" variant="ghost"><ArrowLeft size={16} /></IconButton>
+        </Tooltip>
+        <Tooltip content="前进">
+          <IconButton aria-label="前进" disabled={props.disabled} onClick={props.onForward} title="前进" type="button" variant="ghost"><ArrowRight size={16} /></IconButton>
+        </Tooltip>
+        <Tooltip content="刷新">
+          <IconButton aria-label="刷新" disabled={props.disabled} onClick={props.onReload} title="刷新" type="button" variant="ghost"><RotateCw size={16} /></IconButton>
+        </Tooltip>
+      </Flex>
+      <Grid asChild columns="minmax(0, 1fr) auto" gap="2">
+        <form onSubmit={submit}>
+          <TextField.Root
+            aria-label="地址"
+            disabled={props.stopping}
+            onBlur={() => props.onAddressFocusChange(false)}
+            onChange={(event) => props.onAddressChange(event.target.value)}
+            onFocus={() => props.onAddressFocusChange(true)}
+            placeholder="输入 URL"
+            size="3"
+            value={props.addressValue}
+          />
+          <Button aria-label="访问" disabled={props.disabled || props.navigating || props.stopping} size="3" type="submit" variant="solid">
+            {props.navigating ? <Spinner size="2" /> : <ArrowRight size={16} />}
+          </Button>
+        </form>
+      </Grid>
+      <Flex align="center" gap="2" justify="end">
+        <Badge aria-label={status.label} className="cloud-session-status" color={status.color} title={status.label} variant="soft" />
+        <Tooltip content="停止窗口">
+          <IconButton aria-label="停止窗口" color="red" disabled={props.stopping} onClick={props.onStop} title="停止窗口" type="button" variant="ghost">
+            {props.stopping ? <Spinner size="2" /> : <Square size={16} />}
+          </IconButton>
+        </Tooltip>
+      </Flex>
+    </Card>
   );
 }
 
-function ToolbarButton({ children, danger = false, disabled, label, onClick }: { children: ReactNode; danger?: boolean; disabled?: boolean; label: string; onClick: () => void }) {
-  return (
-    <Tooltip content={label}>
-      <IconButton aria-label={label} color={danger ? 'red' : 'gray'} disabled={disabled} onClick={onClick} title={label} type="button" variant="ghost">
-        {children}
-      </IconButton>
-    </Tooltip>
-  );
-}
-
-function ToolbarLink({ children, label, to }: { children: ReactNode; label: string; to: string }) {
-  return (
-    <Tooltip content={label}>
-      <IconButton asChild aria-label={label} title={label} variant="ghost">
-        <Link to={to}>{children}</Link>
-      </IconButton>
-    </Tooltip>
-  );
-}
-
-function sessionStatus(props: Pick<CloudSessionToolbarProps, 'connected' | 'error' | 'navigating' | 'reconnecting' | 'stopping'>) {
-  if (props.error) return { label: '连接异常', tone: 'tone-danger' };
-  if (props.stopping) return { label: '正在停止', tone: 'tone-warn' };
-  if (props.navigating) return { label: '正在打开', tone: 'tone-warn' };
-  if (props.connected) return { label: '已连接', tone: 'tone-success' };
-  if (props.reconnecting) return { label: '重连中', tone: 'tone-warn' };
-  return { label: '连接中', tone: 'tone-muted' };
+function sessionStatus(props: Pick<CloudSessionToolbarProps, 'connected' | 'error' | 'navigating' | 'reconnecting' | 'stopping'>): { color: 'amber' | 'gray' | 'green' | 'red'; label: string } {
+  if (props.error) return { color: 'red', label: '连接异常' };
+  if (props.stopping) return { color: 'amber', label: '正在停止' };
+  if (props.navigating) return { color: 'amber', label: '正在打开' };
+  if (props.connected) return { color: 'green', label: '已连接' };
+  if (props.reconnecting) return { color: 'amber', label: '重连中' };
+  return { color: 'gray', label: '连接中' };
 }
