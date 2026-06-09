@@ -1,4 +1,4 @@
-import { Badge, Card, Flex, Grid, IconButton, Spinner, TextField, Tooltip } from '@radix-ui/themes';
+import { Badge, Card, Flex, IconButton, Spinner, TextField, Tooltip } from '@radix-ui/themes';
 import type { FormEvent, ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, Globe2, Plus, RotateCw, X } from 'lucide-react';
 import { Link } from 'react-router';
@@ -31,13 +31,13 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
 
   return (
     <Card className="cloud-session-toolbar" role="toolbar" aria-label="浏览器控制栏">
-      <Flex align="center" className="cloud-session-nav" gap="1" wrap="nowrap">
-        <ToolbarButton label="后退" disabled={props.disabled} onClick={props.onBack}><ArrowLeft size={16} /></ToolbarButton>
-        <ToolbarButton label="前进" disabled={props.disabled} onClick={props.onForward}><ArrowRight size={16} /></ToolbarButton>
-        <ToolbarButton label="刷新" disabled={props.disabled} onClick={props.onReload}><RotateCw size={16} /></ToolbarButton>
-      </Flex>
-      <Grid asChild className="cloud-session-address-form" columns="minmax(0, 1fr) auto" gap="2">
-        <form onSubmit={submit}>
+      <Flex align="center" className="cloud-session-toolbar-inner" gap="2">
+        <Flex align="center" className="cloud-session-nav" gap="1" wrap="nowrap">
+          <ToolbarButton label="后退" disabled={props.disabled} onClick={props.onBack}><ArrowLeft size={16} /></ToolbarButton>
+          <ToolbarButton label="前进" disabled={props.disabled} onClick={props.onForward}><ArrowRight size={16} /></ToolbarButton>
+          <ToolbarButton label="刷新" disabled={props.disabled} onClick={props.onReload}><RotateCw size={16} /></ToolbarButton>
+        </Flex>
+        <form className="cloud-session-address-form" onSubmit={submit}>
           <TextField.Root
             aria-label="地址"
             disabled={props.stopping}
@@ -56,32 +56,26 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
             </IconButton>
           </Tooltip>
         </form>
-      </Grid>
-      <Flex align="center" className="cloud-session-window-actions" gap="1" justify="end">
-        <Badge aria-label={status.label} className="cloud-session-status" color={status.color} variant="soft" />
-        <Tooltip content="新窗口">
-          <IconButton asChild aria-label="新窗口" variant="ghost">
-            <Link to={paths.home}><Plus size={16} /></Link>
-          </IconButton>
-        </Tooltip>
-        <Tooltip content="关闭窗口">
-          <IconButton aria-label="关闭窗口" color="red" disabled={props.stopping} onClick={props.onStop} type="button" variant="ghost">
-            {props.stopping ? <Spinner size="2" /> : <X size={16} />}
-          </IconButton>
-        </Tooltip>
+        <Flex align="center" className="cloud-session-window-actions" gap="1" justify="end">
+          <Badge aria-label={status.label} className="cloud-session-status" color={status.color} variant="soft" />
+          <ToolbarLink label="新窗口" to={paths.home}><Plus size={16} /></ToolbarLink>
+          <Tooltip content="关闭窗口">
+            <IconButton aria-label="关闭窗口" color="red" disabled={props.stopping} onClick={props.onStop} type="button" variant="ghost">
+              {props.stopping ? <Spinner size="2" /> : <X size={16} />}
+            </IconButton>
+          </Tooltip>
+        </Flex>
       </Flex>
     </Card>
   );
 }
 
 function ToolbarButton({ children, disabled, label, onClick }: { children: ReactNode; disabled: boolean; label: string; onClick: () => void }) {
-  return (
-    <Tooltip content={label}>
-      <IconButton aria-label={label} disabled={disabled} onClick={onClick} type="button" variant="ghost">
-        {children}
-      </IconButton>
-    </Tooltip>
-  );
+  return <Tooltip content={label}><IconButton aria-label={label} disabled={disabled} onClick={onClick} type="button" variant="ghost">{children}</IconButton></Tooltip>;
+}
+
+function ToolbarLink({ children, label, to }: { children: ReactNode; label: string; to: string }) {
+  return <Tooltip content={label}><IconButton asChild aria-label={label} variant="ghost"><Link to={to}>{children}</Link></IconButton></Tooltip>;
 }
 
 function sessionStatus(props: Pick<CloudSessionToolbarProps, 'connected' | 'error' | 'navigating' | 'reconnecting' | 'stopping'>): { color: 'amber' | 'gray' | 'green' | 'red'; label: string } {

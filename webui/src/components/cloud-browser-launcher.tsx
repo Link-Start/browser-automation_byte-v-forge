@@ -1,4 +1,4 @@
-import { Button, Card, Flex, SegmentedControl, Select, Text, TextField } from '@radix-ui/themes';
+import { Box, Card, Flex, IconButton, SegmentedControl, Select, Text, TextField, Tooltip } from '@radix-ui/themes';
 import type { FormEvent } from 'react';
 import { ArrowRight, Globe2, PlugZap, Sparkles } from 'lucide-react';
 import { BrowserProxyProviderKind } from '../proto/browser/automation/v1/browser_automation';
@@ -38,17 +38,12 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
   }
 
   return (
-    <section className="cloud-browser-card" aria-label="新建云浏览器窗口">
-      <Card className="cloud-browser-shell">
-        <form className="cloud-browser-form" onSubmit={submit}>
-          <Flex align="center" className="cloud-window-strip" justify="between">
-            <span className="window-dots" aria-hidden="true"><i /><i /><i /></span>
-            <Text as="span" color="gray" size="2" weight="medium">新窗口</Text>
-          </Flex>
-          <div className="cloud-launch-strip">
+    <Card className="cloud-browser-shell" aria-label="新建云浏览器窗口">
+      <form className="cloud-browser-form" onSubmit={submit}>
+        <Flex align="center" className="cloud-launch-strip" gap="2">
+          <Box className="cloud-address-wrap">
             <label className="sr-only" htmlFor="cloud-browser-target">URL</label>
             <TextField.Root
-              className="cloud-address-input"
               id="cloud-browser-target"
               aria-describedby={feedback ? 'cloud-browser-feedback' : undefined}
               aria-invalid={Boolean(feedback)}
@@ -61,34 +56,28 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
             >
               <TextField.Slot><Globe2 size={15} /></TextField.Slot>
             </TextField.Root>
-            <Button aria-label="打开窗口" disabled={props.disabled || Boolean(props.validationError)} size="3" type="submit">
+          </Box>
+          <Tooltip content="打开">
+            <IconButton aria-label="打开窗口" disabled={props.disabled || Boolean(props.validationError)} size="3" type="submit">
               {props.launching ? <Sparkles className="spin" size={17} /> : <ArrowRight size={17} />}
-            </Button>
-          </div>
-          <Flex align="center" className="cloud-settings-row" gap="2" wrap="wrap">
-            <SegmentedControl.Root size="1" value={props.fingerprintMode} onValueChange={props.onFingerprintModeChange}>
-              <SegmentedControl.Item value="ip">随 IP</SegmentedControl.Item>
-              <SegmentedControl.Item value="manual">自定义</SegmentedControl.Item>
-            </SegmentedControl.Root>
-            {props.fingerprintMode === 'manual' ? <ManualFingerprintControls {...props} /> : null}
-            <ProxyControls {...props} />
-          </Flex>
-          {feedback ? <Text as="p" id="cloud-browser-feedback" className="form-feedback form-feedback-error" role="alert">{feedback}</Text> : null}
-        </form>
-      </Card>
-    </section>
+            </IconButton>
+          </Tooltip>
+        </Flex>
+        <Flex align="center" className="cloud-settings-row" gap="2" wrap="wrap">
+          <SegmentedControl.Root size="1" value={props.fingerprintMode} onValueChange={props.onFingerprintModeChange}>
+            <SegmentedControl.Item value="ip">随 IP</SegmentedControl.Item>
+            <SegmentedControl.Item value="manual">自定义</SegmentedControl.Item>
+          </SegmentedControl.Root>
+          <ProxyControls {...props} />
+          {props.fingerprintMode === 'manual' ? <ManualFingerprintControls {...props} /> : null}
+        </Flex>
+        {feedback ? <Text as="p" id="cloud-browser-feedback" className="form-feedback form-feedback-error" role="alert">{feedback}</Text> : null}
+      </form>
+    </Card>
   );
 }
 
-type ProxyControlProps = Pick<
-  CloudBrowserLauncherProps,
-  | 'manualProxyUrl'
-  | 'onManualProxyUrlChange'
-  | 'onProxyModeChange'
-  | 'onProxyRuntimeAccountIdChange'
-  | 'proxyMode'
-  | 'proxyRuntimeAccountId'
->;
+type ProxyControlProps = Pick<CloudBrowserLauncherProps, 'manualProxyUrl' | 'onManualProxyUrlChange' | 'onProxyModeChange' | 'onProxyRuntimeAccountIdChange' | 'proxyMode' | 'proxyRuntimeAccountId'>;
 
 function ProxyControls(props: ProxyControlProps) {
   const isManual = props.proxyMode === BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_MANUAL;
@@ -103,36 +92,21 @@ function ProxyControls(props: ProxyControlProps) {
           <Select.Item value={BrowserProxyProviderKind.BROWSER_PROXY_PROVIDER_KIND_PROXY_RUNTIME}>代理服务</Select.Item>
         </Select.Content>
       </Select.Root>
-      {isManual ? (
-        <TextField.Root
-          autoComplete="off"
-          className="proxy-input"
-          onChange={(event) => props.onManualProxyUrlChange(event.target.value)}
-          placeholder="host:port:user:pass"
-          value={props.manualProxyUrl}
-        >
-          <TextField.Slot><PlugZap size={14} /></TextField.Slot>
-        </TextField.Root>
-      ) : null}
-      {isRuntime ? (
-        <TextField.Root
-          autoComplete="off"
-          className="proxy-runtime-input"
-          onChange={(event) => props.onProxyRuntimeAccountIdChange(event.target.value)}
-          placeholder="配置 ID"
-          value={props.proxyRuntimeAccountId}
-        >
-          <TextField.Slot><PlugZap size={14} /></TextField.Slot>
-        </TextField.Root>
-      ) : null}
+      {isManual ? <ProxyInput value={props.manualProxyUrl} onChange={props.onManualProxyUrlChange} placeholder="host:port:user:pass" /> : null}
+      {isRuntime ? <ProxyInput value={props.proxyRuntimeAccountId} onChange={props.onProxyRuntimeAccountIdChange} placeholder="配置 ID" /> : null}
     </Flex>
   );
 }
 
-type ManualFingerprintProps = Pick<
-  CloudBrowserLauncherProps,
-  'locale' | 'localeOptions' | 'onLocaleChange' | 'onTimezoneChange' | 'timezone' | 'timezoneOptions'
->;
+function ProxyInput({ onChange, placeholder, value }: { onChange: (value: string) => void; placeholder: string; value: string }) {
+  return (
+    <TextField.Root autoComplete="off" className="proxy-input" onChange={(event) => onChange(event.target.value)} placeholder={placeholder} value={value}>
+      <TextField.Slot><PlugZap size={14} /></TextField.Slot>
+    </TextField.Root>
+  );
+}
+
+type ManualFingerprintProps = Pick<CloudBrowserLauncherProps, 'locale' | 'localeOptions' | 'onLocaleChange' | 'onTimezoneChange' | 'timezone' | 'timezoneOptions'>;
 
 function ManualFingerprintControls(props: ManualFingerprintProps) {
   return (
@@ -142,7 +116,7 @@ function ManualFingerprintControls(props: ManualFingerprintProps) {
         <Select.Content>{props.localeOptions.map((item) => <Select.Item key={item.value} value={item.value}>{item.label}</Select.Item>)}</Select.Content>
       </Select.Root>
       <Select.Root value={props.timezone} onValueChange={props.onTimezoneChange}>
-        <Select.Trigger aria-label="时区" />
+        <Select.Trigger aria-label="时区" className="timezone-select" />
         <Select.Content>{props.timezoneOptions.map((item) => <Select.Item key={item.value} value={item.value}>{item.label}</Select.Item>)}</Select.Content>
       </Select.Root>
     </Flex>

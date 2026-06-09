@@ -1,26 +1,27 @@
-.cloud-session-page { padding: 6px 0 10px; width: min(1920px, calc(100vw - 10px)); }
-.cloud-session-workspace { align-items: stretch; display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) 220px; min-height: calc(100vh - 72px); }
-.cloud-session-main { display: flex; flex-direction: column; gap: 10px; grid-column: 1; grid-row: 1; min-height: 0; min-width: 0; }
-.cloud-session-workspace .session-rail { grid-column: 2; grid-row: 1; height: calc(100vh - 72px); min-height: 0; }
-.cloud-session-toolbar { align-items: center; background: rgba(255,255,255,.88); border-radius: 16px; display: grid; gap: 8px; grid-template-columns: auto minmax(320px, 1fr) auto; padding: 6px 8px; }
-.cloud-session-address-form { min-width: 0; }
-.cloud-session-nav, .cloud-session-window-actions { min-width: max-content; }
+.cloud-session-page { padding: 6px 0 10px; width: min(1920px, calc(100vw - 12px)); }
+.cloud-session-workspace { align-items: stretch; grid-template-columns: minmax(0, 1fr) minmax(260px, 300px); min-height: calc(100dvh - 72px); }
+.cloud-session-main { grid-column: 1; grid-row: 1; min-height: 0; min-width: 0; }
+.cloud-session-workspace .session-rail { grid-column: 2; grid-row: 1; height: calc(100dvh - 72px); min-height: 0; }
+.cloud-session-toolbar { background: rgba(255,255,255,.9); border-radius: 16px; padding: 6px; }
+.cloud-session-toolbar-inner { min-width: 0; width: 100%; }
+.cloud-session-address-form { align-items: center; display: grid; flex: 1 1 520px; gap: 8px; grid-template-columns: minmax(0, 1fr) auto; min-width: 0; }
+.cloud-session-nav, .cloud-session-window-actions { flex: 0 0 auto; }
 .cloud-session-status { border-radius: 999px; height: 9px; min-width: 9px; padding: 0; width: 9px; }
-.cloud-session-main .browser-stage { background: #0b1020; border-color: #111827; border-radius: 18px; box-shadow: none; flex: 1; margin: 0; min-height: 0; }
+.cloud-session-main .browser-stage { background: #0b1020; border-color: #111827; border-radius: 18px; box-shadow: none; flex: 1 1 auto; margin: 0; min-height: 0; }
 .cloud-session-main .browser-stage-inset { height: 100%; }
-.cloud-session-main .browser-viewport { background: radial-gradient(circle at top, #172033 0, #0b1020 55%); height: calc(100vh - 126px); min-height: 620px; }
+.cloud-session-main .browser-viewport { background: radial-gradient(circle at top, #172033 0, #0b1020 55%); height: clamp(500px, calc(100dvh - 128px), 1080px); min-height: 0; }
 .cloud-session-main .live-frame { max-height: none; }
-.cloud-session-workspace .session-rail-list { max-height: calc(100vh - 134px); }
-@media (max-width: 1120px) {
+.cloud-session-workspace .session-rail-list { max-height: calc(100dvh - 134px); }
+@media (max-width: 1180px) {
   .cloud-session-workspace { grid-template-columns: 1fr; }
   .cloud-session-main, .cloud-session-workspace .session-rail { grid-column: 1; grid-row: auto; }
   .cloud-session-workspace .session-rail { height: auto; order: 2; }
-  .cloud-session-workspace .session-rail-list { max-height: 240px; }
+  .cloud-session-workspace .session-rail-list { max-height: 220px; }
 }
-@media (max-width: 760px) {
+@media (max-width: 820px) {
   .cloud-session-page { width: min(100vw - 14px, 1480px); }
-  .cloud-session-toolbar { grid-template-columns: 1fr auto; }
-  .cloud-session-address-form { grid-column: 1 / -1; grid-row: 2; }
-  .cloud-session-window-actions { justify-content: end; }
-  .cloud-session-main .browser-viewport { height: calc(100vh - 168px); min-height: 420px; }
+  .cloud-session-toolbar-inner { flex-wrap: wrap; }
+  .cloud-session-address-form { flex-basis: 100%; order: 3; }
+  .cloud-session-window-actions { margin-left: auto; }
+  .cloud-session-main .browser-viewport { height: clamp(380px, calc(100dvh - 176px), 780px); }
 }

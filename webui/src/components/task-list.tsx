@@ -1,4 +1,4 @@
-import { Button, Card, Flex, IconButton, Table, Text, Tooltip } from '@radix-ui/themes';
+import { Box, Button, Card, Flex, IconButton, Table, Text, Tooltip } from '@radix-ui/themes';
 import { ClipboardList, Code2, MonitorDot, RefreshCcw } from 'lucide-react';
 import { Link } from 'react-router';
 import type { BrowserTask } from '../proto/browser/automation/v1/browser_automation';
@@ -41,39 +41,41 @@ export function TaskList({ lastUpdatedAt, onRefresh, refreshing = false, session
 
 function TaskTable({ sessionId, tasks }: { sessionId: string; tasks: BrowserTask[] }) {
   return (
-    <Table.Root className="task-table" variant="surface">
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeaderCell>任务</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>状态</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>更新时间</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>页面</Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>操作</Table.ColumnHeaderCell>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {tasks.map((task) => (
-          <Table.Row key={task.task_id}>
-            <Table.Cell>
-              <span className="task-id" title={task.task_id}>
-                <strong>{task.input?.task_key || task.task_id}</strong>
-                <small>{shortID(task.task_id)}</small>
-              </span>
-            </Table.Cell>
-            <Table.Cell><span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span></Table.Cell>
-            <Table.Cell>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</Table.Cell>
-            <Table.Cell>
-              <span className="task-page" title={taskDisplayURL(task)}>
-                <strong>{taskTitle(task)}</strong>
-                <small>{taskMeta(task)}</small>
-                {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
-              </span>
-            </Table.Cell>
-            <Table.Cell><TaskActions sessionId={sessionId} /></Table.Cell>
+    <Box className="task-table-scroll">
+      <Table.Root className="task-table" variant="surface">
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeaderCell>任务</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>状态</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>更新时间</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>页面</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell>操作</Table.ColumnHeaderCell>
           </Table.Row>
-        ))}
-      </Table.Body>
-    </Table.Root>
+        </Table.Header>
+        <Table.Body>
+          {tasks.map((task) => (
+            <Table.Row key={task.task_id}>
+              <Table.Cell>
+                <span className="task-id" title={task.task_id}>
+                  <strong>{task.input?.task_key || task.task_id}</strong>
+                  <small>{shortID(task.task_id)}</small>
+                </span>
+              </Table.Cell>
+              <Table.Cell><span className={`status-chip ${statusTone(task.status)}`}>{statusLabel(task.status)}</span></Table.Cell>
+              <Table.Cell>{formatTaskTime(task.completed_at || task.updated_at || task.started_at || task.created_at)}</Table.Cell>
+              <Table.Cell>
+                <span className="task-page" title={taskDisplayURL(task)}>
+                  <strong>{taskTitle(task)}</strong>
+                  <small>{taskMeta(task)}</small>
+                  {task.last_error?.message ? <em>{safeMessage(task.last_error.message)}</em> : null}
+                </span>
+              </Table.Cell>
+              <Table.Cell><TaskActions sessionId={sessionId} /></Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 }
 

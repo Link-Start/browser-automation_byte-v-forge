@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Grid } from '@radix-ui/themes';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { buildQuickCommands, defaultQuickCommand } from '../api/defaults';
@@ -79,7 +80,7 @@ export function HomeRoute() {
 
   return (
     <PageFrame className="cloud-workbench-page">
-      <div className="cloud-workbench">
+      <Grid className="cloud-workbench" gap="3">
         <CloudBrowserLauncher
           disabled={launch.isPending}
           fingerprintMode={fingerprintMode}
@@ -113,7 +114,7 @@ export function HomeRoute() {
           refreshing={sessions.isFetching}
           sessions={sessionItems}
         />
-      </div>
+      </Grid>
     </PageFrame>
   );
 }

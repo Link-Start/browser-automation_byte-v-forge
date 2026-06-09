@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Flex, Grid } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { executeCommands, listSessions, stopSession } from '../api/browser-api';
@@ -55,7 +56,7 @@ export function SessionLiveRoute() {
 
   return (
     <PageFrame className="cloud-session-page">
-      <div className="cloud-session-workspace">
+      <Grid className="cloud-session-workspace" gap="2">
         <SessionRail
           activeSessionId={sessionId}
           onRefresh={() => {
@@ -64,7 +65,7 @@ export function SessionLiveRoute() {
           refreshing={sessions.isFetching}
           sessions={sessions.data?.sessions || []}
         />
-        <div className="cloud-session-main">
+        <Flex className="cloud-session-main" direction="column" gap="2">
           <CloudSessionToolbar
             addressValue={addressValue}
             connected={liveView.connected}
@@ -88,8 +89,8 @@ export function SessionLiveRoute() {
             onInput={liveView.sendInput}
             pending={!liveView.connected && !liveView.error}
           />
-        </div>
-      </div>
+        </Flex>
+      </Grid>
     </PageFrame>
   );
 }

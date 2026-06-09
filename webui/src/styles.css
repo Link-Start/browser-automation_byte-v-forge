@@ -67,7 +67,8 @@ pre { background: #111827; border-radius: 12px; color: #f9fafb; max-height: 360p
 .result-line strong, .task-id strong, .task-id small, .task-page strong, .task-page small, .task-page em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .text-preview { max-height: 220px; white-space: pre-wrap; }
 .error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; color: #b91c1c; margin: 0; padding: 11px; }
-.task-table { overflow: hidden; }
+.task-table-scroll { overflow-x: auto; }
+.task-table { min-width: 760px; table-layout: fixed; width: 100%; }
 .task-id, .task-page { display: grid; gap: 2px; min-width: 0; }
 .status-chip { border-radius: 999px; display: inline-flex; font-size: 12px; font-weight: 750; justify-content: center; padding: 5px 8px; width: fit-content; }
 .tone-success { background: #dcfce7; color: #166534; } .tone-danger { background: #fee2e2; color: #b91c1c; } .tone-warn { background: #fef3c7; color: #92400e; } .tone-muted { background: #f3f4f6; color: #6b7280; }
