@@ -41,7 +41,6 @@ export function HomeRoute() {
   const [timezone, setTimezone] = useState(initialTimezone);
   const sessions = useQuery({ queryKey: browserQueryKeys.sessions, queryFn: listSessions, refetchInterval: 5000 });
   const sessionItems = sessions.data?.sessions || [];
-  const recentSession = sessionItems[0];
   const sessionConfig = buildCloudBrowserConfig(
     fingerprintMode,
     locale,
@@ -101,16 +100,13 @@ export function HomeRoute() {
           onTimezoneChange={setTimezone}
           proxyMode={proxyMode}
           proxyRuntimeAccountId={proxyRuntimeAccountId}
-          recentSession={recentSession}
           targetUrl={targetUrl}
           timezone={timezone}
           timezoneOptions={timezoneOptionItems}
           validationError={validationError}
-          windowCount={sessionItems.length}
         />
         <SessionRail
-          activeSessionId={recentSession?.session_id}
-          lastUpdatedAt={sessions.dataUpdatedAt}
+          activeSessionId={sessionItems[0]?.session_id}
           onRefresh={() => {
             void sessions.refetch();
           }}
