@@ -49,7 +49,7 @@ export function CloudBrowserLauncher(props: CloudBrowserLauncherProps) {
             autoComplete="url"
             inputMode="url"
             onChange={(event) => props.onTargetUrlChange(event.target.value)}
-            placeholder="输入网址"
+            placeholder="搜索或输入网址"
             size="3"
             value={props.targetUrl}
           >

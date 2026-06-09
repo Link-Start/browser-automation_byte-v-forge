@@ -44,7 +44,7 @@ export function CloudSessionToolbar(props: CloudSessionToolbarProps) {
             onBlur={() => props.onAddressFocusChange(false)}
             onChange={(event) => props.onAddressChange(event.target.value)}
             onFocus={() => props.onAddressFocusChange(true)}
-            placeholder="输入 URL"
+            placeholder="搜索或输入网址"
             size="3"
             value={props.addressValue}
           >
