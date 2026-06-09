@@ -1,18 +1,23 @@
-.cloud-session-page { padding: 12px 0 18px; width: min(1440px, calc(100vw - 24px)); }
-.cloud-session-workspace { align-items: stretch; display: grid; gap: 12px; grid-template-columns: 268px minmax(0, 1fr); min-height: calc(100vh - 88px); }
-.cloud-session-main { display: flex; flex-direction: column; gap: 10px; min-height: 0; min-width: 0; }
-.cloud-session-toolbar { align-items: center; display: grid; gap: 10px; grid-template-columns: auto minmax(0, 1fr) auto; padding: 8px; }
+.cloud-session-page { padding: 10px 0 18px; width: min(1480px, calc(100vw - 20px)); }
+.cloud-session-workspace { align-items: stretch; display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) 260px; min-height: calc(100vh - 84px); }
+.cloud-session-main { display: flex; flex-direction: column; gap: 10px; grid-column: 1; grid-row: 1; min-height: 0; min-width: 0; }
+.cloud-session-workspace .session-rail { grid-column: 2; grid-row: 1; height: calc(100vh - 84px); min-height: 0; }
+.cloud-session-toolbar { align-items: center; display: grid; gap: 8px; grid-template-columns: auto minmax(280px, 1fr) auto; padding: 7px 8px; }
+.cloud-session-address-form { min-width: 0; }
+.cloud-session-nav, .cloud-session-tools { min-width: max-content; }
 .cloud-session-status { border-radius: 999px; height: 9px; min-width: 9px; padding: 0; width: 9px; }
 .cloud-session-main .browser-stage { flex: 1; margin: 0; min-height: 0; }
-.cloud-session-main .browser-viewport { min-height: min(760px, calc(100vh - 160px)); }
-.cloud-session-workspace .session-rail { height: calc(100vh - 88px); min-height: 0; }
-.cloud-session-workspace .session-rail-list { max-height: calc(100vh - 150px); }
-@media (max-width: 1080px) {
+.cloud-session-main .browser-viewport { min-height: min(780px, calc(100vh - 150px)); }
+.cloud-session-workspace .session-rail-list { max-height: calc(100vh - 146px); }
+@media (max-width: 1120px) {
   .cloud-session-workspace { grid-template-columns: 1fr; }
+  .cloud-session-main, .cloud-session-workspace .session-rail { grid-column: 1; grid-row: auto; }
   .cloud-session-workspace .session-rail { height: auto; order: 2; }
   .cloud-session-workspace .session-rail-list { max-height: 240px; }
 }
-@media (max-width: 720px) {
-  .cloud-session-page { width: min(100vw - 16px, 1440px); }
-  .cloud-session-toolbar { grid-template-columns: 1fr; }
+@media (max-width: 760px) {
+  .cloud-session-page { width: min(100vw - 14px, 1480px); }
+  .cloud-session-toolbar { grid-template-columns: 1fr auto; }
+  .cloud-session-address-form { grid-column: 1 / -1; grid-row: 2; }
+  .cloud-session-tools { justify-content: end; }
 }
