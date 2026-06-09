@@ -32,7 +32,7 @@ export function SessionToolbar({ connected, liveViewUrl, onStop, pending = false
     if (!sessionId) return;
     clearCopyResetTimer();
     try {
-      await writeClipboardText(sessionId);
+      await writeClipboardText(sessionLiveURL(sessionId));
       setCopyState('success');
     } catch {
       setCopyState('failed');
@@ -112,15 +112,19 @@ async function writeClipboardText(value: string) {
   await navigator.clipboard.writeText(value);
 }
 
+function sessionLiveURL(sessionId: string) {
+  return `${window.location.origin}${paths.sessionLive(sessionId)}`;
+}
+
 function copyButtonLabel(state: CopyState) {
-  if (state === 'success') return '会话 ID 已复制';
-  if (state === 'failed') return '复制失败，请手动复制会话 ID';
-  return '复制会话 ID';
+  if (state === 'success') return '会话链接已复制';
+  if (state === 'failed') return '复制失败，请手动复制浏览器地址';
+  return '复制会话链接';
 }
 
 function copyFeedback(state: CopyState) {
-  if (state === 'success') return '会话 ID 已复制';
-  if (state === 'failed') return '复制失败，请手动复制';
+  if (state === 'success') return '会话链接已复制';
+  if (state === 'failed') return '复制失败，请手动复制浏览器地址';
   return '';
 }
 

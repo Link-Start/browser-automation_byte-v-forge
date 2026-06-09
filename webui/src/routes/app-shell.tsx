@@ -1,11 +1,10 @@
-import { Home, Plus, Radio, type LucideIcon } from 'lucide-react';
+import { Home, MonitorDot, type LucideIcon } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
 import { paths } from './paths';
 
 const routeLinks: Array<{ icon: LucideIcon; label: string; to: string; end?: boolean }> = [
-  { end: true, icon: Home, label: '入口', to: paths.home },
-  { icon: Plus, label: '新建会话', to: paths.newSession },
-  { icon: Radio, label: '接管会话', to: paths.openSession }
+  { end: true, icon: Home, label: '首页', to: paths.home },
+  { icon: MonitorDot, label: '会话入口', to: paths.sessions }
 ];
 
 export function AppShell() {
